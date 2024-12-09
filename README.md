@@ -6,7 +6,8 @@
 
 - springboot 2.7
 - mysql 8
-- lombok 
+- mybatis 3.5
+- lombok
 - thymeleaf 前端渲染
 
 ## 结构说明

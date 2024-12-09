@@ -4,3 +4,7 @@ server:
 spring:
   profiles:
     active: dal, web, config
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
