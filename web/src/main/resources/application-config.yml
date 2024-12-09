@@ -1,0 +1,10 @@
+view:
+  site:
+    name: coding社区
+    logoUrl: https://blog.hhui.top/hexblog/images/avatar.jpg
+    faviconIconUrl: https://blog.hhui.top/hexblog/images/avatar.jpg
+    contactMeTitle: 联系我 - chrissy
+    contactMeEmail: wx2178@126.com
+    pageSize: 20
+    cdnImgStyle:
+    websiteRecord: 备案记录
