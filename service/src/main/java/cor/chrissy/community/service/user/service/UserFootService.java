@@ -1,12 +1,12 @@
 package cor.chrissy.community.service.user.service;
 
-import cor.chrissy.community.core.enums.CollectionStatEnum;
-import cor.chrissy.community.core.enums.CommentStatEnum;
-import cor.chrissy.community.core.enums.PraiseStatEnum;
+import cor.chrissy.community.common.enums.CollectionStatEnum;
+import cor.chrissy.community.common.enums.CommentStatEnum;
+import cor.chrissy.community.common.enums.PraiseStatEnum;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 public interface UserFootService {
     /**
@@ -14,7 +14,7 @@ public interface UserFootService {
      * @param documentId
      * @return
      */
-    Long queryCollentionCount(Long documentId);
+    Long queryCollectionCount(Long documentId);
 
     /**
      * 文章阅读数

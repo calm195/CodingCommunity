@@ -1,17 +1,38 @@
 package cor.chrissy.community.service.article.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import cor.chrissy.community.core.enums.PushStatusEnum;
-import cor.chrissy.community.core.req.PageParam;
+import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.req.article.ArticlePostReq;
+import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 public interface ArticleService {
-    void updateArticle(ArticleDO articleDO);
+    /**
+     * 查询文章详情
+     *
+     * @param articleId
+     * @return
+     */
+    ArticleDTO queryArticleDetail(Long articleId);
 
+    /**
+     * 保存or更新文章
+     *
+     * @param req
+     * @return
+     */
+    Long saveArticle(ArticlePostReq req);
+
+    /**
+     * 删除文章
+     *
+     * @param articleId
+     */
     void deleteArticle(Long articleId);
 
     /**

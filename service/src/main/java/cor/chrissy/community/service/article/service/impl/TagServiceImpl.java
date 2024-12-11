@@ -4,25 +4,46 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import cor.chrissy.community.core.enums.PushStatusEnum;
-import cor.chrissy.community.core.enums.YesOrNoEnum;
-import cor.chrissy.community.core.req.PageParam;
+import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.enums.YesOrNoEnum;
+import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.TagDO;
 import cor.chrissy.community.service.article.repository.mapper.TagMapper;
 import cor.chrissy.community.service.article.service.TagService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Service
 public class TagServiceImpl implements TagService {
+
     @Resource
     private TagMapper tagMapper;
+
+    /**
+     * 查询标签
+     *
+     * @param tagIds
+     * @return
+     */
+    @Override
+    public List<TagDTO> getTags(Collection<Long> tagIds) {
+        LambdaQueryWrapper<TagDO> query = Wrappers.lambdaQuery();
+        query.eq(TagDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .in(TagDO::getId, tagIds);
+
+        List<TagDO> tagList = tagMapper.selectList(query);
+        return tagList.stream().map(this::parse).collect(Collectors.toList());
+    }
+
 
     @Override
     public Long addTag(TagDO tagDTO) {
@@ -68,10 +89,15 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDO> getTagListByCategoryId(Long categoryId) {
+    public List<TagDTO> getTagListByCategoryId(Long categoryId) {
         LambdaQueryWrapper<TagDO> query = Wrappers.lambdaQuery();
         query.eq(TagDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(TagDO::getCategoryId, categoryId);
-        return tagMapper.selectList(query);
+        List<TagDO> list = tagMapper.selectList(query);
+        return list.stream().map(this::parse).collect(Collectors.toList());
+    }
+
+    private TagDTO parse(TagDO tag) {
+        return new TagDTO(tag.getCategoryId(), tag.getId(), tag.getTagName());
     }
 }

@@ -5,7 +5,7 @@ import cor.chrissy.community.service.comment.repository.entity.CommentDO;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 public interface CommentMapper extends BaseMapper<CommentDO> {
 }

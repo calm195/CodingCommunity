@@ -14,7 +14,7 @@ import cor.chrissy.community.core.util.MapUtil;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Controller
 public class IndexController {

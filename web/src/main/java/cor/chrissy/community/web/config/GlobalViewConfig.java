@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 /**
  * 读取网站配置信息。从配置文件application-config.yml中读取配置信息
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Data
 @Component

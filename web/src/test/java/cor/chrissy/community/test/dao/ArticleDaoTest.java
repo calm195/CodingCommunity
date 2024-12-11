@@ -1,11 +1,10 @@
 package cor.chrissy.community.test.dao;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import cor.chrissy.community.core.req.PageParam;
+import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.CategoryDO;
 import cor.chrissy.community.service.article.repository.entity.TagDO;
-import cor.chrissy.community.service.article.service.TagService;
 import cor.chrissy.community.service.article.service.impl.ArticleServiceImpl;
 import cor.chrissy.community.service.article.service.impl.CategoryServiceImpl;
 import cor.chrissy.community.service.article.service.impl.TagServiceImpl;
@@ -18,7 +17,7 @@ import java.util.List;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Slf4j
 public class ArticleDaoTest extends BasicTest {
@@ -50,7 +49,7 @@ public class ArticleDaoTest extends BasicTest {
         Long tagId = tagService.addTag(tag);
         log.info("tagId: {}", tagId);
 
-        List<TagDO> list = tagService.getTagListByCategoryId(1L);
+        List<TagDTO> list = tagService.getTagListByCategoryId(1L);
         log.info("tagList: {}", list);
     }
 

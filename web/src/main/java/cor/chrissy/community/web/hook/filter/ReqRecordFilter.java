@@ -1,6 +1,6 @@
 package cor.chrissy.community.web.hook.filter;
 
-import cor.chrissy.community.core.context.ReqInfoContext;
+import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.core.util.CrossUtil;
 import cor.chrissy.community.core.util.IpUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.net.URLDecoder;
  * 请求参数日志输出。过滤无用不必信息
  *
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Slf4j
 @WebFilter(urlPatterns = "/*", filterName = "selfProcessBeforeFilter")

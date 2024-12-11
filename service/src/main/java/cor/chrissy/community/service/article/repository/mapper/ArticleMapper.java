@@ -5,7 +5,7 @@ import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 public interface ArticleMapper extends BaseMapper<ArticleDO> {
 }

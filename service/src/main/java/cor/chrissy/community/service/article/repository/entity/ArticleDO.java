@@ -1,13 +1,13 @@
 package cor.chrissy.community.service.article.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import cor.chrissy.community.service.common.BaseDO;
+import cor.chrissy.community.common.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -16,10 +16,12 @@ public class ArticleDO extends BaseDO {
 
     private static final long serialVersionUID = 1L;
 
+    private Long authorId;
+
     /**
      * 文章类型：1-博文，2-问答
      */
-    private Long articleType;
+    private Integer articleType;
 
     /**
      * 文章标题
@@ -52,7 +54,14 @@ public class ArticleDO extends BaseDO {
     private Integer source;
 
     /**
+     * 原文地址
+     */
+    private String sourceUrl;
+
+    /**
      * 状态：0-未发布，1-已发布
+     *
+     * @see cor.chrissy.community.common.enums.PushStatusEnum
      */
     private Integer status;
 

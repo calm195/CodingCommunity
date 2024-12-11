@@ -2,7 +2,7 @@ package cor.chrissy.community.service.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import cor.chrissy.community.core.enums.YesOrNoEnum;
+import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.service.user.repository.entity.UserDO;
 import cor.chrissy.community.service.user.repository.entity.UserInfoDO;
 import cor.chrissy.community.service.user.repository.mapper.UserInfoMapper;
@@ -14,7 +14,7 @@ import javax.annotation.Resource;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Service
 public class UserServiceImpl implements UserService {

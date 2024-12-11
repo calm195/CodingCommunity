@@ -1,24 +1,34 @@
 package cor.chrissy.community.service.article.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import cor.chrissy.community.core.enums.PushStatusEnum;
-import cor.chrissy.community.core.req.PageParam;
+import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.TagDO;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 public interface TagService {
     /**
-     * 添加标签
+     * 查询类目
      *
-     * @param tagDO
+     * @param tagIds
      * @return
      */
-    Long addTag(TagDO tagDO);
+    List<TagDTO> getTags(Collection<Long> tagIds);
+
+    /**
+     * 添加标签
+     *
+     * @param tagDTO
+     * @return
+     */
+    Long addTag(TagDO tagDTO);
 
     /**
      * 更新标签
@@ -55,5 +65,5 @@ public interface TagService {
      * @param categoryId
      * @return
      */
-    List<TagDO> getTagListByCategoryId(Long categoryId);
+    List<TagDTO> getTagListByCategoryId(Long categoryId);
 }

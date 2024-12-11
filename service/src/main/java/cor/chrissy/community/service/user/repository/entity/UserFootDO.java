@@ -1,13 +1,13 @@
 package cor.chrissy.community.service.user.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import cor.chrissy.community.service.common.BaseDO;
+import cor.chrissy.community.common.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
  * @author wx128
- * @date 2024/12/9
+ * @createAt 2024/12/9
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -24,12 +24,12 @@ public class UserFootDO extends BaseDO {
     /**
      * 文档ID（文章/评论）
      */
-    private Long doucumentId;
+    private Long documentId;
 
     /**
      * 文档类型：1-文章，2-评论
      */
-    private Integer doucumentType;
+    private Integer documentType;
 
     /**
      * 收藏状态: 0-未收藏，1-已收藏，2-取消收藏
