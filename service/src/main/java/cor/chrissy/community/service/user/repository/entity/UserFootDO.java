@@ -31,6 +31,10 @@ public class UserFootDO extends BaseDO {
      */
     private Integer documentType;
 
+    private Long documentAuthorId;
+
+    private Long commentId;
+
     /**
      * 收藏状态: 0-未收藏，1-已收藏，2-取消收藏
      */

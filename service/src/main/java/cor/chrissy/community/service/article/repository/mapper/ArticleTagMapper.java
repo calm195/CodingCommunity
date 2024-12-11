@@ -21,7 +21,7 @@ public interface ArticleTagMapper extends BaseMapper<ArticleTagDO> {
     @Insert("<script>" +
             "insert into article_tag(`article_id`, `tag_id`, `deleted`) values " +
             "<foreach collection='list' item='item' separator=','>" +
-            "(#{item.categoryId}, #{item.tagId}, 0})" +
+            "(#{item.articleId}, #{item.tagId}, #{item.deleted})" +
             "</foreach>" +
             "</script>")
     int batchInsert(@Param("list") List<ArticleTagDO> entityList);

@@ -5,12 +5,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.req.user.UserRelationReq;
+import cor.chrissy.community.service.user.converter.UserConverter;
+import cor.chrissy.community.service.user.dto.UserFollowDTO;
+import cor.chrissy.community.service.user.dto.UserFollowListDTO;
 import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 import cor.chrissy.community.service.user.repository.mapper.UserRelationMapper;
 import cor.chrissy.community.service.user.service.UserRelationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author wx128
@@ -22,28 +28,54 @@ public class UserRelationServiceImpl implements UserRelationService {
     @Resource
     private UserRelationMapper userRelationMapper;
 
-    @Override
-    public IPage<UserRelationDO> getUserRelationListByUserId(Integer userId, PageParam pageParam) {
-        LambdaQueryWrapper<UserRelationDO> query = Wrappers.lambdaQuery();
-        query.eq(UserRelationDO::getUserId, userId);
-        Page page = new Page(pageParam.getPageNum(), pageParam.getPageSize());
-        return userRelationMapper.selectPage(page, query);
-    }
+    @Resource
+    private UserConverter userConverter;
 
     @Override
-    public IPage<UserRelationDO> getUserRelationListByFollowUserId(Integer followUserId, PageParam pageParam) {
-        LambdaQueryWrapper<UserRelationDO> query = Wrappers.lambdaQuery();
-        query.eq(UserRelationDO::getFollowUserId, followUserId);
-        Page page = new Page(pageParam.getPageNum(), pageParam.getPageSize());
-        return userRelationMapper.selectPage(page, query);
-    }
+    public UserFollowListDTO getUserFollowList(Long userId, PageParam pageParam) {
 
-    @Override
-    public void deleteUserRelationById(Long id) {
-        UserRelationDO userRelationDTO = userRelationMapper.selectById(id);
-        if (userRelationDTO != null) {
-            userRelationMapper.deleteById(id);
+        UserFollowListDTO userFollowListDTO = new UserFollowListDTO();
+        List<UserFollowDTO> userRelationList = userRelationMapper.queryUserFollowList(userId, pageParam);
+        if (userRelationList.isEmpty())  {
+            return userFollowListDTO;
         }
+
+        Boolean isMore = (userRelationList.size() == pageParam.getPageSize()) ? Boolean.TRUE : Boolean.FALSE;
+
+        userFollowListDTO.setUserFollowList(userRelationList);
+        userFollowListDTO.setIsMore(isMore);
+        return userFollowListDTO;
+    }
+
+    @Override
+    public UserFollowListDTO getUserFansList(Long userId, PageParam pageParam) {
+
+        UserFollowListDTO userFollowListDTO = new UserFollowListDTO();
+        List<UserFollowDTO> userRelationList = userRelationMapper.queryUserFansList(userId, pageParam);
+        if (userRelationList.isEmpty())  {
+            return userFollowListDTO;
+        }
+
+        Boolean isMore = (userRelationList.size() == pageParam.getPageSize()) ? Boolean.TRUE : Boolean.FALSE;
+
+        userFollowListDTO.setUserFollowList(userRelationList);
+        userFollowListDTO.setIsMore(isMore);
+        return userFollowListDTO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveUserRelation(UserRelationReq req) throws Exception {
+        if (req.getUserRelationId() == null || req.getUserRelationId() == 0) {
+            userRelationMapper.insert(userConverter.toDO(req));
+            return;
+        }
+
+        UserRelationDO userRelationDO = userRelationMapper.selectById(req.getUserRelationId());
+        if (userRelationDO == null) {
+            throw new Exception("未查询到该用户关系");
+        }
+        userRelationMapper.updateById(userConverter.toDO(req));
     }
 }
 

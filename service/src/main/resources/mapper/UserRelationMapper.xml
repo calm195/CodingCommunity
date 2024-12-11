@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cor.chrissy.community.service.user.repository.mapper.UserRelationMapper">
+
+    <select id="queryUserFollowList"
+            resultType="cor.chrissy.community.service.user.dto.UserFollowDTO">
+
+        SELECT
+        u.user_id as userId,
+        u.user_name as userName,
+        u.photo as photo,
+        u.profile as profile,
+        r.id as userRelationId
+        FROM user_relation as r
+        left join user_info as u on r.user_id = u.user_id
+        WHERE
+        r.follow_user_id = #{followUserId}
+        and u.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
+        ORDER BY u.id desc
+
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+
+    </select>
+
+    <select id="queryUserFansList"
+            resultType="cor.chrissy.community.service.user.dto.UserFollowDTO">
+
+        SELECT
+        u.user_id as userId,
+        u.user_name as userName,
+        u.photo as photo,
+        u.profile as profile,
+        r.id as userRelationId
+        FROM user_relation as r
+        left join user_info as u on r.follow_user_id = u.user_id
+        WHERE
+        r.user_id = #{userId}
+        and u.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
+        ORDER BY u.id desc
+
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+
+    </select>
+
+    <select id="queryUserFollowCount"
+            resultType="java.lang.Integer">
+
+        SELECT
+        count(*) as count
+        FROM user_relation as r
+        left join user_info as u on r.user_id = u.user_id
+        WHERE
+        r.follow_user_id = #{followUserId}
+        and u.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
+        ORDER BY u.id desc
+
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+
+    </select>
+
+    <select id="queryUserFansCount"
+            resultType="java.lang.Integer">
+
+        SELECT
+        count(*) as count
+        FROM user_relation as r
+        left join user_info as u on r.follow_user_id = u.user_id
+        WHERE
+        r.user_id = #{userId}
+        and u.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
+        ORDER BY u.id desc
+
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+
+    </select>
+
+
+</mapper>

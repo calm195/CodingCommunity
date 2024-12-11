@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.CategoryDTO;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,6 @@ public class CategoryServiceImpl implements CategoryService {
     @PostConstruct
     public void init() {
         categoryCaches = CacheBuilder.newBuilder().maximumSize(300).build(new CacheLoader<Long, CategoryDTO>() {
-            @NotNull
             @Override
             public CategoryDTO load(@NotNull Long categoryId) throws Exception {
                 CategoryDO category = categoryMapper.selectById(categoryId);
@@ -51,6 +51,8 @@ public class CategoryServiceImpl implements CategoryService {
                 return new CategoryDTO(categoryId, category.getCategoryName());
             }
         });
+        // 预热全量缓存
+        loadAllCategories(true);
     }
 
     /**
@@ -90,7 +92,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void operateCategory(Long categoryId, PushStatusEnum pushStatusEnum) {
+    public void operateCategory(Long categoryId, PushStatEnum pushStatusEnum) {
         CategoryDO categoryDTO = categoryMapper.selectById(categoryId);
         if (categoryDTO != null) {
             categoryDTO.setStatus(pushStatusEnum.getCode());
@@ -102,7 +104,7 @@ public class CategoryServiceImpl implements CategoryService {
     public IPage<CategoryDO> getCategoryByPage(PageParam pageParam) {
         LambdaQueryWrapper<CategoryDO> query = Wrappers.lambdaQuery();
         query.eq(CategoryDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .eq(CategoryDO::getStatus, PushStatusEnum.ONLINE.getCode());
+                .eq(CategoryDO::getStatus, PushStatEnum.ONLINE.getCode());
         Page<CategoryDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
         return categoryMapper.selectPage(page, query);
     }
@@ -114,21 +116,28 @@ public class CategoryServiceImpl implements CategoryService {
      * @return
      */
     public List<CategoryDTO> loadAllCategories(boolean forceDB) {
-        if (forceDB || categoryCaches == null) {
+        if (forceDB) {
             List<CategoryDTO> list = loadAllCategoriesFromDb();
             categoryCaches.invalidateAll();
             categoryCaches.cleanUp();
             list.forEach(s -> categoryCaches.put(s.getCategoryId(), s));
             return list;
         } else {
-            return new ArrayList<>(categoryCaches.asMap().values());
+            List<CategoryDTO> list = new ArrayList<>(categoryCaches.asMap().values());
+            list.sort(new Comparator<CategoryDTO>() {
+                @Override
+                public int compare(CategoryDTO o1, CategoryDTO o2) {
+                    return Long.compare(o1.getCategoryId(), o2.getCategoryId());
+                }
+            });
+            return list;
         }
     }
 
     private List<CategoryDTO> loadAllCategoriesFromDb() {
         LambdaQueryWrapper<CategoryDO> query = Wrappers.lambdaQuery();
         query.eq(CategoryDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .eq(CategoryDO::getStatus, PushStatusEnum.ONLINE.getCode());
+                .eq(CategoryDO::getStatus, PushStatEnum.ONLINE.getCode());
         List<CategoryDO> records = categoryMapper.selectList(query);
         return records.stream().map(s -> new CategoryDTO(s.getId(), s.getCategoryName())).collect(Collectors.toList());
     }

@@ -1,5 +1,6 @@
 package cor.chrissy.community.common.result;
 
+import cor.chrissy.community.common.enums.StatusEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,27 +16,20 @@ public class Result<T> implements Serializable {
     private Status status;
     private T result;
 
-    public Result(int code, String message){
-        this.status = new Status(code, message);
+    public Result(Status status) {
+        this.status = status;
     }
 
     public Result(T t){
-        this.status = Status.newState(0, "ok");
+        status = Status.newStatus(StatusEnum.SUCCESS);
         this.result = t;
     }
 
-    public static <T> Result<T> success(T t){
+    public static <T> Result<T> ok(T t){
         return new Result<T>(t);
     }
 
-    public static <T> Result<T> error(Status status, String... messages){
-        String message = "";
-        if (messages != null && messages.length > 0){
-            message = String.format(status.getMessage(), (Object) messages);
-        } else {
-            message = status.getMessage();
-        }
-
-        return new Result<>(status.getCode(), message);
+    public static <T> Result<T> fail(StatusEnum status, Object... messages){
+        return new Result<>(Status.newStatus(status, messages));
     }
 }

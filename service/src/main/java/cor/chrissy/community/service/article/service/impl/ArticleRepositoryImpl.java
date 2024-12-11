@@ -2,10 +2,11 @@ package cor.chrissy.community.service.article.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import cor.chrissy.community.common.enums.SourceTypeEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
+import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
-import cor.chrissy.community.service.article.dto.CategoryDTO;
 import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDetailDO;
@@ -34,6 +35,8 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     private ArticleDetailMapper articleDetailMapper;
     @Autowired
     private ArticleTagMapper articleTagMapper;
+    @Autowired
+    private ArticleConverter articleConverter;
 
     /**
      * 查询文章详情
@@ -41,6 +44,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
      * @param articleId
      * @return
      */
+    @Override
     public ArticleDTO queryArticleDetail(Long articleId) {
         // 查询文章记录
         ArticleDO article = articleMapper.selectById(articleId);
@@ -53,20 +57,8 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         ArticleDetailDO detail = findLatestDetail(articleId);
         List<ArticleTagDO> tagList = findArticleTags(articleId);
 
-        ArticleDTO dto = new ArticleDTO();
-        dto.setAuthor(article.getAuthorId());
-        dto.setArticleId(articleId);
-        dto.setTitle(article.getTitle());
-        dto.setShortTitle(article.getShortTitle());
-        dto.setSummary(article.getSummary());
-        dto.setCover(article.getPicture());
-        dto.setSourceType(SourceTypeEnum.formCode(article.getSource()).getDesc());
-        dto.setSourceUrl(article.getSourceUrl());
-        dto.setStatus(article.getStatus());
-        dto.setLastUpdateTime(article.getUpdateTime().getTime());
+        ArticleDTO dto = articleConverter.toDTO(article);
         dto.setContent(detail.getContent());
-        // 设置类目id
-        dto.setCategory(new CategoryDTO(article.getCategoryId(), null));
         // 设置标签列表
         dto.setTags(tagList.stream().map(s -> new TagDTO(s.getTagId())).collect(Collectors.toList()));
         return dto;
@@ -88,6 +80,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
 
+    @Override
     public Long saveArticle(ArticleDO article, String content, Set<Long> tags) {
         if (article.getId() != null) {
             updateArticle(article, content, tags);
@@ -154,5 +147,17 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         });
         articleTagMapper.batchInsert(insertList);
     }
+
+    @Override
+    public List<ArticleDO> getArticleListByUserId(Long userId, PageParam pageParam) {
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
+                .eq(ArticleDO::getAuthorId, userId)
+                .last(PageParam.getLimitSql(pageParam))
+                .orderByDesc(ArticleDO::getId);
+        return articleMapper.selectList(query);
+    }
+
 
 }

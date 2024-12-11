@@ -1,9 +1,12 @@
 package cor.chrissy.community.service.article.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.service.article.dto.CategoryDTO;
 import cor.chrissy.community.service.article.repository.entity.CategoryDO;
+
+import java.util.List;
 
 /**
  * @author wx128
@@ -17,6 +20,14 @@ public interface CategoryService {
      * @return
      */
     String getCategoryName(Long categoryId);
+
+    /**
+     * 查询所有的分离
+     *
+     * @param forceDB
+     * @return
+     */
+    List<CategoryDTO> loadAllCategories(boolean forceDB);
 
     /**
      * 添加类目
@@ -40,7 +51,7 @@ public interface CategoryService {
      *
      * @param categoryId
      */
-    void operateCategory(Long categoryId, PushStatusEnum pushStatusEnum);
+    void operateCategory(Long categoryId, PushStatEnum pushStatEnum);
 
     /**
      * 类目分页查询

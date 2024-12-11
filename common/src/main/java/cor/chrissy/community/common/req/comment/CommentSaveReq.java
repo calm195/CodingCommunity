@@ -7,7 +7,7 @@ import lombok.Data;
  * @createAt 2024/12/10
  */
 @Data
-public class CommentReq {
+public class CommentSaveReq {
 
     /**
      * 评论ID

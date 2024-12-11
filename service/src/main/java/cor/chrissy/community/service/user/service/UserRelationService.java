@@ -2,6 +2,8 @@ package cor.chrissy.community.service.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.req.user.UserRelationReq;
+import cor.chrissy.community.service.user.dto.UserFollowListDTO;
 import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 
 /**
@@ -10,22 +12,29 @@ import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
  */
 public interface UserRelationService {
     /**
-     * 获取关注用户列表
+     * 我关注的用户
+     *
      * @param userId
+     * @param pageParam
      * @return
      */
-    IPage<UserRelationDO> getUserRelationListByUserId(Integer userId, PageParam pageParam);
+    UserFollowListDTO getUserFollowList(Long userId, PageParam pageParam);
+
 
     /**
-     * 获取被关注用户列表
-     * @param followUserId
+     * 关注我的粉丝
+     *
+     * @param userId
+     * @param pageParam
      * @return
      */
-    IPage<UserRelationDO> getUserRelationListByFollowUserId(Integer followUserId, PageParam pageParam);
+    UserFollowListDTO getUserFansList(Long userId, PageParam pageParam);
+
 
     /**
-     * 删除用户关系
-     * @param id
+     * 保存用户关系
+     * @param req
+     * @throws Exception
      */
-    void deleteUserRelationById(Long id);
+    void saveUserRelation(UserRelationReq req) throws Exception;
 }

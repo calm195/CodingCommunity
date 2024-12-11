@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.TagDTO;
@@ -71,10 +71,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void operateTag(Long tagId, PushStatusEnum pushStatusEnum) {
+    public void operateTag(Long tagId, PushStatEnum pushStatEnum) {
         TagDO tagDTO = tagMapper.selectById(tagId);
         if (tagDTO != null) {
-            tagDTO.setStatus(pushStatusEnum.getCode());
+            tagDTO.setStatus(pushStatEnum.getCode());
             tagMapper.updateById(tagDTO);
         }
     }
@@ -83,7 +83,7 @@ public class TagServiceImpl implements TagService {
     public IPage<TagDO> getTagByPage(PageParam pageParam) {
         LambdaQueryWrapper<TagDO> query = Wrappers.lambdaQuery();
         query.eq(TagDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .eq(TagDO::getStatus, PushStatusEnum.ONLINE.getCode());
+                .eq(TagDO::getStatus, PushStatEnum.ONLINE.getCode());
         Page<TagDO> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize());
         return tagMapper.selectPage(page, query);
     }

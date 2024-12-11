@@ -1,7 +1,7 @@
 package cor.chrissy.community.service.article.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.TagDO;
@@ -50,7 +50,7 @@ public interface TagService {
      *
      * @param tagId
      */
-    void operateTag(Long tagId, PushStatusEnum pushStatusEnum);
+    void operateTag(Long tagId, PushStatEnum pushStatEnum);
 
     /**
      * 标签分页查询

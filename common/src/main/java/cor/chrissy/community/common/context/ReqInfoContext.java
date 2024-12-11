@@ -3,6 +3,8 @@ package cor.chrissy.community.common.context;
 import lombok.Data;
 
 /**
+ * 请求上下文，携带用户身份信息
+ *
  * @author wx128
  * @createAt 2024/12/9
  */

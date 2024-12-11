@@ -1,10 +1,11 @@
 package cor.chrissy.community.service.article.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
+import cor.chrissy.community.service.article.dto.ArticleListDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 
 /**
@@ -12,6 +13,7 @@ import cor.chrissy.community.service.article.repository.entity.ArticleDO;
  * @createAt 2024/12/9
  */
 public interface ArticleService {
+
     /**
      * 查询文章详情
      *
@@ -41,7 +43,7 @@ public interface ArticleService {
      * @param articleId
      * @param pushStatusEnum
      */
-    void operateArticle(Long articleId, PushStatusEnum pushStatusEnum);
+    void operateArticle(Long articleId, PushStatEnum pushStatusEnum);
 
     /**
      * 分页获取文章列表
@@ -50,4 +52,31 @@ public interface ArticleService {
      * @return
      */
     IPage<ArticleDO> getArticleByPage(PageParam pageParam);
+
+    /**
+     * 获取用户文章列表
+     *
+     * @param userId
+     * @return
+     */
+    ArticleListDTO getArticleListByUserId(Long userId, PageParam pageSearchReq);
+
+
+    /**
+     * 获取用户收藏的文章列表
+     *
+     * @param userId
+     * @param pageParam
+     * @return
+     */
+    ArticleListDTO getCollectionArticleListByUserId(Long userId, PageParam pageParam);
+
+    /**
+     * 获取用户阅读的文章列表
+     *
+     * @param userId
+     * @param pageParam
+     * @return
+     */
+    ArticleListDTO getReadArticleListByUserId(Long userId, PageParam pageParam);
 }

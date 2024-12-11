@@ -2,7 +2,7 @@ package cor.chrissy.community.service.comment.converter;
 
 import cor.chrissy.community.service.comment.dto.CommentTreeDTO;
 import cor.chrissy.community.service.comment.repository.entity.CommentDO;
-import cor.chrissy.community.common.req.comment.CommentReq;
+import cor.chrissy.community.common.req.comment.CommentSaveReq;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 @Service
 public class CommentConverter {
 
-    public CommentDO reqToDo(CommentReq req) {
+    public CommentDO toDo(CommentSaveReq req) {
         if (req == null) {
             return null;
         }
@@ -27,7 +27,7 @@ public class CommentConverter {
         return commentDO;
     }
 
-    public CommentTreeDTO doToDTO(CommentDO commentDO) {
+    public CommentTreeDTO toDTO(CommentDO commentDO) {
         CommentTreeDTO commentTreeDTO = new CommentTreeDTO();
         commentTreeDTO.setUserId(commentDO.getUserId());
         commentTreeDTO.setCommentContent(commentDO.getContent());

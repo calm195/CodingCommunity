@@ -11,6 +11,7 @@ import cor.chrissy.community.common.enums.PraiseStatEnum;
 public interface UserFootService {
     /**
      * 文章收藏数
+     *
      * @param documentId
      * @return
      */
@@ -18,6 +19,7 @@ public interface UserFootService {
 
     /**
      * 文章阅读数
+     *
      * @param documentId
      * @return
      */
@@ -25,6 +27,7 @@ public interface UserFootService {
 
     /**
      * 文章评论数
+     *
      * @param documentId
      * @return
      */
@@ -32,6 +35,7 @@ public interface UserFootService {
 
     /**
      * 文章点赞数
+     *
      * @param documentId
      * @return
      */
@@ -39,6 +43,7 @@ public interface UserFootService {
 
     /**
      * 收藏/取消收藏足迹
+     *
      * @param documentId
      * @param userId
      * @return
@@ -47,6 +52,7 @@ public interface UserFootService {
 
     /**
      * 评论/删除评论足迹
+     *
      * @param documentId
      * @param userId
      * @return
@@ -55,9 +61,11 @@ public interface UserFootService {
 
     /**
      * 点赞/取消点赞足迹
+     *
      * @param documentId
      * @param userId
      * @return
      */
     Integer operatePraiseFoot(Long documentId, Long userId, PraiseStatEnum statEnum);
+
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cor.chrissy.community.service.user.repository.mapper.UserFootMapper">
+
+    <select id="queryArticleFootCount"
+            resultType="cor.chrissy.community.service.article.dto.ArticleFootCountDTO">
+
+        SELECT
+            sum(if (praise_stat =${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1, 0)) as praiseCount,
+            sum(if (read_stat =${@cor.chrissy.community.common.enums.ReadStatEnum@READ.code}, 1, 0)) as readCount,
+            sum(if (collection_stat =${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1, 0)) as collectionCount
+        FROM
+            user_foot
+        WHERE
+            document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@DOCUMENT.code}
+          AND document_author_id = #{userId}
+
+    </select>
+
+    <select id="queryCollectionArticleList"
+            resultType="cor.chrissy.community.service.article.repository.entity.ArticleDO">
+
+        SELECT
+        a.id as id,
+        a.author_id as authorId,
+        a.article_type as articleType,
+        a.title as title,
+        a.short_title as shortTitle,
+        a.picture as picture,
+        a.summary as summary,
+        a.category_id as categoryId,
+        a.source as source,
+        a.source_url as sourceUrl,
+        a.status as status,
+        a.create_time as createTime,
+        a.update_time as updateTime
+        FROM user_foot as uf
+        left join article as a on a.id = uf.document_id
+        WHERE
+        uf.user_id = #{userId}
+        AND uf.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@DOCUMENT.code}
+        AND uf.collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}
+        AND a.status = ${@cor.chrissy.community.common.enums.PushStatEnum@ONLINE.code}
+        AND a.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
+        ORDER BY uf.id desc
+
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+
+    </select>
+
+    <select id="queryReadArticleList"
+            resultType="cor.chrissy.community.service.article.repository.entity.ArticleDO">
+
+        SELECT
+        a.id as id,
+        a.author_id as authorId,
+        a.article_type as articleType,
+        a.title as title,
+        a.short_title as shortTitle,
+        a.picture as picture,
+        a.summary as summary,
+        a.category_id as categoryId,
+        a.source as source,
+        a.source_url as sourceUrl,
+        a.status as status,
+        a.create_time as createTime,
+        a.update_time as updateTime
+        FROM user_foot as uf
+        left join article as a on a.id = uf.document_id
+        WHERE
+        uf.user_id = #{userId}
+        AND uf.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@DOCUMENT.code}
+        AND uf.read_stat = ${@cor.chrissy.community.common.enums.ReadStatEnum@READ.code}
+        AND a.status = ${@cor.chrissy.community.common.enums.PushStatEnum@ONLINE.code}
+        AND a.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
+        ORDER BY uf.id desc
+
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+
+    </select>
+
+</mapper>

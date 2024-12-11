@@ -1,5 +1,8 @@
 package cor.chrissy.community.web.front;
 
+import cor.chrissy.community.service.article.dto.CategoryDTO;
+import cor.chrissy.community.service.article.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +21,11 @@ import cor.chrissy.community.core.util.MapUtil;
  */
 @Controller
 public class IndexController {
+
+    @Autowired
+    private CategoryService categoryService;
+
+
     @GetMapping(path = {"/", "", "/index"})
     public String index(Model model, HttpServletRequest request) {
         String activeTab = request.getParameter("type");
@@ -29,16 +37,10 @@ public class IndexController {
         return "index";
     }
 
-    // 分类，使用db中的进行替换
-    private final List<String> DEFAULT_CATEGORIES = Arrays.asList("后端", "前端", "数据库");
-
-    private List<Map<String, Object>> categories(String active) {
-        List<Map<String, Object>> list = new ArrayList<>();
-        boolean hit = DEFAULT_CATEGORIES.contains(active);
-        list.add(MapUtil.createHashMap("name", "全部", "selected", !hit, "refCount", 0));
-        for (int i = 0; i < DEFAULT_CATEGORIES.size(); i++) {
-            list.add(MapUtil.createHashMap("name", DEFAULT_CATEGORIES.get(i), "selected", hit && DEFAULT_CATEGORIES.get(i).equals(active), "refCount", i + 1));
-        }
+    private List<CategoryDTO> categories(String active) {
+        List<CategoryDTO> list = categoryService.loadAllCategories(false);
+        list.add(0, CategoryDTO.DEFAULT_CATEGORY);
+        list.forEach(s -> s.setSelected(s.getCategory().equals(active)));
         return list;
     }
 

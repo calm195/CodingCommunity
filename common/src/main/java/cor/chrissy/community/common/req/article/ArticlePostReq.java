@@ -1,6 +1,6 @@
 package cor.chrissy.community.common.req.article;
 
-import cor.chrissy.community.common.enums.PushStatusEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -76,11 +76,11 @@ public class ArticlePostReq implements Serializable {
      */
     private String actionType;
 
-    public PushStatusEnum pushStatus() {
+    public PushStatEnum pushStatus() {
         if ("post".equalsIgnoreCase(actionType)) {
-            return PushStatusEnum.ONLINE;
+            return PushStatEnum.ONLINE;
         } else {
-            return PushStatusEnum.OFFLINE;
+            return PushStatEnum.OFFLINE;
         }
     }
 

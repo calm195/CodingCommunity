@@ -2,6 +2,7 @@ package cor.chrissy.community.service.article.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import cor.chrissy.community.common.BaseDO;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -61,7 +62,7 @@ public class ArticleDO extends BaseDO {
     /**
      * 状态：0-未发布，1-已发布
      *
-     * @see cor.chrissy.community.common.enums.PushStatusEnum
+     * @see PushStatEnum
      */
     private Integer status;
 

@@ -7,12 +7,12 @@ import lombok.Getter;
  * @createAt 2024/12/9
  */
 @Getter
-public enum PushStatusEnum {
+public enum PushStatEnum {
 
     OFFLINE(0, "未发布"),
     ONLINE(1,"已发布");
 
-    PushStatusEnum(int code, String desc) {
+    PushStatEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }
@@ -20,12 +20,12 @@ public enum PushStatusEnum {
     private final int code;
     private final String desc;
 
-    public static PushStatusEnum formCode(int code) {
-        for (PushStatusEnum yesOrNoEnum : PushStatusEnum.values()) {
+    public static PushStatEnum formCode(int code) {
+        for (PushStatEnum yesOrNoEnum : PushStatEnum.values()) {
             if (yesOrNoEnum.getCode() == code) {
                 return yesOrNoEnum;
             }
         }
-        return PushStatusEnum.OFFLINE;
+        return PushStatEnum.OFFLINE;
     }
 }

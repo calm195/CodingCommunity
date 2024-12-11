@@ -26,5 +26,5 @@ public class UserRelationDO extends BaseDO {
      */
     private Long followUserId;
 
-    private Integer deleted;
+    private Integer followStat;
 }

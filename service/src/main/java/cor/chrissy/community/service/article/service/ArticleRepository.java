@@ -1,8 +1,10 @@
 package cor.chrissy.community.service.article.service;
 
+import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,5 +29,13 @@ public interface ArticleRepository {
      * @return
      */
     Long saveArticle(ArticleDO article, String content, Set<Long> tags);
+
+    /**
+     * 分页获取用户的文章列表
+     * @param userId
+     * @param pageParam
+     * @return
+     */
+    List<ArticleDO> getArticleListByUserId(Long userId, PageParam pageParam);
 }
 

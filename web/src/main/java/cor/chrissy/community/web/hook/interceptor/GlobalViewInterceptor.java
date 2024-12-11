@@ -36,7 +36,7 @@ public class GlobalViewInterceptor implements AsyncHandlerInterceptor {
         // 重定向请求不需要添加
         if (!ObjectUtils.isEmpty(modelAndView)) {
             modelAndView.getModel().put("siteInfo", globalViewConfig);
-            modelAndView.getModel().put("isLogin", true);
+            modelAndView.getModel().put("isLogin", false);
             UserInfo userInfo = new UserInfo().setUid(1L).setUname("chrissy")
                     .setAvatar("https://blog.hhui.top/hexblog/images/avatar.jpg")
                     .setNewMsgList(Collections.singletonList(new UserMsg().setMsgId(100L).setMsgType(1).setMsg("模拟通知消息")));
