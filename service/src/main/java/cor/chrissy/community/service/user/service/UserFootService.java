@@ -13,6 +13,7 @@ public interface UserFootService {
 
     /**
      * 查询文章计数
+     *
      * @param documentId
      * @return
      */

@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * 实体类共有属性基类
+ *
  * @author wx128
  * @createAt 2024/12/9
  */

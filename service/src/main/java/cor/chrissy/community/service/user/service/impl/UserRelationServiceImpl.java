@@ -1,9 +1,5 @@
 package cor.chrissy.community.service.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.req.user.UserRelationReq;
 import cor.chrissy.community.service.user.converter.UserConverter;
@@ -36,7 +32,7 @@ public class UserRelationServiceImpl implements UserRelationService {
 
         UserFollowListDTO userFollowListDTO = new UserFollowListDTO();
         List<UserFollowDTO> userRelationList = userRelationMapper.queryUserFollowList(userId, pageParam);
-        if (userRelationList.isEmpty())  {
+        if (userRelationList.isEmpty()) {
             return userFollowListDTO;
         }
 
@@ -52,7 +48,7 @@ public class UserRelationServiceImpl implements UserRelationService {
 
         UserFollowListDTO userFollowListDTO = new UserFollowListDTO();
         List<UserFollowDTO> userRelationList = userRelationMapper.queryUserFansList(userId, pageParam);
-        if (userRelationList.isEmpty())  {
+        if (userRelationList.isEmpty()) {
             return userFollowListDTO;
         }
 

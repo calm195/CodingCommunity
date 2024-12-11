@@ -3,6 +3,8 @@ package cor.chrissy.community.common.enums;
 import lombok.Getter;
 
 /**
+ * 网络请求参数枚举
+ *
  * @author wx128
  * @createAt 2024/12/11
  */

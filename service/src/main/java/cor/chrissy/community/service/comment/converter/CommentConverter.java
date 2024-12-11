@@ -1,13 +1,15 @@
 package cor.chrissy.community.service.comment.converter;
 
+import cor.chrissy.community.common.req.comment.CommentSaveReq;
 import cor.chrissy.community.service.comment.dto.CommentTreeDTO;
 import cor.chrissy.community.service.comment.repository.entity.CommentDO;
-import cor.chrissy.community.common.req.comment.CommentSaveReq;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 
 /**
+ * 评论信息转换工具
+ *
  * @author wx128
  * @createAt 2024/12/10
  */

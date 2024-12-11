@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * IP工具类
+ *
  * @author wx128
  * @createAt 2024/12/9
  */
@@ -16,6 +17,7 @@ public class IpUtil {
 
     /**
      * 获取客户端真实IP。发生错误则返回 "x.0.0.1"
+     *
      * @param req 请求体
      * @return IP字符串
      */

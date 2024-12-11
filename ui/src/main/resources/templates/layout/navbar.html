@@ -82,7 +82,8 @@
                            class="dropdown-item">管理后台</a>
                         <div th:if="${!#strings.equalsIgnoreCase(user.role, 'admin')}"
                              class="dropdown-divider"></div>
-                        <a th:href="${'/user/' + user.userId}" class="dropdown-item" target="_blank" href="#">个人主页</a>
+                        <a th:href="${'/user/' + user.userId}" class="dropdown-item" target="_blank"
+                           href="#">个人主页</a>
                         <a href="/user/logout" class="dropdown-item">登出</a>
                     </div>
                 </li>
@@ -140,14 +141,16 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">邮箱</span>
                         </div>
-                        <input id="registerEmail" type="email" class="form-control" placeholder="注册邮箱（用于接收账号激活邮件）"/>
+                        <input id="registerEmail" type="email" class="form-control"
+                               placeholder="注册邮箱（用于接收账号激活邮件）"/>
                     </div>
                     <br/>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text">昵称</span>
                         </div>
-                        <input id="registerNickname" type="text" class="form-control" placeholder="给自己起个昵称呗（50字以内）"/>
+                        <input id="registerNickname" type="text" class="form-control"
+                               placeholder="给自己起个昵称呗（50字以内）"/>
                     </div>
                     <br/>
                     <div class="input-group">
@@ -161,7 +164,8 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">确认</span>
                         </div>
-                        <input id="registerPassword2" type="password" class="form-control" placeholder="请再次输入注册密码"/>
+                        <input id="registerPassword2" type="password" class="form-control"
+                               placeholder="请再次输入注册密码"/>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -16,10 +16,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
+ * 注入全局配置信息，如站点信息，thymleaf
+ *
  * @author wx128
  * @createAt 2024/12/9
  */

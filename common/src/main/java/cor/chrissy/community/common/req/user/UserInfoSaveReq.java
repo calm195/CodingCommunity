@@ -3,6 +3,8 @@ package cor.chrissy.community.common.req.user;
 import lombok.Data;
 
 /**
+ * 用户信息保存请求体
+ *
  * @author wx128
  * @createAt 2024/12/11
  */

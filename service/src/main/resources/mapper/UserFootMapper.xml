@@ -5,14 +5,13 @@
     <select id="queryCountByArticle"
             resultType="cor.chrissy.community.service.article.dto.ArticleFootCountDTO">
 
-        SELECT
-            sum(if (praise_stat =${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1, 0)) as praiseCount,
-            sum(if (read_stat =${@cor.chrissy.community.common.enums.ReadStatEnum@READ.code}, 1, 0)) as readCount,
-            sum(if (collection_stat =${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1, 0)) as collectionCount
-        FROM
-            user_foot
-        WHERE
-            document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@DOCUMENT.code}
+        SELECT sum(if(praise_stat = ${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1,
+                      0))                                                                               as praiseCount,
+               sum(if(read_stat = ${@cor.chrissy.community.common.enums.ReadStatEnum@READ.code}, 1, 0)) as readCount,
+               sum(if(collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1,
+                      0))                                                                               as collectionCount
+        FROM user_foot
+        WHERE document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@DOCUMENT.code}
           AND document_id = #{articleId}
 
     </select>
@@ -20,14 +19,13 @@
     <select id="queryArticleFootCount"
             resultType="cor.chrissy.community.service.article.dto.ArticleFootCountDTO">
 
-        SELECT
-            sum(if (praise_stat =${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1, 0)) as praiseCount,
-            sum(if (read_stat =${@cor.chrissy.community.common.enums.ReadStatEnum@READ.code}, 1, 0)) as readCount,
-            sum(if (collection_stat =${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1, 0)) as collectionCount
-        FROM
-            user_foot
-        WHERE
-            document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@DOCUMENT.code}
+        SELECT sum(if(praise_stat = ${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1,
+                      0))                                                                               as praiseCount,
+               sum(if(read_stat = ${@cor.chrissy.community.common.enums.ReadStatEnum@READ.code}, 1, 0)) as readCount,
+               sum(if(collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1,
+                      0))                                                                               as collectionCount
+        FROM user_foot
+        WHERE document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@DOCUMENT.code}
           AND document_author_id = #{userId}
 
     </select>

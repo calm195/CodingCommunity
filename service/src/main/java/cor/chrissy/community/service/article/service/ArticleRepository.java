@@ -32,6 +32,7 @@ public interface ArticleRepository {
 
     /**
      * 分页获取用户的文章列表
+     *
      * @param userId
      * @param pageParam
      * @return
@@ -40,6 +41,7 @@ public interface ArticleRepository {
 
     /**
      * 分页获取文章列表
+     *
      * @param categoryId
      * @param pageParam
      * @return

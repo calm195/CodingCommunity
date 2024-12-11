@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * post流数据封装，避免因日志导致参数被消费
+ *
  * @author wx128
  * @createAt 2024/12/9
  */

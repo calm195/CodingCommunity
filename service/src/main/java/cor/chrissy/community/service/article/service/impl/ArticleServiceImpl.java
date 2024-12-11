@@ -23,7 +23,6 @@ import cor.chrissy.community.service.article.service.CategoryService;
 import cor.chrissy.community.service.article.service.TagService;
 import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
 import cor.chrissy.community.service.user.service.UserFootService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

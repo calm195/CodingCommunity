@@ -15,6 +15,7 @@ import java.util.List;
 public interface UserRelationMapper extends BaseMapper<UserRelationDO> {
     /**
      * 我关注的用户
+     *
      * @param followUserId
      * @param pageParam
      * @return
@@ -23,6 +24,7 @@ public interface UserRelationMapper extends BaseMapper<UserRelationDO> {
 
     /**
      * 关注我的粉丝
+     *
      * @param userId
      * @param pageParam
      * @return
@@ -31,6 +33,7 @@ public interface UserRelationMapper extends BaseMapper<UserRelationDO> {
 
     /**
      * 我关注的用户总数
+     *
      * @param followUserId
      * @param pageParam
      * @return
@@ -39,6 +42,7 @@ public interface UserRelationMapper extends BaseMapper<UserRelationDO> {
 
     /**
      * 关注我的粉丝总数
+     *
      * @param userId
      * @param pageParam
      * @return

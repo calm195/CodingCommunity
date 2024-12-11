@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.Set;
 
 /**
+ * 文章发布请求体
+ *
  * @author wx128
  * @createAt 2024/12/11
  */

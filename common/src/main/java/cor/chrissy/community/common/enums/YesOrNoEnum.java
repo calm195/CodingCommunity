@@ -3,14 +3,16 @@ package cor.chrissy.community.common.enums;
 import lombok.Getter;
 
 /**
+ * 是否，枚举
+ *
  * @author wx128
  * @createAt 2024/12/9
  */
 @Getter
 public enum YesOrNoEnum {
 
-    NO(0, "N","否", "no"),
-    YES(1,"Y" ,"是", "yes");
+    NO(0, "N", "否", "no"),
+    YES(1, "Y", "是", "yes");
 
     YesOrNoEnum(int code, String desc, String cnDesc, String enDesc) {
         this.code = code;

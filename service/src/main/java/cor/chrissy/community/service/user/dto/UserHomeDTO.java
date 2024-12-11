@@ -47,20 +47,20 @@ public class UserHomeDTO {
     /**
      * 已发布文章数
      */
-    private Integer  articleCount;
+    private Integer articleCount;
 
     /**
      * 文章点赞数
      */
-    private Integer  praiseCount;
+    private Integer praiseCount;
 
     /**
      * 文章被阅读数
      */
-    private Integer  readCount;
+    private Integer readCount;
 
     /**
      * 文章被收藏数
      */
-    private Integer  collectionCount;
+    private Integer collectionCount;
 }

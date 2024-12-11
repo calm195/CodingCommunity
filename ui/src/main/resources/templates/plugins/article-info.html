@@ -6,10 +6,11 @@
     <div id="postsTitle"
          th:data-id="${article.articleId}"
          th:text="${article.title}"
-         style="font-size: 30px;margin-bottom: 20px;font-weight: 600;">标题</div>
+         style="font-size: 30px;margin-bottom: 20px;font-weight: 600;">标题
+    </div>
     <div style="margin-bottom: 20px;">
         <small class="text-muted" style="margin-right: 10px;">
-            <img th:src="${author.photo}" style="width: 12px;height: 12px;" />&nbsp;
+            <img th:src="${author.photo}" style="width: 12px;height: 12px;"/>&nbsp;
             <a th:href="${'/user/' + author.userId}" th:text="${author.userName}">作者</a>
         </small>
         <small class="text-muted" style="margin-right: 10px;">
@@ -43,7 +44,8 @@
            th:text="${tag.tag}"
            th:href="${'/tag/' + tag.tag}"
            target="_blank"
-           href="#" style="padding: 2px 10px;border: 1px solid #6c757d;border-radius: 32px;margin-right: 10px;font-size: 10px;"></a>
+           href="#"
+           style="padding: 2px 10px;border: 1px solid #6c757d;border-radius: 32px;margin-right: 10px;font-size: 10px;"></a>
     </div>
 
     <!--    <pre th:utext="${article.content}" class="article-content">-->
@@ -67,7 +69,8 @@
         </span>
     </div>
     <!-- 再次确认 Modal -->
-    <div class="modal fade" id="deleteModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="deleteModalDropLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog"
+         aria-labelledby="deleteModalDropLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

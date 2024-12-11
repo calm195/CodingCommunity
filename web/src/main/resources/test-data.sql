@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `article`;
 CREATE TABLE `article`
 (
     `id`           int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `author_id`      int unsigned NOT NULL COMMENT '用户ID',
+    `author_id`    int unsigned NOT NULL COMMENT '用户ID',
     `article_type` tinyint      NOT NULL DEFAULT '1' COMMENT '文章类型：1-博文，2-问答',
     `title`        varchar(120) NOT NULL COMMENT '文章标题',
     `short_title`  varchar(120) NOT NULL COMMENT '短标题',

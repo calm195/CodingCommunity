@@ -26,6 +26,7 @@ public class UserFootServiceImpl implements UserFootService {
 
     /**
      * 获取文章计数
+     *
      * @param documentId
      * @return
      */

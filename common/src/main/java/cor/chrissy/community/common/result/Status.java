@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * 状态值类，用于后端返回参数
+ *
  * @author wx128
  * @createAt 2024/12/9
  */

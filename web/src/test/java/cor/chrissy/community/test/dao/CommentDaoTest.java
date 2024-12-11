@@ -1,11 +1,9 @@
 package cor.chrissy.community.test.dao;
 
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.req.comment.CommentSaveReq;
 import cor.chrissy.community.service.comment.dto.CommentTreeDTO;
 import cor.chrissy.community.service.comment.service.CommentService;
-import cor.chrissy.community.service.comment.service.impl.CommentServiceImpl;
-import cor.chrissy.community.common.req.comment.CommentSaveReq;
-import cor.chrissy.community.common.req.PageSearchReq;
 import cor.chrissy.community.test.BasicTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

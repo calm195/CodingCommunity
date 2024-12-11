@@ -1,10 +1,8 @@
 package cor.chrissy.community.service.user.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.req.user.UserRelationReq;
 import cor.chrissy.community.service.user.dto.UserFollowListDTO;
-import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 
 /**
  * @author wx128
@@ -33,6 +31,7 @@ public interface UserRelationService {
 
     /**
      * 保存用户关系
+     *
      * @param req
      * @throws Exception
      */

@@ -9,6 +9,8 @@ import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 import org.springframework.stereotype.Service;
 
 /**
+ * 用户信息转换工具
+ *
  * @author wx128
  * @createAt 2024/12/11
  */

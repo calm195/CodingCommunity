@@ -12,17 +12,17 @@ public class ArticleFootCountDTO {
     /**
      * 文章点赞数
      */
-    private Integer  praiseCount;
+    private Integer praiseCount;
 
     /**
      * 文章被阅读数
      */
-    private Integer  readCount;
+    private Integer readCount;
 
     /**
      * 文章被收藏数
      */
-    private Integer  collectionCount;
+    private Integer collectionCount;
 
     /**
      * 评论数

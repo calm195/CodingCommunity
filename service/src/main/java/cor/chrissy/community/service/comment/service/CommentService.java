@@ -1,9 +1,8 @@
 package cor.chrissy.community.service.comment.service;
 
 import cor.chrissy.community.common.req.PageParam;
-import cor.chrissy.community.service.comment.dto.CommentTreeDTO;
 import cor.chrissy.community.common.req.comment.CommentSaveReq;
-import cor.chrissy.community.common.req.PageSearchReq;
+import cor.chrissy.community.service.comment.dto.CommentTreeDTO;
 
 import java.util.Map;
 

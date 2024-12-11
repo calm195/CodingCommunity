@@ -117,7 +117,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
                 newTags.remove(tag.getTagId());
             }
         });
-        if (!toDeleted.isEmpty()){
+        if (!toDeleted.isEmpty()) {
             articleTagMapper.deleteBatchIds(toDeleted);
         }
 

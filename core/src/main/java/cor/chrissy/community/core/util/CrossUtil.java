@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 跨域工具类
+ *
  * @author wx128
  * @createAt 2024/12/9
  */
@@ -13,7 +15,7 @@ public class CrossUtil {
     /**
      * 支持跨域
      *
-     * @param req 请求体
+     * @param req  请求体
      * @param resp 返回体
      */
     public static void buildCors(HttpServletRequest req, HttpServletResponse resp) {

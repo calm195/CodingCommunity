@@ -6,6 +6,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 后端返回包装体
+ *
  * @author wx128
  * @createAt 2024/12/9
  */
@@ -20,16 +22,16 @@ public class Result<T> implements Serializable {
         this.status = status;
     }
 
-    public Result(T t){
+    public Result(T t) {
         status = Status.newStatus(StatusEnum.SUCCESS);
         this.result = t;
     }
 
-    public static <T> Result<T> ok(T t){
+    public static <T> Result<T> ok(T t) {
         return new Result<T>(t);
     }
 
-    public static <T> Result<T> fail(StatusEnum status, Object... messages){
+    public static <T> Result<T> fail(StatusEnum status, Object... messages) {
         return new Result<>(Status.newStatus(status, messages));
     }
 }

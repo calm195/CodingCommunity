@@ -3,6 +3,8 @@ package cor.chrissy.community.common.enums;
 import lombok.Getter;
 
 /**
+ * 发布状态枚举
+ *
  * @author wx128
  * @createAt 2024/12/9
  */
@@ -10,7 +12,7 @@ import lombok.Getter;
 public enum PushStatEnum {
 
     OFFLINE(0, "未发布"),
-    ONLINE(1,"已发布");
+    ONLINE(1, "已发布");
 
     PushStatEnum(int code, String desc) {
         this.code = code;

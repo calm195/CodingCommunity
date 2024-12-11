@@ -7,6 +7,8 @@ import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import org.springframework.stereotype.Service;
 
 /**
+ * 文章信息转化工具
+ *
  * @author wx128
  * @createAt 2024/12/11
  */
