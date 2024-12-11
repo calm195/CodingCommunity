@@ -6,6 +6,7 @@ import cor.chrissy.community.common.enums.CollectionStatEnum;
 import cor.chrissy.community.common.enums.CommentStatEnum;
 import cor.chrissy.community.common.enums.PraiseStatEnum;
 import cor.chrissy.community.common.enums.ReadStatEnum;
+import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
 import cor.chrissy.community.service.user.repository.entity.UserFootDO;
 import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
 import cor.chrissy.community.service.user.service.UserFootService;
@@ -22,6 +23,17 @@ public class UserFootServiceImpl implements UserFootService {
 
     @Resource
     private UserFootMapper userFootMapper;
+
+    /**
+     * 获取文章计数
+     * @param documentId
+     * @return
+     */
+    public ArticleFootCountDTO queryArticleCount(Long documentId) {
+        ArticleFootCountDTO res = userFootMapper.queryCountByArticle(documentId);
+        if (res == null) res = new ArticleFootCountDTO();
+        return res;
+    }
 
     @Override
     public Long queryCollectionCount(Long documentId) {

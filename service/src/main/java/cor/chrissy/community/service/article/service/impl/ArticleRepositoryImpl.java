@@ -20,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -116,7 +117,9 @@ public class ArticleRepositoryImpl implements ArticleRepository {
                 newTags.remove(tag.getTagId());
             }
         });
-        articleTagMapper.deleteBatchIds(toDeleted);
+        if (!toDeleted.isEmpty()){
+            articleTagMapper.deleteBatchIds(toDeleted);
+        }
 
         if (!newTags.isEmpty()) {
             saveTags(articleId, newTags);
@@ -159,5 +162,14 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         return articleMapper.selectList(query);
     }
 
-
+    @Override
+    public List<ArticleDO> getArticleListByCategoryId(Long categoryId, PageParam pageParam) {
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode());
+        Optional.ofNullable(categoryId).ifPresent(cid -> query.eq(ArticleDO::getCategoryId, cid));
+        query.last(PageParam.getLimitSql(pageParam))
+                .orderByDesc(ArticleDO::getId);
+        return articleMapper.selectList(query);
+    }
 }

@@ -1,5 +1,8 @@
 package cor.chrissy.community.web.hook.interceptor;
 
+import cor.chrissy.community.common.context.ReqInfoContext;
+import cor.chrissy.community.service.user.dto.UserHomeDTO;
+import cor.chrissy.community.service.user.service.UserService;
 import cor.chrissy.community.web.config.GlobalViewConfig;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -26,6 +29,9 @@ public class GlobalViewInterceptor implements AsyncHandlerInterceptor {
     @Resource
     private GlobalViewConfig globalViewConfig;
 
+    @Resource
+    private UserService userService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         return true;
@@ -36,22 +42,21 @@ public class GlobalViewInterceptor implements AsyncHandlerInterceptor {
         // 重定向请求不需要添加
         if (!ObjectUtils.isEmpty(modelAndView)) {
             modelAndView.getModel().put("siteInfo", globalViewConfig);
-            modelAndView.getModel().put("isLogin", false);
-            UserInfo userInfo = new UserInfo().setUid(1L).setUname("chrissy")
-                    .setAvatar("https://blog.hhui.top/hexblog/images/avatar.jpg")
-                    .setNewMsgList(Collections.singletonList(new UserMsg().setMsgId(100L).setMsgType(1).setMsg("模拟通知消息")));
-            modelAndView.getModel().put("user", userInfo);
-        }
-    }
+            Long userId = ReqInfoContext.getReqInfo().getUserId();
+            if (userId == null) {
+                return;
+            }
 
-    @Data
-    @Accessors(chain = true)
-    private static class UserInfo {
-        private Long uid;
-        private String uname;
-        private String avatar;
-        private String role;
-        private List<UserMsg> newMsgList;
+            UserHomeDTO userHomeDTO = userService.getUserHomeDTO(userId);
+            if (!ObjectUtils.isEmpty(userHomeDTO)) {
+                modelAndView.getModel().put("isLogin", true);
+                modelAndView.getModel().put("user", userHomeDTO);
+            } else {
+                modelAndView.getModel().put("isLogin", false);
+            }
+
+            modelAndView.getModel().put("msgs", Arrays.asList(new UserMsg().setMsgId(100L).setMsgType(1).setMsg("模拟通知消息")));
+        }
     }
 
     @Data

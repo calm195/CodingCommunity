@@ -16,7 +16,7 @@ public interface ArticleDetailMapper extends BaseMapper<ArticleDetailDO> {
      * @param content
      * @return
      */
-    @Update("update article_detail set `content` = #{content}, `versoin` = `version` + 1 where article_id = #{articleId} and `deleted`=0 order by `versoin` desc limit 1")
+    @Update("update article_detail set `content` = #{content}, `versoin` = `version` + 1 where article_id = #{articleId} and `deleted`=0 order by `version` desc limit 1")
     int updateContent(long articleId, String content);
 
 }

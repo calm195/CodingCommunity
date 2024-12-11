@@ -3,12 +3,21 @@ package cor.chrissy.community.service.user.service;
 import cor.chrissy.community.common.enums.CollectionStatEnum;
 import cor.chrissy.community.common.enums.CommentStatEnum;
 import cor.chrissy.community.common.enums.PraiseStatEnum;
+import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
 
 /**
  * @author wx128
  * @createAt 2024/12/9
  */
 public interface UserFootService {
+
+    /**
+     * 查询文章计数
+     * @param documentId
+     * @return
+     */
+    ArticleFootCountDTO queryArticleCount(Long documentId);
+
     /**
      * 文章收藏数
      *

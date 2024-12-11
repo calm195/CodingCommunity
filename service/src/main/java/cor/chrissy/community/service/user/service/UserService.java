@@ -14,15 +14,14 @@ public interface UserService {
     /**
      * 保存用户
      * @param req
-     * @throws Exception
      */
-    void saveUser(UserSaveReq req) throws Exception;
+    void saveUser(UserSaveReq req);
 
     /**
      * 删除用户
      * @param userId
      */
-    void deleteUser(Long userId) throws Exception;
+    void deleteUser(Long userId);
 
     /**
      * 保存用户详情
@@ -48,7 +47,6 @@ public interface UserService {
      * 查询用户主页信息
      * @param userId
      * @return
-     * @throws Exception
      */
-    UserHomeDTO getUserHomeDTO(Long userId) throws Exception;
+    UserHomeDTO getUserHomeDTO(Long userId);
 }

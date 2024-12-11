@@ -9,11 +9,17 @@ import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.service.ArticleService;
 import cor.chrissy.community.service.article.service.CategoryService;
 import cor.chrissy.community.service.article.service.TagService;
+import cor.chrissy.community.service.user.dto.UserHomeDTO;
+import cor.chrissy.community.service.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,6 +39,9 @@ public class ArticleController {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * 文章编辑页
      *
@@ -47,12 +56,12 @@ public class ArticleController {
 
             List<CategoryDTO> categoryList = categoryService.loadAllCategories(false);
             categoryList.forEach(s -> {
-                s.setSelected(s.getCategoryId().equals(article.getArticleId()));
+                s.setSelected(s.getCategoryId().equals(article.getCategory().getCategoryId()));
             });
             model.addAttribute("categories", categoryList);
 
-            List<TagDTO> tagList = tagService.getTagListByCategoryId(article.getArticleId());
-            model.addAttribute("tags", tagList);
+            model.addAttribute("tagChooses", article.getTags());
+            model.addAttribute("tags", tagService.getTagListByCategoryId(article.getCategory().getCategoryId()));
         } else {
             List<CategoryDTO> categoryList = categoryService.loadAllCategories(false);
             model.addAttribute("categories", categoryList);
@@ -68,9 +77,30 @@ public class ArticleController {
      * @return
      */
     @PostMapping(path = "post")
-    public String post(ArticlePostReq req) {
-        articleService.saveArticle(req);
-        return "";
+    @ResponseBody
+    @Transactional(rollbackFor = Exception.class)
+    public Result<Long> post(@RequestBody ArticlePostReq req, HttpServletResponse response) throws IOException {
+        Long articleId = articleService.saveArticle(req);
+        return Result.ok(articleId);
+    }
+
+    /**
+     * 文章详情页
+     * - 参数解析知识点
+     * - * [1.Get请求参数解析姿势汇总 | 一灰灰Learning](https://hhui.top/spring-web/01.request/01.190824-springboot%E7%B3%BB%E5%88%97%E6%95%99%E7%A8%8Bweb%E7%AF%87%E4%B9%8Bget%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E6%B1%87%E6%80%BB/)
+     *
+     * @param articleId
+     * @return
+     */
+    @GetMapping("detail/{articleId}")
+    public String detail(@PathVariable(name = "articleId") Long articleId, Model model) {
+        ArticleDTO articleDTO = articleService.queryArticleDetail(articleId);
+        model.addAttribute("article", articleDTO);
+
+        // 作者信息
+        UserHomeDTO user = userService.getUserHomeDTO(articleDTO.getAuthor());
+        model.addAttribute("author", user);
+        return "biz/article/detail";
     }
 
     /**

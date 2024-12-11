@@ -3,7 +3,8 @@ package cor.chrissy.community.common.req;
 import lombok.Data;
 
 /**
- * 数据库分页参数
+ * 数据库分页参数，请求页数从1开始计数
+ *
  * @author wx128
  * @createAt 2024/12/9
  */

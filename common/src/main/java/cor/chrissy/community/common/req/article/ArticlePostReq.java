@@ -37,9 +37,9 @@ public class ArticlePostReq implements Serializable {
     private Set<Long> tagIds;
 
     /**
-     * 简介
+     * 简介 TODO: 名称规范化
      */
-    private String summery;
+    private String summary;
 
     /**
      * 正文内容

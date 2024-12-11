@@ -22,6 +22,7 @@ import cor.chrissy.community.service.article.service.ArticleService;
 import cor.chrissy.community.service.article.service.CategoryService;
 import cor.chrissy.community.service.article.service.TagService;
 import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
+import cor.chrissy.community.service.user.service.UserFootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +56,9 @@ public class ArticleServiceImpl implements ArticleService {
     private ArticleConverter articleConverter;
 
     @Resource
+    private UserFootService userFootService;
+
+    @Resource
     private UserFootMapper userFootMapper;
 
     /**
@@ -66,6 +70,11 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public ArticleDTO queryArticleDetail(Long articleId) {
         ArticleDTO article = articleRepository.queryArticleDetail(articleId);
+
+        if (article == null) {
+            throw new IllegalArgumentException("文章不存在");
+        }
+
         // 更新分类
         CategoryDTO category = article.getCategory();
         category.setCategory(categoryService.getCategoryName(category.getCategoryId()));
@@ -73,6 +82,8 @@ public class ArticleServiceImpl implements ArticleService {
         // 更新tagIds
         Set<Long> tagIds = article.getTags().stream().map(TagDTO::getTagId).collect(Collectors.toSet());
         article.setTags(tagService.getTags(tagIds));
+
+        article.setArticleFootCount(userFootService.queryArticleCount(articleId));
         return article;
     }
 
@@ -92,17 +103,33 @@ public class ArticleServiceImpl implements ArticleService {
         article.setTitle(req.getTitle());
         article.setShortTitle(req.getSubTitle());
         article.setArticleType(ArticleTypeEnum.valueOf(req.getArticleType().toUpperCase()).getCode());
-        article.setPicture(req.getCover());
+        article.setPicture(req.getCover() == null ? "" : req.getCover());
         article.setCategoryId(req.getCategoryId());
         article.setSource(req.getSource());
         article.setSourceUrl(req.getSourceUrl());
-        article.setSummary(req.getSummery());
+        article.setSummary(req.getSummary());
         article.setStatus(req.pushStatus().getCode());
         article.setDeleted(req.deleted() ? 1 : 0);
 
         return articleRepository.saveArticle(article, req.getContent(), req.getTagIds());
     }
 
+    @Override
+    public ArticleListDTO queryArticlesByCategory(Long categoryId, PageParam page) {
+        if (categoryId != null && categoryId <= 0) categoryId = null;
+        List<ArticleDO> records = articleRepository.getArticleListByCategoryId(categoryId, page);
+        List<ArticleDTO> result = new ArrayList<>();
+        records.forEach(record -> {
+            ArticleDTO dto = articleConverter.toDTO(record);
+            dto.setArticleFootCount(userFootService.queryArticleCount(record.getId()));
+            result.add(dto);
+        });
+
+        ArticleListDTO dto = new ArticleListDTO();
+        dto.setArticleList(result);
+        dto.setIsMore(result.size() == page.getPageSize());
+        return dto;
+    }
 
     @Override
     public void deleteArticle(Long articleId) {

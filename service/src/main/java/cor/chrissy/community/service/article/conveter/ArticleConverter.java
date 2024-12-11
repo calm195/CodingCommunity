@@ -20,6 +20,7 @@ public class ArticleConverter {
         ArticleDTO articleDTO = new ArticleDTO();
         articleDTO.setAuthor(articleDO.getAuthorId());
         articleDTO.setArticleId(articleDO.getId());
+        articleDTO.setArticleType(articleDO.getArticleType());
         articleDTO.setTitle(articleDO.getTitle());
         articleDTO.setShortTitle(articleDO.getShortTitle());
         articleDTO.setSummary(articleDO.getSummary());

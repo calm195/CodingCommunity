@@ -16,6 +16,11 @@ public class ArticleDTO implements Serializable {
     private Long articleId;
 
     /**
+     * 文章类型：1-博文，2-问答
+     */
+    private Integer articleType;
+
+    /**
      * 作者uid
      */
     private Long author;
@@ -70,4 +75,8 @@ public class ArticleDTO implements Serializable {
      */
     private List<TagDTO> tags;
 
+    /**
+     * 计数统计相关
+     */
+    private ArticleFootCountDTO articleFootCount;
 }
