@@ -1,4 +1,4 @@
-package cor.chrissy.community.common;
+package cor.chrissy.community.common.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

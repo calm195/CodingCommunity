@@ -14,13 +14,16 @@ import cor.chrissy.community.service.article.repository.entity.ArticleDO;
  */
 public interface ArticleService {
 
+    ArticleDO querySimpleArticleById(Long id);
+
     /**
      * 查询文章详情
      *
      * @param articleId
+     * @param updateReadCnd true表示计数加一，false则不变
      * @return
      */
-    ArticleDTO queryArticleDetail(Long articleId);
+    ArticleDTO queryArticleDetail(Long articleId, boolean updateReadCnd);
 
     /**
      * 查询某一个分类下的文章，支持翻页
@@ -30,6 +33,15 @@ public interface ArticleService {
      * @return
      */
     ArticleListDTO queryArticlesByCategory(Long categoryId, PageParam pageParam);
+
+    /**
+     * 根据查询关键词查询文章，返回符合的文章列表，支持翻页
+     *
+     * @param key
+     * @param pageParam
+     * @return
+     */
+    ArticleListDTO queryArticlesBySearchKey(String key, PageParam pageParam);
 
     /**
      * 保存or更新文章

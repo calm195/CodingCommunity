@@ -1,19 +1,22 @@
 package cor.chrissy.community.service.article.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import cor.chrissy.community.common.enums.DocumentTypeEnum;
 import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
-import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDetailDO;
 import cor.chrissy.community.service.article.repository.entity.ArticleTagDO;
+import cor.chrissy.community.service.article.repository.entity.ReadCountDO;
 import cor.chrissy.community.service.article.repository.mapper.ArticleDetailMapper;
 import cor.chrissy.community.service.article.repository.mapper.ArticleMapper;
 import cor.chrissy.community.service.article.repository.mapper.ArticleTagMapper;
+import cor.chrissy.community.service.article.repository.mapper.ReadCountMapper;
 import cor.chrissy.community.service.article.service.ArticleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author wx128
@@ -38,6 +40,8 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     private ArticleTagMapper articleTagMapper;
     @Autowired
     private ArticleConverter articleConverter;
+    @Autowired
+    private ReadCountMapper readCountMapper;
 
     /**
      * 查询文章详情
@@ -55,13 +59,9 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 
         // 查询文章关联标签
-        ArticleDetailDO detail = findLatestDetail(articleId);
-        List<ArticleTagDO> tagList = findArticleTags(articleId);
-
         ArticleDTO dto = articleConverter.toDTO(article);
+        ArticleDetailDO detail = findLatestDetail(articleId);
         dto.setContent(detail.getContent());
-        // 设置标签列表
-        dto.setTags(tagList.stream().map(s -> new TagDTO(s.getTagId())).collect(Collectors.toList()));
         return dto;
     }
 
@@ -73,13 +73,6 @@ public class ArticleRepositoryImpl implements ArticleRepository {
                 .orderByDesc(ArticleDetailDO::getVersion);
         return articleDetailMapper.selectOne(contentQuery);
     }
-
-    private List<ArticleTagDO> findArticleTags(long articleId) {
-        LambdaQueryWrapper<ArticleTagDO> contentQuery = Wrappers.lambdaQuery();
-        return articleTagMapper.selectList(contentQuery.eq(ArticleTagDO::getArticleId, articleId)
-                .eq(ArticleTagDO::getDeleted, YesOrNoEnum.NO.getCode()));
-    }
-
 
     @Override
     public Long saveArticle(ArticleDO article, String content, Set<Long> tags) {
@@ -106,7 +99,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     private void updateTags(Long articleId, Set<Long> newTags) {
-        List<ArticleTagDO> dbTags = findArticleTags(articleId);
+        List<ArticleTagDO> dbTags = articleTagMapper.queryArticleTags(articleId);
         // 在旧的里面，不在新的里面的标签，设置为删除
         List<Long> toDeleted = new ArrayList<>();
         dbTags.forEach(tag -> {
@@ -152,6 +145,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public ArticleDO getSimpleArticleById(Long articleId) {
+        return articleMapper.selectById(articleId);
+    }
+
+    @Override
     public List<ArticleDO> getArticleListByUserId(Long userId, PageParam pageParam) {
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
@@ -171,5 +169,37 @@ public class ArticleRepositoryImpl implements ArticleRepository {
         query.last(PageParam.getLimitSql(pageParam))
                 .orderByDesc(ArticleDO::getId);
         return articleMapper.selectList(query);
+    }
+
+    @Override
+    public List<ArticleDO> getArticleListByBySearchKey(String key, PageParam pageParam) {
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
+                .and(!StringUtils.isEmpty(key),
+                        v -> v.like(ArticleDO::getTitle, key)
+                                .or()
+                                .like(ArticleDO::getShortTitle, key)
+                                .or()
+                                .like(ArticleDO::getSummary, key));
+        query.last(PageParam.getLimitSql(pageParam))
+                .orderByDesc(ArticleDO::getId);
+        return articleMapper.selectList(query);
+    }
+
+    @Override
+    public int count(Long articleId) {
+        LambdaQueryWrapper<ReadCountDO> query = Wrappers.lambdaQuery();
+        query.eq(ReadCountDO::getDocumentId, articleId).eq(ReadCountDO::getDocumentType, DocumentTypeEnum.ARTICLE.getCode());
+        ReadCountDO record = readCountMapper.selectOne(query);
+        if (record == null) {
+            record = new ReadCountDO().setDocumentId(articleId).setDocumentType(DocumentTypeEnum.ARTICLE.getCode()).setCnt(1);
+            readCountMapper.insert(record);
+        } else {
+            // fixme: 这里存在并发覆盖问题，推荐使用 update read_count set cnt = cnt + 1 where id = xxx
+            record.setCnt(record.getCnt() + 1);
+            readCountMapper.updateById(record);
+        }
+        return record.getCnt();
     }
 }

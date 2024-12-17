@@ -31,6 +31,14 @@ public interface ArticleRepository {
     Long saveArticle(ArticleDO article, String content, Set<Long> tags);
 
     /**
+     * 获取文章基本信息，不包含正文、分类、标签等
+     *
+     * @param articleId
+     * @return
+     */
+    ArticleDO getSimpleArticleById(Long articleId);
+
+    /**
      * 分页获取用户的文章列表
      *
      * @param userId
@@ -47,5 +55,21 @@ public interface ArticleRepository {
      * @return
      */
     List<ArticleDO> getArticleListByCategoryId(Long categoryId, PageParam pageParam);
+
+    /**
+     * 分页获取文章列表（根据查询关键词）
+     *
+     * @param key
+     * @param pageParam
+     * @return
+     */
+    List<ArticleDO> getArticleListByBySearchKey(String key, PageParam pageParam);
+
+    /**
+     * 访问计数
+     * @param articleId
+     * @return
+     */
+    int count(Long articleId);
 }
 

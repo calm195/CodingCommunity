@@ -1,7 +1,7 @@
 package cor.chrissy.community.service.comment.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import cor.chrissy.community.common.BaseDO;
+import cor.chrissy.community.common.entity.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -35,6 +35,11 @@ public class CommentDO extends BaseDO {
      * 父评论ID
      */
     private Long parentCommentId;
+
+    /**
+     * 顶级评论ID
+     */
+    private Long topCommentId;
 
     private Integer deleted;
 }

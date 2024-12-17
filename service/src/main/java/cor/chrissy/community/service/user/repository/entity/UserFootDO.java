@@ -1,7 +1,7 @@
 package cor.chrissy.community.service.user.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import cor.chrissy.community.common.BaseDO;
+import cor.chrissy.community.common.entity.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -33,10 +33,8 @@ public class UserFootDO extends BaseDO {
 
     private Long documentAuthorId;
 
-    private Long commentId;
-
     /**
-     * 收藏状态: 0-未收藏，1-已收藏，2-取消收藏
+     * 收藏状态: 0-未收藏，1-已收藏
      */
     private Integer collectionStat;
 
@@ -46,12 +44,12 @@ public class UserFootDO extends BaseDO {
     private Integer readStat;
 
     /**
-     * 评论状态: 0-未评论，1-已评论，2-删除评论
+     * 评论状态: 0-未评论，1-已评论
      */
     private Integer commentStat;
 
     /**
-     * 点赞状态: 0-未点赞，1-已点赞，2-取消点赞
+     * 点赞状态: 0-未点赞，1-已点赞
      */
     private Integer praiseStat;
 }

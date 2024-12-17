@@ -2,17 +2,18 @@ package cor.chrissy.community.service.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import cor.chrissy.community.common.enums.CollectionStatEnum;
-import cor.chrissy.community.common.enums.CommentStatEnum;
-import cor.chrissy.community.common.enums.PraiseStatEnum;
-import cor.chrissy.community.common.enums.ReadStatEnum;
+import cor.chrissy.community.common.enums.*;
+import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
+import cor.chrissy.community.service.article.repository.entity.ArticleDO;
+import cor.chrissy.community.service.comment.repository.entity.CommentDO;
 import cor.chrissy.community.service.user.repository.entity.UserFootDO;
 import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
 import cor.chrissy.community.service.user.service.UserFootService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author wx128
@@ -24,77 +25,109 @@ public class UserFootServiceImpl implements UserFootService {
     @Resource
     private UserFootMapper userFootMapper;
 
+    @Override
+    public ArticleFootCountDTO saveArticleFoot(Long articleId, Long author, Long userId, OperateTypeEnum operateTypeEnum) {
+        if (userId != null) {
+            // 未登录时，不更新对应的足迹内容
+            doSaveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, author, articleId, userId, operateTypeEnum);
+        }
+        return userFootMapper.queryCountByArticle(articleId);
+    }
+
     /**
-     * 获取文章计数
+     * 保存或更新状态信息
      *
-     * @param documentId
-     * @return
+     * @param documentType    文档类型：博文 + 评论
+     * @param documentId      文档id
+     * @param authorId        作者
+     * @param userId          操作人
+     * @param operateTypeEnum 操作类型：点赞，评论，收藏等
      */
-    public ArticleFootCountDTO queryArticleCount(Long documentId) {
-        ArticleFootCountDTO res = userFootMapper.queryCountByArticle(documentId);
-        if (res == null) res = new ArticleFootCountDTO();
+    private void doSaveOrUpdateUserFoot(DocumentTypeEnum documentType, Long documentId,
+                                        Long authorId, Long userId, OperateTypeEnum operateTypeEnum) {
+        // 查询是否有该足迹
+        UserFootDO readUserFootDO = userFootMapper.queryFootByDocumentInfo(documentId, documentType.getCode(), userId);
+        if (readUserFootDO == null) {
+            readUserFootDO = new UserFootDO();
+            readUserFootDO.setUserId(userId);
+            readUserFootDO.setDocumentId(documentId);
+            readUserFootDO.setDocumentType(documentType.getCode());
+            readUserFootDO.setDocumentAuthorId(authorId);
+            setUserFootStat(readUserFootDO, operateTypeEnum);
+            userFootMapper.insert(readUserFootDO);
+        } else {
+            setUserFootStat(readUserFootDO, operateTypeEnum);
+            userFootMapper.updateById(readUserFootDO);
+        }
+    }
+
+    private UserFootDO setUserFootStat(UserFootDO userFootDO, OperateTypeEnum operateTypeEnum) {
+        if (operateTypeEnum == OperateTypeEnum.READ) {
+            userFootDO.setReadStat(ReadStatEnum.READ.getCode());
+        } else if (operateTypeEnum == OperateTypeEnum.PRAISE) {
+            userFootDO.setPraiseStat(PraiseStatEnum.PRAISE.getCode());
+        } else if (operateTypeEnum == OperateTypeEnum.CANCEL_PRAISE) {
+            userFootDO.setPraiseStat(PraiseStatEnum.CANCEL_PRAISE.getCode());
+        } else if (operateTypeEnum == OperateTypeEnum.COLLECTION) {
+            userFootDO.setCollectionStat(CollectionStatEnum.COLLECTION.getCode());
+        } else if (operateTypeEnum == OperateTypeEnum.CANCEL_COLLECTION) {
+            userFootDO.setCollectionStat(CollectionStatEnum.CANCEL_COLLECTION.getCode());
+        } else if (operateTypeEnum == OperateTypeEnum.COMMENT) {
+            userFootDO.setCommentStat(CommentStatEnum.COMMENT.getCode());
+        } else if (operateTypeEnum == OperateTypeEnum.DELETE_COMMENT) {
+            userFootDO.setCommentStat(CommentStatEnum.CANCEL_COMMENT.getCode());
+        }
+        return userFootDO;
+    }
+
+    @Override
+    public ArticleFootCountDTO queryArticleCountByArticleId(Long articleId) {
+        ArticleFootCountDTO res = userFootMapper.queryCountByArticle(articleId);
+        if (res == null) {
+            res = new ArticleFootCountDTO();
+        }
         return res;
     }
 
     @Override
-    public Long queryCollectionCount(Long documentId) {
-        LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, documentId)
-                .eq(UserFootDO::getCollectionStat, CollectionStatEnum.COLLECTION.getCode());
-        return userFootMapper.selectCount(query);
+    public ArticleFootCountDTO queryArticleCountByUserId(Long userId) {
+        return userFootMapper.queryArticleFootCount(userId);
     }
 
     @Override
-    public Long queryReadCount(Long documentId) {
+    public Long queryCommentPraiseCount(Long commentId) {
         LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, documentId)
-                .eq(UserFootDO::getReadStat, ReadStatEnum.READ.getCode());
-        return userFootMapper.selectCount(query);
-    }
-
-    @Override
-    public Long queryCommentCount(Long documentId) {
-        LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, documentId)
-                .eq(UserFootDO::getCommentStat, CommentStatEnum.COMMENT.getCode());
-        return userFootMapper.selectCount(query);
-    }
-
-    @Override
-    public Long queryPraiseCount(Long documentId) {
-        LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, documentId)
+        query.eq(UserFootDO::getDocumentId, commentId)
+                .eq(UserFootDO::getDocumentType, DocumentTypeEnum.COMMENT.getCode())
                 .eq(UserFootDO::getPraiseStat, PraiseStatEnum.PRAISE.getCode());
         return userFootMapper.selectCount(query);
     }
 
     @Override
-    public Integer operateCollectionFoot(Long documentId, Long userId, CollectionStatEnum statEnum) {
-        LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, documentId)
-                .eq(UserFootDO::getUserId, userId);
-        UserFootDO userFootDTO = userFootMapper.selectOne(query);
-        userFootDTO.setCollectionStat(statEnum.getCode());
-        return userFootMapper.update(userFootDTO, query);
+    public List<ArticleDO> queryReadArticleList(Long userId, PageParam pageParam) {
+        return userFootMapper.queryReadArticleList(userId, pageParam);
     }
 
     @Override
-    public Integer operateCommentFoot(Long documentId, Long userId, CommentStatEnum statEnum) {
-        LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, documentId)
-                .eq(UserFootDO::getUserId, userId);
-        UserFootDO userFootDTO = userFootMapper.selectOne(query);
-        userFootDTO.setCommentStat(statEnum.getCode());
-        return userFootMapper.update(userFootDTO, query);
+    public List<ArticleDO> queryCollectionArticleList(Long userId, PageParam pageParam) {
+        return userFootMapper.queryCollectionArticleList(userId, pageParam);
     }
 
     @Override
-    public Integer operatePraiseFoot(Long documentId, Long userId, PraiseStatEnum statEnum) {
-        LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, documentId)
-                .eq(UserFootDO::getUserId, userId);
-        UserFootDO userFootDTO = userFootMapper.selectOne(query);
-        userFootDTO.setPraiseStat(statEnum.getCode());
-        return userFootMapper.update(userFootDTO, query);
+    public void saveCommentFoot(CommentDO comment, Long articleAuthor, Long parentCommentAuthor) {
+        // 保存文章对应的评论足迹
+        doSaveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, articleAuthor, comment.getArticleId(), comment.getUserId(), OperateTypeEnum.COMMENT);
+        // 如果是子评论，则找到父评论的记录，然后设置为已评
+        if (parentCommentAuthor != null) {
+            doSaveOrUpdateUserFoot(DocumentTypeEnum.COMMENT, parentCommentAuthor, comment.getParentCommentId(), comment.getUserId(), OperateTypeEnum.COMMENT);
+        }
+    }
+
+    @Override
+    public void deleteCommentFoot(CommentDO comment, Long articleAuthor, Long parentCommentAuthor) {
+        doSaveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, articleAuthor, comment.getArticleId(), comment.getUserId(), OperateTypeEnum.DELETE_COMMENT);
+        if (parentCommentAuthor != null) {
+            doSaveOrUpdateUserFoot(DocumentTypeEnum.COMMENT, parentCommentAuthor, comment.getParentCommentId(), comment.getUserId(), OperateTypeEnum.DELETE_COMMENT);
+        }
     }
 }

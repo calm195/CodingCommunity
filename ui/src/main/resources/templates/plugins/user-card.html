@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 
 <!-- 用户卡片 -->
 <div class="card" th:fragment="user_card(user)">
@@ -11,9 +11,9 @@
                      style="padding-right: 1em" alt="">
             </div>
             <div class="d-flex flex-column justify-content-center">
-                <h5 class="card-title" th:text="${user.userName}">chrissy</h5>
+                <h5 class="card-title" th:text="${user.userName}">一灰灰</h5>
                 <p class="card-text" th:text="${user.profile}">
-                    profile description
+                    this is a longer text for the card title and the third kind of card.
                 </p>
             </div>
         </div>

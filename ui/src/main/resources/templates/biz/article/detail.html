@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<div th:replace="layout/header :: head(~{::title}, ~{}, ~{})">
+    <title th:text="${siteInfo.name}">QuickFrom社区</title>
+</div>
+
+<body id="body" th:data-toast-message="${toast}" th:data-token="${token}">
+<!-- 导航栏 -->
+<div th:replace="layout/navbar :: header"></div>
+
+
+<div th:replace="layout/container :: container_right_sidebar(~{::left}, ~{::right})">
+    <left>
+        <!-- 这里显示cover -->
+        <div th:if="${!#strings.isEmpty(article.cover)}"
+             class="carousel slide">
+            <div class="carousel-inner">
+                <img th:src="${article.cover}" src="https://spring.hhui.top/spring-blog/imgs/220425/logo.jpg"
+                     class="img-fluid"/>
+            </div>
+        </div>
+
+        <!-- 正文 -->
+        <content>
+            <div th:replace="plugins/article-info :: article-info(${article}, ${author})"></div>
+            <div th:replace="plugins/article-list :: comment-list(${comments}, ${article})"></div>
+        </content>
+    </left>
+    <right>
+        <!-- 用户信息卡片 -->
+        <div th:replace="plugins/user-card :: user_card(${author})"></div>
+
+        <!-- 公告 -->
+        <div th:if="${!#lists.isEmpty(sideBarItems)}"
+             th:each="item : ${sideBarItems}">
+            <div th:replace="plugins/normal-card :: normal_card(${item})"/>
+        </div>
+    </right>
+</div>
+
+<div th:replace="layout/footer :: footer"></div>
+
+<script>
+    <!-- 评论相关 -->
+    const commentContent = $("#commentContent");
+    commentContent.on('input propertychange', function () {
+        const val = $(this).val();
+        if (val) {
+            $("#commentBtn").attr("disabled", false);
+        } else {
+            $("#commentBtn").attr("disabled", true);
+        }
+    });
+
+    // 直接评论
+    const commentBtn = $("#commentBtn");
+    commentBtn.click(function () {
+        const content = commentContent.val();
+        if (!content || content.length > 512) {
+            toastr.error("评论内容长度要求在[1,512]之间");
+            return;
+        }
+        // 提交评论
+        const params = {
+            // 文章id
+            "articleId": $('#postsTitle').attr("data-id"),
+            // 评论内容
+            "commentContent": content
+        };
+        post("/comment/post", params, function (data) {
+            location.reload();
+        })
+    });
+
+
+    // 回复评论
+    const replyContent = $('#replyContent');
+    const replyBtn = $('#replyBtn');
+    $('.reply-comment').on('click', function (e) {
+        $('#commentModalDropLabel').html('回复 ' + this.dataset.replyNickname);
+        $('#repliedContent').html(this.dataset.replyContent);
+        replyContent.attr('placeholder', '回复' + this.dataset.replyNickname);
+        // 回复的评论ID
+        replyBtn.attr('data-reply-id', this.dataset.replyId);
+        // 回复的一级评论ID
+        replyBtn.attr('data-reply-top', this.dataset.replyTop);
+    });
+
+    replyBtn.on('click', function () {
+        if (!replyContent.val()) {
+            toastr.error('回复内容不能为空');
+            return;
+        }
+        // 提交评论
+        const params = {
+            // 文章id
+            "articleId": $('#postsTitle').attr("data-id"),
+            // 评论内容
+            "commentContent": replyContent.val(),
+            // 回复的评论id
+            "parentCommentId": replyBtn.attr('data-reply-id'),
+            // 回复的一级评论id
+            "topCommentId": replyBtn.attr('data-reply-top')
+        };
+        post("/comment/post", params, function (data) {
+            location.reload();
+        })
+    });
+</script>
+</body>
+</html>

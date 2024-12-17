@@ -11,7 +11,7 @@ CREATE TABLE `article`
     `summary`      varchar(300) NOT NULL DEFAULT '' COMMENT '文章摘要',
     `category_id`  int unsigned NOT NULL DEFAULT '0' COMMENT '类目ID',
     `source`       tinyint      NOT NULL DEFAULT '1' COMMENT '来源：1-转载，2-原创，3-翻译',
-    `source_url`   varchar(128) NOT NULL DEFAULT '1' COMMENT '原文链接',
+    `source_url`    varchar(128) NOT NULL DEFAULT '1' COMMENT '原文链接',
     `status`       tinyint      NOT NULL DEFAULT '0' COMMENT '状态：0-未发布，1-已发布',
     `deleted`      tinyint      NOT NULL DEFAULT '0' COMMENT '是否删除',
     `create_time`  timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -20,7 +20,7 @@ CREATE TABLE `article`
     KEY `idx_category_id` (`category_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='文章表';
+    COMMENT ='文章表';
 
 
 -- forum.article_detail definition
@@ -38,7 +38,7 @@ CREATE TABLE `article_detail`
     UNIQUE KEY `idx_article_version` (`article_id`, `version`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='文章详情表';
+    COMMENT ='文章详情表';
 
 
 -- forum.article_tag definition
@@ -55,7 +55,7 @@ CREATE TABLE `article_tag`
     KEY `idx_tag_id` (`tag_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='文章标签映射';
+    COMMENT ='文章标签映射';
 
 
 -- forum.category definition
@@ -71,7 +71,7 @@ CREATE TABLE `category`
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='类目管理表';
+    COMMENT ='类目管理表';
 
 
 -- forum.comment definition
@@ -82,16 +82,18 @@ CREATE TABLE `comment`
     `article_id`        int unsigned NOT NULL COMMENT '文章ID',
     `user_id`           int unsigned NOT NULL COMMENT '用户ID',
     `content`           varchar(300) NOT NULL DEFAULT '' COMMENT '评论内容',
+    `top_comment_id`    int unsigned NOT NULL DEFAULT '0' COMMENT '顶级评论ID',
     `parent_comment_id` int unsigned NOT NULL DEFAULT '0' COMMENT '父评论ID',
     `deleted`           tinyint      NOT NULL DEFAULT '0' COMMENT '是否删除',
     `create_time`       timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`       timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
     PRIMARY KEY (`id`),
-    KEY `idx_article_id` (`article_id`),
+    KEY `idx_article_id_parent_comment_id` (`article_id`, `parent_comment_id`),
+    KEY `idx_top_comment_id` (`top_comment_id`),
     KEY `idx_user_id` (`user_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='评论表';
+    COMMENT ='评论表';
 
 
 -- forum.tag definition
@@ -110,7 +112,7 @@ CREATE TABLE `tag`
     KEY `idx_category_id` (`category_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='标签管理表';
+    COMMENT ='标签管理表';
 
 
 -- forum.`user` definition
@@ -129,6 +131,21 @@ CREATE TABLE `user`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户登录表';
 
+-- forum.read_count 访问计数
+
+CREATE TABLE `read_count`
+(
+    `id`            int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `document_id`   int unsigned NOT NULL COMMENT '文档ID（文章/评论）',
+    `document_type` tinyint      NOT NULL DEFAULT '1' COMMENT '文档类型：1-文章，2-评论',
+    `cnt`           int unsigned NOT NULL COMMENT '访问计数',
+    `create_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `idx_document_id_type` (`document_id`, `document_type`)
+) ENGINE = InnoDB
+  AUTO_INCREMENT = 1
+  DEFAULT CHARSET = utf8mb4 COMMENT ='计数表';
 
 -- forum.user_foot definition
 
@@ -139,7 +156,6 @@ CREATE TABLE `user_foot`
     `document_id`        int unsigned     NOT NULL COMMENT '文档ID（文章/评论）',
     `document_type`      tinyint          NOT NULL DEFAULT '1' COMMENT '文档类型：1-文章，2-评论',
     `document_author_id` int unsigned     NOT NULL COMMENT '文档作者ID',
-    `comment_id`         int unsigned     NOT NULL DEFAULT '0' COMMENT '当前评论的ID',
     `collection_stat`    tinyint unsigned NOT NULL DEFAULT '0' COMMENT '收藏状态: 0-未收藏，1-已收藏，2-取消收藏',
     `read_stat`          tinyint unsigned NOT NULL DEFAULT '0' COMMENT '阅读状态: 0-未读，1-已读',
     `comment_stat`       tinyint unsigned NOT NULL DEFAULT '0' COMMENT '评论状态: 0-未评论，1-已评论，2-删除评论',
@@ -147,11 +163,11 @@ CREATE TABLE `user_foot`
     `create_time`        timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`        timestamp        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `idx_user_document` (`user_id`, `document_id`, `document_type`, `comment_id`),
+    UNIQUE KEY `idx_user_document` (`user_id`, `document_id`, `document_type`),
     KEY `idx_document_id` (`document_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户足迹表';
+  COMMENT ='用户足迹表';
 
 
 -- forum.user_info definition
@@ -191,4 +207,4 @@ CREATE TABLE `user_relation`
     KEY `key_follow_user_id` (`follow_user_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci COMMENT ='用户关系表';
+  COMMENT ='用户关系表';

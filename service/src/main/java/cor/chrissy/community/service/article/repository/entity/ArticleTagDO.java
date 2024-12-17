@@ -1,7 +1,7 @@
 package cor.chrissy.community.service.article.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import cor.chrissy.community.common.BaseDO;
+import cor.chrissy.community.common.entity.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

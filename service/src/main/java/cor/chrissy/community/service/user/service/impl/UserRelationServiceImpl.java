@@ -9,7 +9,6 @@ import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 import cor.chrissy.community.service.user.repository.mapper.UserRelationMapper;
 import cor.chrissy.community.service.user.service.UserRelationService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -60,7 +59,6 @@ public class UserRelationServiceImpl implements UserRelationService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void saveUserRelation(UserRelationReq req) throws Exception {
         if (req.getUserRelationId() == null || req.getUserRelationId() == 0) {
             userRelationMapper.insert(userConverter.toDO(req));

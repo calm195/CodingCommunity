@@ -1,5 +1,6 @@
 package cor.chrissy.community.common.context;
 
+import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import lombok.Data;
 
 /**
@@ -54,18 +55,23 @@ public class ReqInfoContext {
         private String payload;
 
         /**
-         * 终点看书 app的请求，会携带这个参数
-         */
-        private String uuid;
-
-        /**
          * 设备信息
          */
         private String userAgent;
 
         /**
+         * 登录的会话
+         */
+        private String session;
+
+        /**
          * 用户id
          */
         private Long userId;
+
+        /**
+         * 用户信息
+         */
+        private BaseUserInfoDTO userInfo;
     }
 }

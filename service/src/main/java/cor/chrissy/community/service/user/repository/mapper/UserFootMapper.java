@@ -16,6 +16,16 @@ import java.util.List;
 public interface UserFootMapper extends BaseMapper<UserFootDO> {
 
     /**
+     * 查询足迹信息
+     *
+     * @param documentId
+     * @param type
+     * @param userId
+     * @return
+     */
+    UserFootDO queryFootByDocumentInfo(@Param("documentId") Long documentId, @Param("type") Integer type, @Param("userId") Long userId);
+
+    /**
      * 查询文章计数信息
      *
      * @param articleId

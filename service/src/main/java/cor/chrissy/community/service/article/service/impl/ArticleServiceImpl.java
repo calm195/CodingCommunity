@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cor.chrissy.community.common.context.ReqInfoContext;
+import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.ArticleTypeEnum;
+import cor.chrissy.community.common.enums.OperateTypeEnum;
 import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
@@ -14,23 +16,21 @@ import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.ArticleListDTO;
 import cor.chrissy.community.service.article.dto.CategoryDTO;
-import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.repository.mapper.ArticleMapper;
+import cor.chrissy.community.service.article.repository.mapper.ArticleTagMapper;
 import cor.chrissy.community.service.article.service.ArticleRepository;
 import cor.chrissy.community.service.article.service.ArticleService;
 import cor.chrissy.community.service.article.service.CategoryService;
 import cor.chrissy.community.service.article.service.TagService;
-import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
 import cor.chrissy.community.service.user.service.UserFootService;
+import cor.chrissy.community.service.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author wx128
@@ -49,6 +49,9 @@ public class ArticleServiceImpl implements ArticleService {
     private CategoryService categoryService;
 
     @Resource
+    private ArticleTagMapper articleTagMapper;
+
+    @Resource
     private TagService tagService;
 
     @Resource
@@ -58,20 +61,30 @@ public class ArticleServiceImpl implements ArticleService {
     private UserFootService userFootService;
 
     @Resource
-    private UserFootMapper userFootMapper;
+    private UserService userService;
+
+    @Override
+    public ArticleDO querySimpleArticleById(Long articleId) {
+        return articleRepository.getSimpleArticleById(articleId);
+    }
 
     /**
      * 获取文章详情
      *
      * @param articleId
+     * @param updateReadCnt
      * @return
      */
     @Override
-    public ArticleDTO queryArticleDetail(Long articleId) {
+    public ArticleDTO queryArticleDetail(Long articleId, boolean updateReadCnt) {
         ArticleDTO article = articleRepository.queryArticleDetail(articleId);
 
         if (article == null) {
             throw new IllegalArgumentException("文章不存在");
+        }
+
+        if (updateReadCnt) {
+            articleRepository.count(articleId);
         }
 
         // 更新分类
@@ -79,10 +92,9 @@ public class ArticleServiceImpl implements ArticleService {
         category.setCategory(categoryService.getCategoryName(category.getCategoryId()));
 
         // 更新tagIds
-        Set<Long> tagIds = article.getTags().stream().map(TagDTO::getTagId).collect(Collectors.toSet());
-        article.setTags(tagService.getTags(tagIds));
+        article.setTags(articleTagMapper.queryArticleTagDetails(articleId));
 
-        article.setArticleFootCount(userFootService.queryArticleCount(articleId));
+        article.setArticleFootCount(userFootService.saveArticleFoot(articleId, article.getAuthor(), ReqInfoContext.getReqInfo().getUserId(), OperateTypeEnum.READ));
         return article;
     }
 
@@ -115,12 +127,41 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ArticleListDTO queryArticlesByCategory(Long categoryId, PageParam page) {
-        if (categoryId != null && categoryId <= 0) categoryId = null;
+        if (categoryId != null && categoryId <= 0) {
+            categoryId = null;
+        }
         List<ArticleDO> records = articleRepository.getArticleListByCategoryId(categoryId, page);
         List<ArticleDTO> result = new ArrayList<>();
         records.forEach(record -> {
             ArticleDTO dto = articleConverter.toDTO(record);
-            dto.setArticleFootCount(userFootService.queryArticleCount(record.getId()));
+            dto.setArticleFootCount(userFootService.queryArticleCountByArticleId(record.getId()));
+            dto.setAuthorName(userService.getUserInfoByUserId(dto.getAuthor()).getUserName());
+            dto.setTags(articleTagMapper.queryArticleTagDetails(record.getId()));
+            result.add(dto);
+        });
+
+        ArticleListDTO dto = new ArticleListDTO();
+        dto.setArticleList(result);
+        dto.setIsMore(result.size() == page.getPageSize());
+        return dto;
+    }
+
+    @Override
+    public ArticleListDTO queryArticlesBySearchKey(String key, PageParam page) {
+        if (key == null || key.isEmpty()){
+            return new ArticleListDTO();
+        }
+
+        List<ArticleDO> records = articleRepository.getArticleListByBySearchKey(key, page);
+        List<ArticleDTO> result = new ArrayList<>();
+        records.forEach(record -> {
+            ArticleDTO dto = articleConverter.toDTO(record);
+            // 阅读计数
+            dto.setArticleFootCount(userFootService.queryArticleCountByArticleId(record.getId()));
+            // 作者信息
+            dto.setAuthorName(userService.getUserInfoByUserId(dto.getAuthor()).getUserName());
+            // 标签列表
+            dto.setTags(articleTagMapper.queryArticleTagDetails(record.getId()));
             result.add(dto);
         });
 
@@ -167,10 +208,17 @@ public class ArticleServiceImpl implements ArticleService {
             return articleListDTO;
         }
 
+        BaseUserInfoDTO userInfoDTO = userService.getUserInfoByUserId(userId);
+
         List<ArticleDTO> articleList = new ArrayList<>();
         for (ArticleDO articleDTO : articleDTOS) {
             ArticleDTO dto = articleConverter.toDTO(articleDTO);
-            // TODO: 筛其它数据
+            // 阅读计数
+            dto.setArticleFootCount(userFootService.queryArticleCountByArticleId(articleDTO.getId()));
+            // 作者信息
+            dto.setAuthorName(userInfoDTO.getUserName());
+            // 标签列表
+            dto.setTags(articleTagMapper.queryArticleTagDetails(articleDTO.getId()));
             articleList.add(dto);
         }
 
@@ -185,7 +233,8 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleListDTO getCollectionArticleListByUserId(Long userId, PageParam pageParam) {
         ArticleListDTO articleListDTO = new ArticleListDTO();
 
-        List<ArticleDO> articleDTOS = userFootMapper.queryCollectionArticleList(userId, pageParam);
+        BaseUserInfoDTO userInfoDTO = userService.getUserInfoByUserId(userId);
+        List<ArticleDO> articleDTOS = userFootService.queryCollectionArticleList(userId, pageParam);
         if (articleDTOS.isEmpty()) {
             articleListDTO.setIsMore(Boolean.FALSE);
             return articleListDTO;
@@ -194,7 +243,12 @@ public class ArticleServiceImpl implements ArticleService {
         List<ArticleDTO> articleList = new ArrayList<>();
         for (ArticleDO articleDTO : articleDTOS) {
             ArticleDTO dto = articleConverter.toDTO(articleDTO);
-            // TODO: 筛其它数据
+            // 阅读计数
+            dto.setArticleFootCount(userFootService.queryArticleCountByArticleId(articleDTO.getId()));
+            // 作者信息
+            dto.setAuthorName(userInfoDTO.getUserName());
+            // 标签列表
+            dto.setTags(articleTagMapper.queryArticleTagDetails(articleDTO.getId()));
             articleList.add(dto);
         }
 
@@ -209,7 +263,10 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleListDTO getReadArticleListByUserId(Long userId, PageParam pageParam) {
         ArticleListDTO articleListDTO = new ArticleListDTO();
 
-        List<ArticleDO> articleDTOS = userFootMapper.queryReadArticleList(userId, pageParam);
+        // 获取用户信息
+        BaseUserInfoDTO userInfoDTO = userService.getUserInfoByUserId(userId);
+
+        List<ArticleDO> articleDTOS = userFootService.queryReadArticleList(userId, pageParam);
         if (articleDTOS.isEmpty()) {
             articleListDTO.setIsMore(Boolean.FALSE);
             return articleListDTO;
@@ -218,7 +275,12 @@ public class ArticleServiceImpl implements ArticleService {
         List<ArticleDTO> articleList = new ArrayList<>();
         for (ArticleDO articleDTO : articleDTOS) {
             ArticleDTO dto = articleConverter.toDTO(articleDTO);
-            // TODO: 筛其它数据
+            // 阅读计数
+            dto.setArticleFootCount(userFootService.queryArticleCountByArticleId(articleDTO.getId()));
+            // 作者信息
+            dto.setAuthorName(userInfoDTO.getUserName());
+            // 标签列表
+            dto.setTags(articleTagMapper.queryArticleTagDetails(articleDTO.getId()));
             articleList.add(dto);
         }
 

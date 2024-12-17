@@ -1,6 +1,7 @@
 package cor.chrissy.community.common.req.user;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * 用户账户保存请求体
@@ -9,6 +10,7 @@ import lombok.Data;
  * @createAt 2024/12/11
  */
 @Data
+@Accessors(chain = true)
 public class UserSaveReq {
     /**
      * 主键ID

@@ -14,6 +14,9 @@ import java.util.List;
  * @createAt 2024/12/9
  */
 public interface TagService {
+
+    List<TagDTO> getArticleTags(Long articleId);
+
     /**
      * 查询类目
      *

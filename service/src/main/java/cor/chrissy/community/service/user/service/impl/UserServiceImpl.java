@@ -2,6 +2,7 @@ package cor.chrissy.community.service.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.user.UserInfoSaveReq;
@@ -13,12 +14,14 @@ import cor.chrissy.community.service.user.converter.UserConverter;
 import cor.chrissy.community.service.user.dto.UserHomeDTO;
 import cor.chrissy.community.service.user.repository.entity.UserDO;
 import cor.chrissy.community.service.user.repository.entity.UserInfoDO;
-import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
 import cor.chrissy.community.service.user.repository.mapper.UserInfoMapper;
 import cor.chrissy.community.service.user.repository.mapper.UserMapper;
 import cor.chrissy.community.service.user.repository.mapper.UserRelationMapper;
+import cor.chrissy.community.service.user.service.UserFootService;
+import cor.chrissy.community.service.user.service.UserRepository;
 import cor.chrissy.community.service.user.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -41,10 +44,33 @@ public class UserServiceImpl implements UserService {
     private ArticleMapper articleMapper;
 
     @Resource
-    private UserFootMapper userFootMapper;
+    private UserConverter userConverter;
 
     @Resource
-    private UserConverter userConverter;
+    private UserFootService userFootService;
+
+    @Resource
+    private UserRepository userRepository;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void registerOrGetUserInfo(UserSaveReq req) {
+        UserDO userDO = userMapper.getByThirdAccountId(req.getThirdAccountId());
+        if (userDO != null) {
+            req.setUserId(userDO.getId());
+            return;
+        }
+
+        userDO = userConverter.toDO(req);
+        userMapper.insert(userDO);
+        req.setUserId(userDO.getId());
+
+        UserInfoSaveReq userInfoSaveReq = new UserInfoSaveReq();
+        userInfoSaveReq.setUserId(userDO.getId());
+        userInfoSaveReq.setUserName(String.format("coder - %6d", (int) (Math.random() * 1000000)));
+        userInfoSaveReq.setPhoto("https://blog.hhui.top/hexblog/images/avatar.jpg");
+        saveUserInfo(userInfoSaveReq);
+    }
 
     @Override
     public void saveUser(UserSaveReq req) {
@@ -75,14 +101,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void saveUserInfo(UserInfoSaveReq req) {
-        UserInfoDO userInfoDO = getUserInfoByUserId(req.getUserId());
-        if (userInfoDO == null) {
+        BaseUserInfoDTO userInfoDTO = getUserInfoByUserId(req.getUserId());
+        if (userInfoDTO == null) {
             userInfoMapper.insert(userConverter.toDO(req));
             return;
         }
 
-        UserInfoDO updateUserInfoDO = userConverter.toDO(req);
-        updateUserInfoDO.setId(userInfoDO.getId());
+        UserInfoDO updateUserInfoDO = userConverter.toDO(userInfoDTO);
+        updateUserInfoDO.setUserId(userInfoDTO.getUserId());
+        updateUserInfoDO.setUserName(req.getUserName());
+        updateUserInfoDO.setPhoto(req.getPhoto());
+        updateUserInfoDO.setPosition(req.getPosition());
+        updateUserInfoDO.setCompany(req.getCompany());
+        updateUserInfoDO.setProfile(req.getProfile());
         userInfoMapper.updateById(updateUserInfoDO);
     }
 
@@ -96,28 +127,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfoDO getUserInfoByUserId(Long userId) {
+    public BaseUserInfoDTO getUserInfoByUserId(Long userId) {
         LambdaQueryWrapper<UserInfoDO> query = Wrappers.lambdaQuery();
         query.eq(UserInfoDO::getUserId, userId)
                 .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode());
-        return userInfoMapper.selectOne(query);
+        UserInfoDO userInfoDO =  userInfoMapper.selectOne(query);
+        return userConverter.toDTO(userInfoDO);
     }
 
     @Override
     public UserHomeDTO getUserHomeDTO(Long userId) {
 
-        UserInfoDO userInfoDO = getUserInfoByUserId(userId);
+        BaseUserInfoDTO userInfoDTO = getUserInfoByUserId(userId);
 
-        if (userInfoDO == null) {
+        if (userInfoDTO == null) {
             throw new IllegalArgumentException("用户不存在");
         }
 
         // 获取关注数、粉丝数
-        Integer followCount = userRelationMapper.queryUserFollowCount(userId, null);
-        Integer fansCount = userRelationMapper.queryUserFansCount(userId, null);
+        Long followCount = userRepository.queryUserFollowCount(userId);
+        Long fansCount = userRepository.queryUserFansCount(userId);
 
         // 获取文章相关统计
-        ArticleFootCountDTO articleFootCountDTO = userFootMapper.queryArticleFootCount(userId);
+        ArticleFootCountDTO articleFootCountDTO = userFootService.queryArticleCountByUserId(userId);
 
         // 获取发布文章总数
         LambdaQueryWrapper<ArticleDO> articleQuery = Wrappers.lambdaQuery();
@@ -126,14 +158,10 @@ public class UserServiceImpl implements UserService {
                 .eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode());
         Long articleCount = articleMapper.selectCount(articleQuery);
 
-        UserHomeDTO userHomeDTO = new UserHomeDTO();
-        userHomeDTO.setUserId(userInfoDO.getUserId());
+        UserHomeDTO userHomeDTO = userConverter.toUserHomeDTO(userInfoDTO);
         userHomeDTO.setRole("normal");
-        userHomeDTO.setUserName(userInfoDO.getUserName());
-        userHomeDTO.setPhoto(userInfoDO.getPhoto());
-        userHomeDTO.setProfile(userInfoDO.getProfile());
-        userHomeDTO.setFollowCount(followCount);
-        userHomeDTO.setFansCount(fansCount);
+        userHomeDTO.setFollowCount(followCount.intValue());
+        userHomeDTO.setFansCount(fansCount.intValue());
         if (articleFootCountDTO != null) {
             userHomeDTO.setPraiseCount(articleFootCountDTO.getPraiseCount());
             userHomeDTO.setReadCount(articleFootCountDTO.getReadCount());

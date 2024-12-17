@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * 文章传输DTO
+ *
  * @author wx128
  * @createAt 2024/12/11
  */
@@ -24,6 +26,8 @@ public class ArticleDTO implements Serializable {
      * 作者uid
      */
     private Long author;
+
+    private String authorName;
 
     private String title;
 
@@ -59,6 +63,11 @@ public class ArticleDTO implements Serializable {
      * 0 未发布 1 已发布
      */
     private Integer status;
+
+    /**
+     * 创建时间
+     */
+    private Long createTime;
 
     /**
      * 最后更新时间

@@ -1,15 +1,11 @@
 package cor.chrissy.community.test.dao;
 
-import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.req.comment.CommentSaveReq;
-import cor.chrissy.community.service.comment.dto.CommentTreeDTO;
 import cor.chrissy.community.service.comment.service.CommentService;
 import cor.chrissy.community.test.BasicTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
 
 /**
  * @author wx128
@@ -22,7 +18,7 @@ public class CommentDaoTest extends BasicTest {
     private CommentService commentService;
 
     @Test
-    public void testSaveComment() throws Exception {
+    public void testSaveComment() {
         CommentSaveReq commentSaveReq1 = new CommentSaveReq();
         commentSaveReq1.setArticleId(1L);
         commentSaveReq1.setCommentContent("一灰的评论1");
@@ -57,16 +53,6 @@ public class CommentDaoTest extends BasicTest {
         commentSaveReq5.setParentCommentId(commentId3);
         commentSaveReq5.setUserId(2L);
         commentService.saveComment(commentSaveReq5);
-    }
-
-
-    @Test
-    public void testGetCommentList() {
-        PageParam pageSearchReq = new PageParam();
-        pageSearchReq.setPageNum(1L);
-        pageSearchReq.setPageSize(2L);
-        Map<Long, CommentTreeDTO> commentTreeDTOList = commentService.getCommentList(1L, pageSearchReq);
-        log.info("commentTreeDTOList: {}", commentTreeDTOList);
     }
 
     @Test

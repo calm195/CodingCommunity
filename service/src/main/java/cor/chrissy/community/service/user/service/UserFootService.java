@@ -1,9 +1,12 @@
 package cor.chrissy.community.service.user.service;
 
-import cor.chrissy.community.common.enums.CollectionStatEnum;
-import cor.chrissy.community.common.enums.CommentStatEnum;
-import cor.chrissy.community.common.enums.PraiseStatEnum;
+import cor.chrissy.community.common.enums.OperateTypeEnum;
+import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
+import cor.chrissy.community.service.article.repository.entity.ArticleDO;
+import cor.chrissy.community.service.comment.repository.entity.CommentDO;
+
+import java.util.List;
 
 /**
  * @author wx128
@@ -12,70 +15,72 @@ import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
 public interface UserFootService {
 
     /**
-     * 查询文章计数
+     * 保存文章计数
      *
-     * @param documentId
+     * @param articleId       文章主键
+     * @param author          作者
+     * @param userId          操作用户
+     * @param operateTypeEnum 操作类型
      * @return
      */
-    ArticleFootCountDTO queryArticleCount(Long documentId);
+    ArticleFootCountDTO saveArticleFoot(Long articleId, Long author, Long userId, OperateTypeEnum operateTypeEnum);
 
     /**
-     * 文章收藏数
+     * 根据文章ID查询文章计数
      *
-     * @param documentId
+     * @param articleId
      * @return
      */
-    Long queryCollectionCount(Long documentId);
+    ArticleFootCountDTO queryArticleCountByArticleId(Long articleId);
+
 
     /**
-     * 文章阅读数
+     * 根据用户ID查询文章计数
      *
-     * @param documentId
-     * @return
-     */
-    Long queryReadCount(Long documentId);
-
-    /**
-     * 文章评论数
-     *
-     * @param documentId
-     * @return
-     */
-    Long queryCommentCount(Long documentId);
-
-    /**
-     * 文章点赞数
-     *
-     * @param documentId
-     * @return
-     */
-    Long queryPraiseCount(Long documentId);
-
-    /**
-     * 收藏/取消收藏足迹
-     *
-     * @param documentId
      * @param userId
      * @return
      */
-    Integer operateCollectionFoot(Long documentId, Long userId, CollectionStatEnum statEnum);
+    ArticleFootCountDTO queryArticleCountByUserId(Long userId);
 
     /**
-     * 评论/删除评论足迹
+     * 获取评论点赞数量
      *
-     * @param documentId
-     * @param userId
+     * @param commentId
      * @return
      */
-    Integer operateCommentFoot(Long documentId, Long userId, CommentStatEnum statEnum);
+    Long queryCommentPraiseCount(Long commentId);
 
     /**
-     * 点赞/取消点赞足迹
+     * 查询已读文章列表
      *
-     * @param documentId
      * @param userId
+     * @param pageParam
      * @return
      */
-    Integer operatePraiseFoot(Long documentId, Long userId, PraiseStatEnum statEnum);
+    List<ArticleDO> queryReadArticleList(Long userId, PageParam pageParam);
+
+    /**
+     * 查询收藏文章列表
+     *
+     * @param userId
+     * @param pageParam
+     * @return
+     */
+    List<ArticleDO> queryCollectionArticleList(Long userId, PageParam pageParam);
+
+    /**
+     * 保存评论足迹
+     *
+     * @param comment 保存评论入参
+     */
+    void saveCommentFoot(CommentDO comment, Long articleAuthor, Long parentCommentAuthor);
+
+    /**
+     * 删除评论足迹
+     *
+     * @param commentDO
+     * @throws Exception
+     */
+    void deleteCommentFoot(CommentDO commentDO, Long articleAuthor, Long parentCommentAuthor);
 
 }

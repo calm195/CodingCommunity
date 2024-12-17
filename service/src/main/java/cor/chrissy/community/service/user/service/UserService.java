@@ -1,15 +1,23 @@
 package cor.chrissy.community.service.user.service;
 
+import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.req.user.UserInfoSaveReq;
 import cor.chrissy.community.common.req.user.UserSaveReq;
 import cor.chrissy.community.service.user.dto.UserHomeDTO;
-import cor.chrissy.community.service.user.repository.entity.UserInfoDO;
 
 /**
  * @author wx128
  * @createAt 2024/12/9
  */
 public interface UserService {
+
+    /**
+     * 用户存在时，直接返回；不存在时，则初始化
+     *
+     * @param req
+     */
+    void registerOrGetUserInfo(UserSaveReq req);
+
     /**
      * 保存用户
      *
@@ -44,7 +52,7 @@ public interface UserService {
      * @param userId
      * @return
      */
-    UserInfoDO getUserInfoByUserId(Long userId);
+    BaseUserInfoDTO getUserInfoByUserId(Long userId);
 
 
     /**

@@ -1,38 +1,20 @@
 package cor.chrissy.community.service.user.dto;
 
+import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
+ * 用户主页详情DTO
+ *
  * @author wx128
  * @createAt 2024/12/11
  */
 @Data
-public class UserHomeDTO {
-
-    /**
-     * 用户id
-     */
-    private Long userId;
-
-    /**
-     * 用户名
-     */
-    private String userName;
-
-    /**
-     * 用户角色 admin, normal
-     */
-    private String role;
-
-    /**
-     * 用户图像
-     */
-    private String photo;
-
-    /**
-     * 个人简介
-     */
-    private String profile;
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class UserHomeDTO extends BaseUserInfoDTO {
 
     /**
      * 关注数
