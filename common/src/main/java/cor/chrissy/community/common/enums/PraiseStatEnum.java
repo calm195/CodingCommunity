@@ -23,7 +23,7 @@ public enum PraiseStatEnum {
     private final Integer code;
     private final String desc;
 
-    public static PraiseStatEnum formCode(Integer code) {
+    public static PraiseStatEnum fromCode(Integer code) {
         for (PraiseStatEnum value : PraiseStatEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

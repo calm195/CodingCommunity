@@ -23,7 +23,7 @@ public enum FollowStateEnum {
     private final Integer code;
     private final String desc;
 
-    public static FollowStateEnum formCode(Integer code) {
+    public static FollowStateEnum fromCode(Integer code) {
         for (FollowStateEnum value : FollowStateEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

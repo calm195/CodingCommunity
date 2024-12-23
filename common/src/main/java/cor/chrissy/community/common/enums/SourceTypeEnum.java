@@ -24,7 +24,7 @@ public enum SourceTypeEnum {
     private final Integer code;
     private final String desc;
 
-    public static SourceTypeEnum formCode(Integer code) {
+    public static SourceTypeEnum fromCode(Integer code) {
         for (SourceTypeEnum value : SourceTypeEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

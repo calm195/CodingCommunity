@@ -23,7 +23,7 @@ public enum DocumentTypeEnum {
     private final Integer code;
     private final String desc;
 
-    public static DocumentTypeEnum formCode(Integer code) {
+    public static DocumentTypeEnum fromCode(Integer code) {
         for (DocumentTypeEnum value : DocumentTypeEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

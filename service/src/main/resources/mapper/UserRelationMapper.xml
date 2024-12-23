@@ -2,6 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cor.chrissy.community.service.user.repository.mapper.UserRelationMapper">
 
+    <sql id="limit">
+        <if test="pageParam != null">
+            limit #{pageParam.offset}, #{pageParam.limit}
+        </if>
+    </sql>
+
     <select id="queryUserFollowList"
             resultType="cor.chrissy.community.service.user.dto.UserFollowDTO">
 
@@ -18,10 +24,7 @@
           and r.follow_stat = ${@cor.chrissy.community.common.enums.FollowStateEnum@FOLLOW.code}
         ORDER BY u.id desc
 
-        <if test="pageParam != null">
-            limit #{pageParam.offset}, #{pageParam.limit}
-        </if>
-
+        <include refid="limit"/>
     </select>
 
     <select id="queryUserFansList"
@@ -40,9 +43,7 @@
             and u.follow_stat = ${@cor.chrissy.community.common.enums.FollowStateEnum@FOLLOW.code}
         ORDER BY u.id desc
 
-        <if test="pageParam != null">
-            limit #{pageParam.offset}, #{pageParam.limit}
-        </if>
+        <include refid="limit"/>
 
     </select>
 

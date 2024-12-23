@@ -1,5 +1,6 @@
 package cor.chrissy.community.service.article.dto;
 
+import cor.chrissy.community.service.user.dto.SimpleUserInfoDTO;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -28,6 +29,8 @@ public class ArticleDTO implements Serializable {
     private Long author;
 
     private String authorName;
+
+    private String authorAvatar;
 
     private String title;
 
@@ -64,6 +67,14 @@ public class ArticleDTO implements Serializable {
      */
     private Integer status;
 
+    private Integer flagBit;
+
+    private Boolean isOfficial;
+
+    private Boolean isTopping;
+
+    private Boolean isCream;
+
     /**
      * 创建时间
      */
@@ -88,4 +99,24 @@ public class ArticleDTO implements Serializable {
      * 计数统计相关
      */
     private ArticleFootCountDTO articleFootCount;
+
+    /**
+     * 表示当前查看的用户是否已经点赞过
+     */
+    private Boolean praised;
+
+    /**
+     * 表示当用户是否评论过
+     */
+    private Boolean commented;
+
+    /**
+     * 表示当前用户是否收藏过
+     */
+    private Boolean collected;
+
+    /**
+     * 点赞用户信息
+     */
+    private List<SimpleUserInfoDTO> praisedUsers;
 }

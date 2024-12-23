@@ -5,6 +5,8 @@ import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.core.util.CrossUtil;
 import cor.chrissy.community.core.util.IpUtil;
 import cor.chrissy.community.service.account.service.LoginService;
+import cor.chrissy.community.service.statistics.service.StatisticsSettingService;
+import cor.chrissy.community.web.global.GlobalInitService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,12 +29,15 @@ import java.net.URLDecoder;
  * @createAt 2024/12/9
  */
 @Slf4j
-@WebFilter(urlPatterns = "/*", filterName = "selfProcessBeforeFilter")
+@WebFilter(urlPatterns = "/*", filterName = "reqRecordFilter", asyncSupported = true)
 public class ReqRecordFilter implements Filter {
     private static final Logger REQ_LOG = LoggerFactory.getLogger("req");
 
     @Resource
-    private LoginService loginService;
+    private GlobalInitService globalInitService;
+
+    @Resource
+    private StatisticsSettingService statisticsSettingService;
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -66,18 +71,8 @@ public class ReqRecordFilter implements Filter {
             reqInfo.setUserAgent(request.getHeader("User-Agent"));
 
             request = this.wrapperRequest(request, reqInfo);
+            globalInitService.initLoginUser(reqInfo);
             ReqInfoContext.addReqInfo(reqInfo);
-
-            for (Cookie cookie : request.getCookies()) {
-                if (LoginService.SESSION_KEY.equalsIgnoreCase(cookie.getName())) {
-                    String session = cookie.getValue();
-                    BaseUserInfoDTO user = loginService.getUserBySessionId(session);
-                    reqInfo.setSession(session);
-                    reqInfo.setUserId(user.getUserId());
-                    reqInfo.setUserInfo(user);
-                    break;
-                }
-            }
         } catch (Exception e) {
             log.error("init reqInfo error!", e);
         }
@@ -88,6 +83,7 @@ public class ReqRecordFilter implements Filter {
     private void buildRequestLog(ReqInfoContext.ReqInfo req, HttpServletRequest request, long costTime) {
         // fixme 过滤不需要记录请求日志的场景
         if (request == null
+                || req == null
                 || request.getRequestURI().endsWith("css")
                 || request.getRequestURI().endsWith("js")
                 || request.getRequestURI().endsWith("png")
@@ -116,6 +112,7 @@ public class ReqRecordFilter implements Filter {
         msg.append("; payload=").append(req.getPayload());
         msg.append("; cost=").append(costTime);
         REQ_LOG.info("{}", msg);
+        statisticsSettingService.saveRequestCount(req.getClientIp());
     }
 
 

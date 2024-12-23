@@ -22,7 +22,7 @@ public enum PushStatEnum {
     private final int code;
     private final String desc;
 
-    public static PushStatEnum formCode(int code) {
+    public static PushStatEnum fromCode(int code) {
         for (PushStatEnum yesOrNoEnum : PushStatEnum.values()) {
             if (yesOrNoEnum.getCode() == code) {
                 return yesOrNoEnum;

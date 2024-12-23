@@ -1,13 +1,16 @@
 package cor.chrissy.community.web;
 
+import cor.chrissy.community.web.global.CodingCommunityExceptionHandler;
 import cor.chrissy.community.web.hook.interceptor.GlobalViewInterceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author wx128
@@ -26,5 +29,10 @@ public class CodingCommunityApplication implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(globalViewInterceptor);
+    }
+
+    @Override
+    public void configureHandlerExceptionResolvers(List<HandlerExceptionResolver> resolvers) {
+        resolvers.add(0, new CodingCommunityExceptionHandler());
     }
 }

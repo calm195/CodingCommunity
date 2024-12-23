@@ -1,37 +1,40 @@
 package cor.chrissy.community.service.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import cor.chrissy.community.common.enums.*;
+import cor.chrissy.community.common.enums.DocumentTypeEnum;
+import cor.chrissy.community.common.enums.OperateTypeEnum;
 import cor.chrissy.community.common.req.PageParam;
-import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
-import cor.chrissy.community.service.article.repository.entity.ArticleDO;
+import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.comment.repository.entity.CommentDO;
+import cor.chrissy.community.service.comment.service.CommentReadService;
+import cor.chrissy.community.service.user.dto.SimpleUserInfoDTO;
+import cor.chrissy.community.service.user.repository.dao.UserFootDao;
 import cor.chrissy.community.service.user.repository.entity.UserFootDO;
-import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
 import cor.chrissy.community.service.user.service.UserFootService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * @author wx128
- * @createAt 2024/12/9
+ * @createAt 2024/12/18
  */
 @Service
 public class UserFootServiceImpl implements UserFootService {
+    private final UserFootDao userFootDao;
 
-    @Resource
-    private UserFootMapper userFootMapper;
+    @Autowired
+    private ArticleReadService articleReadService;
 
-    @Override
-    public ArticleFootCountDTO saveArticleFoot(Long articleId, Long author, Long userId, OperateTypeEnum operateTypeEnum) {
-        if (userId != null) {
-            // 未登录时，不更新对应的足迹内容
-            doSaveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, author, articleId, userId, operateTypeEnum);
-        }
-        return userFootMapper.queryCountByArticle(articleId);
+    @Autowired
+    private CommentReadService commentReadService;
+
+    public UserFootServiceImpl(UserFootDao userFootDao) {
+        this.userFootDao = userFootDao;
     }
 
     /**
@@ -43,10 +46,10 @@ public class UserFootServiceImpl implements UserFootService {
      * @param userId          操作人
      * @param operateTypeEnum 操作类型：点赞，评论，收藏等
      */
-    private void doSaveOrUpdateUserFoot(DocumentTypeEnum documentType, Long documentId,
-                                        Long authorId, Long userId, OperateTypeEnum operateTypeEnum) {
-        // 查询是否有该足迹
-        UserFootDO readUserFootDO = userFootMapper.queryFootByDocumentInfo(documentId, documentType.getCode(), userId);
+    @Override
+    public UserFootDO saveOrUpdateUserFoot(DocumentTypeEnum documentType, Long documentId, Long authorId, Long userId, OperateTypeEnum operateTypeEnum) {
+        // 查询是否有该足迹；有则更新，没有则插入
+        UserFootDO readUserFootDO = userFootDao.getByDocumentAndUserId(documentId, documentType.getCode(), userId);
         if (readUserFootDO == null) {
             readUserFootDO = new UserFootDO();
             readUserFootDO.setUserId(userId);
@@ -54,80 +57,88 @@ public class UserFootServiceImpl implements UserFootService {
             readUserFootDO.setDocumentType(documentType.getCode());
             readUserFootDO.setDocumentAuthorId(authorId);
             setUserFootStat(readUserFootDO, operateTypeEnum);
-            userFootMapper.insert(readUserFootDO);
-        } else {
-            setUserFootStat(readUserFootDO, operateTypeEnum);
-            userFootMapper.updateById(readUserFootDO);
+            userFootDao.save(readUserFootDO);
+        } else if (setUserFootStat(readUserFootDO, operateTypeEnum)) {
+            readUserFootDO.setUpdateTime(new Date());
+            userFootDao.updateById(readUserFootDO);
         }
+        return readUserFootDO;
     }
 
-    private UserFootDO setUserFootStat(UserFootDO userFootDO, OperateTypeEnum operateTypeEnum) {
-        if (operateTypeEnum == OperateTypeEnum.READ) {
-            userFootDO.setReadStat(ReadStatEnum.READ.getCode());
-        } else if (operateTypeEnum == OperateTypeEnum.PRAISE) {
-            userFootDO.setPraiseStat(PraiseStatEnum.PRAISE.getCode());
-        } else if (operateTypeEnum == OperateTypeEnum.CANCEL_PRAISE) {
-            userFootDO.setPraiseStat(PraiseStatEnum.CANCEL_PRAISE.getCode());
-        } else if (operateTypeEnum == OperateTypeEnum.COLLECTION) {
-            userFootDO.setCollectionStat(CollectionStatEnum.COLLECTION.getCode());
-        } else if (operateTypeEnum == OperateTypeEnum.CANCEL_COLLECTION) {
-            userFootDO.setCollectionStat(CollectionStatEnum.CANCEL_COLLECTION.getCode());
-        } else if (operateTypeEnum == OperateTypeEnum.COMMENT) {
-            userFootDO.setCommentStat(CommentStatEnum.COMMENT.getCode());
-        } else if (operateTypeEnum == OperateTypeEnum.DELETE_COMMENT) {
-            userFootDO.setCommentStat(CommentStatEnum.CANCEL_COMMENT.getCode());
-        }
-        return userFootDO;
-    }
-
-    @Override
-    public ArticleFootCountDTO queryArticleCountByArticleId(Long articleId) {
-        ArticleFootCountDTO res = userFootMapper.queryCountByArticle(articleId);
-        if (res == null) {
-            res = new ArticleFootCountDTO();
-        }
-        return res;
-    }
-
-    @Override
-    public ArticleFootCountDTO queryArticleCountByUserId(Long userId) {
-        return userFootMapper.queryArticleFootCount(userId);
-    }
-
-    @Override
-    public Long queryCommentPraiseCount(Long commentId) {
-        LambdaQueryWrapper<UserFootDO> query = Wrappers.lambdaQuery();
-        query.eq(UserFootDO::getDocumentId, commentId)
-                .eq(UserFootDO::getDocumentType, DocumentTypeEnum.COMMENT.getCode())
-                .eq(UserFootDO::getPraiseStat, PraiseStatEnum.PRAISE.getCode());
-        return userFootMapper.selectCount(query);
-    }
-
-    @Override
-    public List<ArticleDO> queryReadArticleList(Long userId, PageParam pageParam) {
-        return userFootMapper.queryReadArticleList(userId, pageParam);
-    }
-
-    @Override
-    public List<ArticleDO> queryCollectionArticleList(Long userId, PageParam pageParam) {
-        return userFootMapper.queryCollectionArticleList(userId, pageParam);
-    }
 
     @Override
     public void saveCommentFoot(CommentDO comment, Long articleAuthor, Long parentCommentAuthor) {
         // 保存文章对应的评论足迹
-        doSaveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, articleAuthor, comment.getArticleId(), comment.getUserId(), OperateTypeEnum.COMMENT);
+        saveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, comment.getArticleId(), articleAuthor, comment.getUserId(), OperateTypeEnum.COMMENT);
         // 如果是子评论，则找到父评论的记录，然后设置为已评
-        if (parentCommentAuthor != null) {
-            doSaveOrUpdateUserFoot(DocumentTypeEnum.COMMENT, parentCommentAuthor, comment.getParentCommentId(), comment.getUserId(), OperateTypeEnum.COMMENT);
+        if (comment.getParentCommentId() != null && comment.getParentCommentId() != 0) {
+            // 如果需要展示父评论的子评论数量，authorId 需要传父评论的 userId
+            saveOrUpdateUserFoot(DocumentTypeEnum.COMMENT, comment.getParentCommentId(), parentCommentAuthor, comment.getUserId(), OperateTypeEnum.COMMENT);
         }
     }
 
     @Override
-    public void deleteCommentFoot(CommentDO comment, Long articleAuthor, Long parentCommentAuthor) {
-        doSaveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, articleAuthor, comment.getArticleId(), comment.getUserId(), OperateTypeEnum.DELETE_COMMENT);
-        if (parentCommentAuthor != null) {
-            doSaveOrUpdateUserFoot(DocumentTypeEnum.COMMENT, parentCommentAuthor, comment.getParentCommentId(), comment.getUserId(), OperateTypeEnum.DELETE_COMMENT);
+    public void removeCommentFoot(CommentDO comment, Long articleAuthor, Long parentCommentAuthor) {
+        saveOrUpdateUserFoot(DocumentTypeEnum.ARTICLE, comment.getArticleId(), articleAuthor, comment.getUserId(), OperateTypeEnum.DELETE_COMMENT);
+        if (comment.getParentCommentId() != null) {
+            // 如果需要展示父评论的子评论数量，authorId 需要传父评论的 userId
+            saveOrUpdateUserFoot(DocumentTypeEnum.COMMENT, comment.getParentCommentId(), parentCommentAuthor, comment.getUserId(), OperateTypeEnum.DELETE_COMMENT);
         }
+    }
+
+
+    private boolean setUserFootStat(UserFootDO userFootDO, OperateTypeEnum operate) {
+        switch (operate) {
+            case READ:
+                return compareAndUpdate(userFootDO::getReadStat, userFootDO::setReadStat, operate.getDbStatCode());
+            case PRAISE:
+            case CANCEL_PRAISE:
+                return compareAndUpdate(userFootDO::getPraiseStat, userFootDO::setPraiseStat, operate.getDbStatCode());
+            case COLLECTION:
+            case CANCEL_COLLECTION:
+                return compareAndUpdate(userFootDO::getCollectionStat, userFootDO::setCollectionStat, operate.getDbStatCode());
+            case COMMENT:
+            case DELETE_COMMENT:
+                return compareAndUpdate(userFootDO::getCommentStat, userFootDO::setCommentStat, operate.getDbStatCode());
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * 相同则直接返回false不用更新；不同则更新,返回true
+     *
+     * @param supplier
+     * @param consumer
+     * @param input
+     * @param <T>
+     * @return
+     */
+    private <T> boolean compareAndUpdate(Supplier<T> supplier, Consumer<T> consumer, T input) {
+        if (Objects.equals(supplier.get(), input)) {
+            return false;
+        }
+        consumer.accept(input);
+        return true;
+    }
+
+    @Override
+    public List<Long> queryUserReadArticleList(Long userId, PageParam pageParam) {
+        return userFootDao.listReadArticleByUserId(userId, pageParam);
+    }
+
+    @Override
+    public List<Long> queryUserCollectionArticleList(Long userId, PageParam pageParam) {
+        return userFootDao.listCollectedArticlesByUserId(userId, pageParam);
+    }
+
+    @Override
+    public List<SimpleUserInfoDTO> queryArticlePraisedUsers(Long articleId) {
+        return userFootDao.listDocumentPraisedUsers(articleId, DocumentTypeEnum.ARTICLE.getCode(), 10);
+    }
+
+    @Override
+    public UserFootDO queryUserFoot(Long documentId, Integer type, Long userId) {
+        return userFootDao.getByDocumentAndUserId(documentId, type, userId);
     }
 }

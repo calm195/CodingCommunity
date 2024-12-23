@@ -33,7 +33,6 @@ public interface UserRelationService {
      * 保存用户关系
      *
      * @param req
-     * @throws Exception
      */
-    void saveUserRelation(UserRelationReq req) throws Exception;
+    void saveUserRelation(UserRelationReq req);
 }

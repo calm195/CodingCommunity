@@ -23,7 +23,7 @@ public enum CollectionStatEnum {
     private final Integer code;
     private final String desc;
 
-    public static CollectionStatEnum formCode(Integer code) {
+    public static CollectionStatEnum  fromCode(Integer code) {
         for (CollectionStatEnum value : CollectionStatEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;
