@@ -115,6 +115,6 @@ public class WxLoginServiceImpl implements LoginService {
         }
 
         Long userId = sessionMap.getIfPresent(session);
-        return userId == null ? null : userService.getUserInfoByUserId(userId);
+        return userId == null ? null : userService.queryBasicUserInfo(userId);
     }
 }

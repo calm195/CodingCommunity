@@ -22,7 +22,7 @@ public enum TagTypeEnum {
     private final Integer code;
     private final String desc;
 
-    public static TagTypeEnum formCode(Integer code) {
+    public static TagTypeEnum fromCode(Integer code) {
         for (TagTypeEnum value : TagTypeEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

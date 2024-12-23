@@ -73,5 +73,7 @@ public class ReqInfoContext {
          * 用户信息
          */
         private BaseUserInfoDTO userInfo;
+
+        private Integer msgNum;
     }
 }

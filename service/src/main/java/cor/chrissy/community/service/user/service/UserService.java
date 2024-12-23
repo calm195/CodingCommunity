@@ -3,7 +3,7 @@ package cor.chrissy.community.service.user.service;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.req.user.UserInfoSaveReq;
 import cor.chrissy.community.common.req.user.UserSaveReq;
-import cor.chrissy.community.service.user.dto.UserHomeDTO;
+import cor.chrissy.community.service.user.dto.UserStatisticInfoDTO;
 
 /**
  * @author wx128
@@ -19,20 +19,6 @@ public interface UserService {
     void registerOrGetUserInfo(UserSaveReq req);
 
     /**
-     * 保存用户
-     *
-     * @param req
-     */
-    void saveUser(UserSaveReq req);
-
-    /**
-     * 删除用户
-     *
-     * @param userId
-     */
-    void deleteUser(Long userId);
-
-    /**
      * 保存用户详情
      *
      * @param req
@@ -40,19 +26,13 @@ public interface UserService {
     void saveUserInfo(UserInfoSaveReq req);
 
     /**
-     * 删除用户信息
-     *
-     * @param userId
-     */
-    void deleteUserInfo(Long userId);
-
-    /**
-     * 查询用户详情信息
+     * 查询用户基本信息
+     * todo: 可以做缓存优化
      *
      * @param userId
      * @return
      */
-    BaseUserInfoDTO getUserInfoByUserId(Long userId);
+    BaseUserInfoDTO queryBasicUserInfo(Long userId);
 
 
     /**
@@ -60,6 +40,7 @@ public interface UserService {
      *
      * @param userId
      * @return
+     * @throws Exception
      */
-    UserHomeDTO getUserHomeDTO(Long userId);
+    UserStatisticInfoDTO queryUserInfoWithStatistic(Long userId);
 }

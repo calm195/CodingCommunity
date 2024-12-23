@@ -23,7 +23,7 @@ public enum ArticleTypeEnum {
     private final Integer code;
     private final String desc;
 
-    public static ArticleTypeEnum formCode(Integer code) {
+    public static ArticleTypeEnum fromCode(Integer code) {
         for (ArticleTypeEnum value : ArticleTypeEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

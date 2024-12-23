@@ -2,15 +2,16 @@ package cor.chrissy.community.test.dao;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.ArticleListDTO;
 import cor.chrissy.community.service.article.dto.TagDTO;
+import cor.chrissy.community.service.article.repository.dao.CategoryDao;
+import cor.chrissy.community.service.article.repository.dao.TagDao;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.repository.entity.CategoryDO;
 import cor.chrissy.community.service.article.repository.entity.TagDO;
-import cor.chrissy.community.service.article.service.ArticleRepository;
-import cor.chrissy.community.service.article.service.ArticleService;
-import cor.chrissy.community.service.article.service.CategoryService;
-import cor.chrissy.community.service.article.service.TagService;
+import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.test.BasicTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -27,25 +28,21 @@ import java.util.Set;
 @Slf4j
 public class ArticleDaoTest extends BasicTest {
     @Autowired
-    private TagService tagService;
+    private TagDao tagDao;
+
     @Autowired
-    private ArticleService articleService;
+    private CategoryDao categoryDao;
+
     @Autowired
-    private CategoryService categoryService;
-    @Autowired
-    private ArticleRepository articleRepository;
+    private ArticleReadService articleService;
 
     @Test
     public void testCategory() {
         CategoryDO category = new CategoryDO();
         category.setCategoryName("后端");
         category.setStatus(1);
-        Long categoryId = categoryService.addCategory(category);
-        log.info("save category:{} -> id:{}", category, categoryId);
-
-        IPage<CategoryDO> list = categoryService.getCategoryByPage(PageParam.newPageInstance(0L, 10L));
-        log.info("query list: {}", list.getRecords());
-
+        categoryDao.save(category);
+        log.info("save category:{} -> id:{}", category, category.getId());
     }
 
     @Test
@@ -54,34 +51,13 @@ public class ArticleDaoTest extends BasicTest {
         tag.setTagName("Java");
         tag.setTagType(1);
         tag.setCategoryId(1L);
-        Long tagId = tagService.addTag(tag);
-        log.info("tagId: {}", tagId);
-
-        List<TagDTO> list = tagService.getTagListByCategoryId(1L);
-        log.info("tagList: {}", list);
+        tagDao.save(tag);
+        log.info("tagId: {}", tag.getId());
     }
 
     @Test
     public void testArticle() {
-        ArticleListDTO articleListDTO = articleService.getCollectionArticleListByUserId(1L, PageParam.newPageInstance(1L, 10L));
+        PageListVo<ArticleDTO> articleListDTO = articleService.queryArticlesByCategory(1L, PageParam.newPageInstance(1L, 10L));
         log.info("articleListDTO: {}", articleListDTO);
-    }
-
-    @Test
-    public void testSaveArticle() {
-        Set<Long> set = new HashSet<>();
-        set.add(1L);
-        ArticleDO article = new ArticleDO();
-        article.setAuthorId(1L);
-        article.setCategoryId(1L);
-        article.setArticleType(1);
-        article.setShortTitle("test short title");
-        article.setPicture("test picture");
-        article.setCategoryId(1L);
-        article.setSource(1);
-        article.setSourceUrl("test url");
-        article.setTitle("test title");
-        article.setSummary("test summary");
-        articleRepository.saveArticle(article, "test content", set);
     }
 }

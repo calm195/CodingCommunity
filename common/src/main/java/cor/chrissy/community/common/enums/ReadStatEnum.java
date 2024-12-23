@@ -22,7 +22,7 @@ public enum ReadStatEnum {
     private final Integer code;
     private final String desc;
 
-    public static ReadStatEnum formCode(Integer code) {
+    public static ReadStatEnum fromCode(Integer code) {
         for (ReadStatEnum value : ReadStatEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

@@ -15,10 +15,9 @@ import java.util.ArrayList;
  * @author wx128
  * @createAt 2024/12/10
  */
-@Service
 public class CommentConverter {
 
-    public CommentDO toDo(CommentSaveReq req) {
+    public static CommentDO toDo(CommentSaveReq req) {
         if (req == null) {
             return null;
         }
@@ -32,32 +31,24 @@ public class CommentConverter {
         return commentDO;
     }
 
-    public TopCommentDTO toTopCommentDTO(CommentDO commentDO) {
-        if (commentDO == null) {
-            return null;
-        }
-
-        TopCommentDTO topCommentDTO = new TopCommentDTO();
-        parseDto(commentDO, topCommentDTO);
-        topCommentDTO.setChildComments(new ArrayList<>());
-        return topCommentDTO;
-    }
-
-    public SubCommentDTO toSubCommentDTO(CommentDO commentDO) {
-        if (commentDO == null) {
-            return null;
-        }
-
-        SubCommentDTO subCommentDTO = new SubCommentDTO();
-        parseDto(commentDO, subCommentDTO);
-        return subCommentDTO;
-    }
-
-    private <T extends BaseCommentDTO> void parseDto(CommentDO commentDO, T sub) {
-        sub.setCommentId(commentDO.getId());
-        sub.setUserId(commentDO.getUserId());
-        sub.setCommentContent(commentDO.getContent());
-        sub.setCommentTime(commentDO.getCreateTime().getTime());
+    private static <T extends BaseCommentDTO> void parseDto(CommentDO comment, T sub) {
+        sub.setCommentId(comment.getId());
+        sub.setUserId(comment.getUserId());
+        sub.setCommentContent(comment.getContent());
+        sub.setCommentTime(comment.getCreateTime().getTime());
         sub.setPraiseCount(0);
+    }
+
+    public static TopCommentDTO toTopDto(CommentDO commentDO) {
+        TopCommentDTO dto = new TopCommentDTO();
+        parseDto(commentDO, dto);
+        dto.setChildComments(new ArrayList<>());
+        return dto;
+    }
+
+    public static SubCommentDTO toSubDto(CommentDO comment) {
+        SubCommentDTO sub = new SubCommentDTO();
+        parseDto(comment, sub);
+        return sub;
     }
 }

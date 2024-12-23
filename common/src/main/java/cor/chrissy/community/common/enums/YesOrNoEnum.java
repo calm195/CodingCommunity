@@ -26,7 +26,7 @@ public enum YesOrNoEnum {
     private final String cnDesc;
     private final String enDesc;
 
-    public static YesOrNoEnum formCode(int code) {
+    public static YesOrNoEnum fromCode(int code) {
         for (YesOrNoEnum yesOrNoEnum : YesOrNoEnum.values()) {
             if (yesOrNoEnum.getCode() == code) {
                 return yesOrNoEnum;

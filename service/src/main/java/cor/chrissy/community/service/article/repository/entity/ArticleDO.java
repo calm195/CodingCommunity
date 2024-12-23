@@ -67,4 +67,6 @@ public class ArticleDO extends BaseDO {
     private Integer status;
 
     private Integer deleted;
+
+    private Integer flagBit;
 }

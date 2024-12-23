@@ -26,7 +26,7 @@ public class UserServiceTest extends BasicTest {
         UserSaveReq req = new UserSaveReq();
         req.setThirdAccountId(UUID.randomUUID().toString());
         req.setLoginType(0);
-        userService.saveUser(req);
+        userService.registerOrGetUserInfo(req);
         long userId = req.getUserId();
 
         UserInfoSaveReq save = new UserInfoSaveReq();

@@ -1,167 +1,107 @@
 package cor.chrissy.community.service.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
-import cor.chrissy.community.common.enums.PushStatEnum;
-import cor.chrissy.community.common.enums.YesOrNoEnum;
+import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.req.user.UserInfoSaveReq;
 import cor.chrissy.community.common.req.user.UserSaveReq;
+import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
-import cor.chrissy.community.service.article.repository.entity.ArticleDO;
-import cor.chrissy.community.service.article.repository.mapper.ArticleMapper;
+import cor.chrissy.community.service.article.dto.YearArticleDTO;
+import cor.chrissy.community.service.article.repository.dao.ArticleDao;
+import cor.chrissy.community.service.article.service.ArticleReadService;
+import cor.chrissy.community.service.article.service.CountService;
 import cor.chrissy.community.service.user.converter.UserConverter;
-import cor.chrissy.community.service.user.dto.UserHomeDTO;
+import cor.chrissy.community.service.user.dto.UserStatisticInfoDTO;
+import cor.chrissy.community.service.user.repository.dao.UserDao;
+import cor.chrissy.community.service.user.repository.dao.UserRelationDao;
 import cor.chrissy.community.service.user.repository.entity.UserDO;
 import cor.chrissy.community.service.user.repository.entity.UserInfoDO;
-import cor.chrissy.community.service.user.repository.mapper.UserInfoMapper;
-import cor.chrissy.community.service.user.repository.mapper.UserMapper;
-import cor.chrissy.community.service.user.repository.mapper.UserRelationMapper;
-import cor.chrissy.community.service.user.service.UserFootService;
-import cor.chrissy.community.service.user.service.UserRepository;
+import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 import cor.chrissy.community.service.user.service.UserService;
+import cor.chrissy.community.service.user.service.help.UserRandomGenHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author wx128
- * @createAt 2024/12/9
+ * @createAt 2024/12/18
  */
 @Service
 public class UserServiceImpl implements UserService {
-    @Resource
-    private UserMapper userMapper;
 
     @Resource
-    private UserInfoMapper userInfoMapper;
+    private UserDao userDao;
 
     @Resource
-    private UserRelationMapper userRelationMapper;
+    private UserRelationDao userRelationDao;
 
-    @Resource
-    private ArticleMapper articleMapper;
+    @Autowired
+    private ArticleReadService articleReadService;
 
-    @Resource
-    private UserConverter userConverter;
+    @Autowired
+    private CountService countService;
 
-    @Resource
-    private UserFootService userFootService;
+    @Autowired
+    private ArticleDao articleDao;
 
-    @Resource
-    private UserRepository userRepository;
 
+    /**
+     * 用户存在时，直接返回；不存在时，则初始化
+     *
+     * @param req
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void registerOrGetUserInfo(UserSaveReq req) {
-        UserDO userDO = userMapper.getByThirdAccountId(req.getThirdAccountId());
-        if (userDO != null) {
-            req.setUserId(userDO.getId());
+        UserDO record = userDao.getByThirdAccountId(req.getThirdAccountId());
+        if (record != null) {
+            // 用户存在，不需要注册
+            req.setUserId(record.getId());
             return;
         }
 
-        userDO = userConverter.toDO(req);
-        userMapper.insert(userDO);
-        req.setUserId(userDO.getId());
+        // 用户不存在，则需要注册
+        record = UserConverter.toDO(req);
+        userDao.saveUser(record);
+        req.setUserId(record.getId());
 
-        UserInfoSaveReq userInfoSaveReq = new UserInfoSaveReq();
-        userInfoSaveReq.setUserId(userDO.getId());
-        userInfoSaveReq.setUserName(String.format("coder - %6d", (int) (Math.random() * 1000000)));
-        userInfoSaveReq.setPhoto("https://blog.hhui.top/hexblog/images/avatar.jpg");
-        saveUserInfo(userInfoSaveReq);
-    }
-
-    @Override
-    public void saveUser(UserSaveReq req) {
-        if (req.getUserId() == null || req.getUserId() == 0) {
-            UserDO user = userConverter.toDO(req);
-            userMapper.insert(user);
-            req.setUserId(user.getId());
-            return;
-        }
-
-        UserDO userDO = userMapper.selectById(req.getUserId());
-        if (userDO == null) {
-            throw new IllegalArgumentException("未查询到该用户");
-        }
-        userMapper.updateById(userConverter.toDO(req));
-    }
-
-
-    @Override
-    public void deleteUser(Long userId) {
-        UserDO updateUser = userMapper.selectById(userId);
-        if (updateUser == null) {
-            throw new IllegalArgumentException("未查询到该用户");
-        }
-        updateUser.setDeleted(YesOrNoEnum.YES.getCode());
-        userMapper.updateById(updateUser);
+        // 初始化用户信息，随机生成用户昵称 + 头像
+        UserInfoDO userInfo = new UserInfoDO();
+        userInfo.setUserId(req.getUserId());
+        userInfo.setUserName(UserRandomGenHelper.genNickName());
+        userInfo.setPhoto(UserRandomGenHelper.genAvatar());
+        userDao.save(userInfo);
     }
 
     @Override
     public void saveUserInfo(UserInfoSaveReq req) {
-        BaseUserInfoDTO userInfoDTO = getUserInfoByUserId(req.getUserId());
-        if (userInfoDTO == null) {
-            userInfoMapper.insert(userConverter.toDO(req));
-            return;
-        }
-
-        UserInfoDO updateUserInfoDO = userConverter.toDO(userInfoDTO);
-        updateUserInfoDO.setUserId(userInfoDTO.getUserId());
-        updateUserInfoDO.setUserName(req.getUserName());
-        updateUserInfoDO.setPhoto(req.getPhoto());
-        updateUserInfoDO.setPosition(req.getPosition());
-        updateUserInfoDO.setCompany(req.getCompany());
-        updateUserInfoDO.setProfile(req.getProfile());
-        userInfoMapper.updateById(updateUserInfoDO);
+        UserInfoDO userInfoDO = UserConverter.toDO(req);
+        userDao.updateById(userInfoDO);
     }
 
     @Override
-    public void deleteUserInfo(Long userId) {
-        UserInfoDO updateUserInfo = userInfoMapper.selectById(userId);
-        if (updateUserInfo != null) {
-            updateUserInfo.setDeleted(YesOrNoEnum.YES.getCode());
-            userInfoMapper.updateById(updateUserInfo);
+    public BaseUserInfoDTO queryBasicUserInfo(Long userId) {
+        UserInfoDO user = userDao.getByUserId(userId);
+        if (user == null) {
+            throw ExceptionUtil.of(StatusEnum.USER_NOT_EXISTS, "userId=" + userId);
         }
+        return UserConverter.toDTO(user);
     }
 
     @Override
-    public BaseUserInfoDTO getUserInfoByUserId(Long userId) {
-        LambdaQueryWrapper<UserInfoDO> query = Wrappers.lambdaQuery();
-        query.eq(UserInfoDO::getUserId, userId)
-                .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode());
-        UserInfoDO userInfoDO =  userInfoMapper.selectOne(query);
-        return userConverter.toDTO(userInfoDO);
-    }
-
-    @Override
-    public UserHomeDTO getUserHomeDTO(Long userId) {
-
-        BaseUserInfoDTO userInfoDTO = getUserInfoByUserId(userId);
-
-        if (userInfoDTO == null) {
-            throw new IllegalArgumentException("用户不存在");
-        }
-
-        // 获取关注数、粉丝数
-        Long followCount = userRepository.queryUserFollowCount(userId);
-        Long fansCount = userRepository.queryUserFansCount(userId);
+    public UserStatisticInfoDTO queryUserInfoWithStatistic(Long userId) {
+        BaseUserInfoDTO userInfoDTO = queryBasicUserInfo(userId);
+        UserStatisticInfoDTO userHomeDTO = UserConverter.toUserHomeDTO(userInfoDTO);
+        userHomeDTO.setRole("normal");
 
         // 获取文章相关统计
-        ArticleFootCountDTO articleFootCountDTO = userFootService.queryArticleCountByUserId(userId);
-
-        // 获取发布文章总数
-        LambdaQueryWrapper<ArticleDO> articleQuery = Wrappers.lambdaQuery();
-        articleQuery.eq(ArticleDO::getAuthorId, userId)
-                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
-                .eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode());
-        Long articleCount = articleMapper.selectCount(articleQuery);
-
-        UserHomeDTO userHomeDTO = userConverter.toUserHomeDTO(userInfoDTO);
-        userHomeDTO.setRole("normal");
-        userHomeDTO.setFollowCount(followCount.intValue());
-        userHomeDTO.setFansCount(fansCount.intValue());
+        ArticleFootCountDTO articleFootCountDTO = countService.queryArticleCountInfoByUserId(userId);
         if (articleFootCountDTO != null) {
             userHomeDTO.setPraiseCount(articleFootCountDTO.getPraiseCount());
             userHomeDTO.setReadCount(articleFootCountDTO.getReadCount());
@@ -171,7 +111,35 @@ public class UserServiceImpl implements UserService {
             userHomeDTO.setReadCount(0);
             userHomeDTO.setCollectionCount(0);
         }
-        userHomeDTO.setArticleCount(articleCount.intValue());
+
+        // 获取发布文章总数
+        int articleCount = articleReadService.queryArticleCount(userId);
+        userHomeDTO.setArticleCount(articleCount);
+
+        // 获取关注数
+        Long followCount = userRelationDao.queryUserFollowCount(userId);
+        userHomeDTO.setFollowCount(followCount.intValue());
+
+        // 粉丝数
+        Long fansCount = userRelationDao.queryUserFansCount(userId);
+        userHomeDTO.setFansCount(fansCount.intValue());
+
+        // 是否关注
+        Long followUserId = ReqInfoContext.getReqInfo().getUserId();
+        if (followUserId != null) {
+            UserRelationDO userRelationDO = userRelationDao.getUserRelationByUserId(userId, followUserId);
+            userHomeDTO.setFollowed((userRelationDO == null) ? Boolean.FALSE : Boolean.TRUE);
+        } else {
+            userHomeDTO.setFollowed(Boolean.FALSE);
+        }
+
+        // 加入天数
+        Integer joinDayCount = (int) ((new Date()).getTime() - userHomeDTO.getCreateTime().getTime()) / (1000 * 3600 * 24);
+        userHomeDTO.setJoinDayCount(joinDayCount);
+
+        // 创作历程
+        List<YearArticleDTO> yearArticleDTOS = articleDao.listYearArticleByUserId(userId);
+        userHomeDTO.setYearArticleList(yearArticleDTOS);
         return userHomeDTO;
     }
 }

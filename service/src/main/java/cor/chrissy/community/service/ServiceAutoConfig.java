@@ -12,8 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("cor.chrissy.community")
 @MapperScan(basePackages = {
         "cor.chrissy.community.service.article.repository.mapper",
-        "cor.chrissy.community.service.user.repository.mapper",
+        "cor.chrissy.community.service.banner.repository.mapper",
         "cor.chrissy.community.service.comment.repository.mapper",
+        "cor.chrissy.community.service.notify.repository.mapper",
+        "cor.chrissy.community.service.statistics.repository.mapper",
+        "cor.chrissy.community.service.user.repository.mapper",
 })
 public class ServiceAutoConfig {
 }

@@ -1,6 +1,5 @@
 package cor.chrissy.community.test;
 
-import lombok.Getter;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Test;
 
@@ -55,7 +54,6 @@ public class DemoTest {
     }
 
     public static class Ans<T> {
-        @Getter
         private T ans;
         private boolean tag = false;
 
@@ -65,6 +63,9 @@ public class DemoTest {
             return this;
         }
 
+        public T getAns() {
+            return ans;
+        }
     }
 
     @Test

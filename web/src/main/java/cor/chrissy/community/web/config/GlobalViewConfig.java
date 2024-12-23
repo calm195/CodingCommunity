@@ -24,4 +24,7 @@ public class GlobalViewConfig {
     private Integer pageSize;
     private String cdnImgStyle;
     private String websiteRecord;
+
+    private String wxLoginUrl;
+    private String host;
 }

@@ -11,8 +11,6 @@ import java.io.Serializable;
  * @createAt 2024/12/11
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class TagDTO implements Serializable {
     private static final long serialVersionUID = -8614833588325787479L;
 
@@ -22,7 +20,5 @@ public class TagDTO implements Serializable {
 
     private String tag;
 
-    public TagDTO(Long tagId) {
-        this.tagId = tagId;
-    }
+    private Integer status;
 }
