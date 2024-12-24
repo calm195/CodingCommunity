@@ -68,5 +68,18 @@ public class ArticleDO extends BaseDO {
 
     private Integer deleted;
 
-    private Integer flagBit;
+    /**
+     * 是否官方
+     */
+    private Integer officialStat;
+
+    /**
+     * 是否置顶
+     */
+    private Integer toppingStat;
+
+    /**
+     * 是否加精
+     */
+    private Integer creamStat;
 }

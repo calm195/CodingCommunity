@@ -10,19 +10,26 @@ import java.awt.image.BufferedImage;
 public interface ImageService {
 
     /**
-     * 获取图片
+     * 图片转存
+     * @param content
+     * @return
+     */
+    String mdImgReplace(String content);
+
+    /**
+     * 外网图片转存
+     *
+     * @param img
+     * @return
+     */
+    String saveImg(String img);
+
+    /**
+     * 上传图片转存
      *
      * @param request
      * @return
      */
-    BufferedImage getImg(HttpServletRequest request);
-
-    /**
-     * 图片本地保存
-     *
-     * @param bf
-     * @return
-     */
-    String saveImg(BufferedImage bf);
+    String saveImg(HttpServletRequest request);
 }
 

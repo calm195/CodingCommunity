@@ -77,18 +77,7 @@ public class QrLoginHelper {
      * @return
      */
     public String genVerifyCode(HttpServletRequest request, HttpServletResponse response) {
-        String deviceId = null;
-        for (Cookie cookie : request.getCookies()) {
-            if (LoginService.USER_DEVICE_KEY.equalsIgnoreCase(cookie.getName())) {
-                deviceId = cookie.getValue();
-                break;
-            }
-        }
-        if (deviceId == null) {
-            deviceId = UUID.randomUUID().toString();
-            response.addCookie(new Cookie(LoginService.USER_DEVICE_KEY, deviceId));
-        }
-
+        String deviceId = initDeviceId(request, response);
         String code = deviceCodeCache.getUnchecked(deviceId);
         SseEmitter lastSse = verifyCodeCache.getIfPresent(code);
         if (lastSse != null) {
@@ -113,6 +102,30 @@ public class QrLoginHelper {
         return sseEmitter;
     }
 
+        /**
+     * 刷新验证码
+     *
+     * @param request
+     * @param response
+     * @return
+     * @throws IOException
+     */
+    public String refreshCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String deviceId = initDeviceId(request, response);
+        String oldCode = deviceCodeCache.getUnchecked(deviceId);
+        SseEmitter lastSse = verifyCodeCache.getIfPresent(oldCode);
+        if (lastSse == null) {
+            return null;
+        }
+
+        // 重新生成一个验证码
+        deviceCodeCache.invalidate(deviceId);
+        String newCode = deviceCodeCache.getUnchecked(deviceId);
+        lastSse.send("refresh#" + newCode);
+        verifyCodeCache.invalidate(oldCode);
+        verifyCodeCache.put(newCode, lastSse);
+        return newCode;
+    }
 
     /**
      * 二维码已扫描
@@ -127,14 +140,15 @@ public class QrLoginHelper {
         }
     }
 
-    public void login(String loginCode, String verifyCode) {
+    public boolean login(String loginCode, String verifyCode) {
         String session = loginService.login(verifyCode);
         SseEmitter sseEmitter = verifyCodeCache.getIfPresent(loginCode);
         if (sseEmitter != null) {
             try {
                 // 登录成功，写入session
                 sseEmitter.send(session);
-                sseEmitter.send("login#" + LoginService.SESSION_KEY + "=" + session);
+                sseEmitter.send("login#" + LoginService.SESSION_KEY + "=" + session + ";path=/;");
+                return true;
             } catch (Exception e) {
                 log.error("登录异常: {}, {}", loginCode, verifyCode, e);
             } finally {
@@ -142,6 +156,32 @@ public class QrLoginHelper {
                 verifyCodeCache.invalidate(loginCode);
             }
         }
+        return false;
+    }
+
+        /**
+     * 初始化设备id
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    public String initDeviceId(HttpServletRequest request, HttpServletResponse response) {
+        String deviceId = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (LoginService.USER_DEVICE_KEY.equalsIgnoreCase(cookie.getName())) {
+                    deviceId = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        if (deviceId == null) {
+            deviceId = UUID.randomUUID().toString();
+            response.addCookie(new Cookie(LoginService.USER_DEVICE_KEY, deviceId));
+        }
+        return deviceId;
     }
 }
 

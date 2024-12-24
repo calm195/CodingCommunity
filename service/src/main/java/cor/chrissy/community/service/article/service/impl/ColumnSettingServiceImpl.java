@@ -7,9 +7,8 @@ import cor.chrissy.community.common.req.article.ColumnReq;
 import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.core.util.NumUtil;
 import cor.chrissy.community.service.article.conveter.ColumnConverter;
+import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.ColumnDTO;
-import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
-import cor.chrissy.community.service.article.repository.dao.ArticleDao;
 import cor.chrissy.community.service.article.repository.dao.ColumnDao;
 import cor.chrissy.community.service.article.repository.entity.ColumnArticleDO;
 import cor.chrissy.community.service.article.repository.entity.ColumnInfoDO;
@@ -35,9 +34,6 @@ public class ColumnSettingServiceImpl implements ColumnSettingService {
 
     @Autowired
     private ColumnDao columnDao;
-
-    @Autowired
-    private ArticleDao articleDao;
 
     @Autowired
     private UserService userService;
@@ -106,8 +102,8 @@ public class ColumnSettingServiceImpl implements ColumnSettingService {
     }
 
     @Override
-    public List<SimpleArticleDTO> queryColumnArticles(long columnId) {
-        return columnService.queryColumnArticles(columnId);
+    public List<ArticleDTO> queryColumnArticles(long columnId) {
+        return columnService.queryColumnArticlesDetail(columnId);
     }
 }
 

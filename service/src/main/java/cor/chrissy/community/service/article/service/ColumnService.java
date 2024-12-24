@@ -2,6 +2,7 @@ package cor.chrissy.community.service.article.service;
 
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.ColumnDTO;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
 
@@ -44,4 +45,13 @@ public interface ColumnService {
      * @return
      */
     List<SimpleArticleDTO> queryColumnArticles(long columnId);
+
+
+    /**
+     * 专栏 + 文章列表详情
+     *
+     * @param columnId
+     * @return
+     */
+    List<ArticleDTO> queryColumnArticlesDetail(long columnId);
 }

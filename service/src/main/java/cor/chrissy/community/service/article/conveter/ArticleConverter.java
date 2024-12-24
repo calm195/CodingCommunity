@@ -1,7 +1,6 @@
 package cor.chrissy.community.service.article.conveter;
 
 import cor.chrissy.community.common.enums.ArticleTypeEnum;
-import cor.chrissy.community.common.enums.FlagBitEnum;
 import cor.chrissy.community.common.enums.SourceTypeEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
@@ -60,12 +59,11 @@ public class ArticleConverter {
         articleDTO.setSourceType(SourceTypeEnum.fromCode(articleDO.getSource()).getDesc());
         articleDTO.setSourceUrl(articleDO.getSourceUrl());
         articleDTO.setStatus(articleDO.getStatus());
-        articleDTO.setFlagBit(articleDO.getFlagBit());
         articleDTO.setCreateTime(articleDO.getCreateTime().getTime());
         articleDTO.setLastUpdateTime(articleDO.getUpdateTime().getTime());
-        articleDTO.setIsOfficial((articleDO.getFlagBit() & FlagBitEnum.OFFICIAL.getCode()) == 0 ? Boolean.FALSE : Boolean.TRUE);
-        articleDTO.setIsTopping((articleDO.getFlagBit() & FlagBitEnum.TOPPING.getCode()) == 0 ? Boolean.FALSE : Boolean.TRUE);
-        articleDTO.setIsCream((articleDO.getFlagBit() & FlagBitEnum.CREAM.getCode()) == 0 ? Boolean.FALSE : Boolean.TRUE);
+        articleDTO.setOfficialStat(articleDO.getOfficialStat());
+        articleDTO.setToppingStat(articleDO.getToppingStat());
+        articleDTO.setCreamStat(articleDO.getCreamStat());
 
         // 设置类目id
         articleDTO.setCategory(new CategoryDTO(articleDO.getCategoryId(), null));

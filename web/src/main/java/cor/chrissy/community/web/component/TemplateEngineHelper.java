@@ -1,6 +1,7 @@
 package cor.chrissy.community.web.component;
 
 import cor.chrissy.community.core.util.MapUtil;
+import cor.chrissy.community.web.global.GlobalInitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
@@ -12,8 +13,12 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
  */
 @Component
 public class TemplateEngineHelper {
+
     @Autowired
     private SpringTemplateEngine springTemplateEngine;
+
+    @Autowired
+    private GlobalInitService globalInitService;
 
     /**
      * 模板渲染
@@ -27,6 +32,7 @@ public class TemplateEngineHelper {
     public <T> String render(String template, String attrName, T attrVal) {
         Context context = new Context();
         context.setVariable(attrName, attrVal);
+        context.setVariable("global", globalInitService.globalAttr());
         return springTemplateEngine.process(template, context);
     }
 

@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cor.chrissy.community.common.enums.FollowStateEnum;
 import cor.chrissy.community.common.req.PageParam;
-import cor.chrissy.community.service.user.dto.UserFollowDTO;
+import cor.chrissy.community.service.user.dto.FollowUserInfoDTO;
 import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 import cor.chrissy.community.service.user.repository.mapper.UserRelationMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class UserRelationDao extends ServiceImpl<UserRelationMapper, UserRelatio
      * @param pageParam
      * @return
      */
-    public List<UserFollowDTO> listUserFollows(Long followUserId, PageParam pageParam) {
+    public List<FollowUserInfoDTO> listUserFollows(Long followUserId, PageParam pageParam) {
         return baseMapper.queryUserFollowList(followUserId, pageParam);
     }
 
@@ -36,8 +37,20 @@ public class UserRelationDao extends ServiceImpl<UserRelationMapper, UserRelatio
      * @param pageParam
      * @return
      */
-    public List<UserFollowDTO> listUserFans(Long userId, PageParam pageParam) {
+    public List<FollowUserInfoDTO> listUserFans(Long userId, PageParam pageParam) {
         return baseMapper.queryUserFansList(userId, pageParam);
+    }
+
+    /**
+     * 查询followUserId与给定的用户列表的关联
+     *
+     * @param followUserId
+     * @param targetUserId
+     * @return
+     */
+    public List<UserRelationDO> listUserRelations(Long followUserId, Collection<Long> targetUserId) {
+        return lambdaQuery().eq(UserRelationDO::getFollowUserId, followUserId)
+                .in(UserRelationDO::getUserId, targetUserId).list();
     }
 
     public Long queryUserFollowCount(Long userId) {

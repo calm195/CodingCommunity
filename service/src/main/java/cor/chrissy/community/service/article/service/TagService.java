@@ -16,4 +16,6 @@ public interface TagService {
      * @return
      */
     List<TagDTO> queryTagsByCategoryId(Long categoryId);
+
+    Long queryTagId(String tagName);
 }

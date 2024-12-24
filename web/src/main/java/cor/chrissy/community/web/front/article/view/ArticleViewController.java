@@ -6,6 +6,7 @@ import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.CategoryDTO;
+import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.article.service.ArticleRecommendService;
 import cor.chrissy.community.service.article.service.CategoryService;
@@ -26,9 +27,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author wx128
@@ -79,14 +79,17 @@ public class ArticleViewController extends BaseViewController {
                 s.setSelected(s.getCategoryId().equals(article.getCategory().getCategoryId()));
             });
             vo.setCategories(categoryList);
-            vo.setTags(tagService.queryTagsByCategoryId(article.getCategory().getCategoryId()));
+            List<TagDTO> tagList = tagService.queryTagsByCategoryId(article.getCategory().getCategoryId());
+            Set<Long> selectedTagIds = article.getTags().stream().map(TagDTO::getTagId).collect(Collectors.toSet());
+            tagList.forEach(s -> s.setSelected(selectedTagIds.contains(s.getTagId())));
+            vo.setTags(tagList);
         } else {
             List<CategoryDTO> categoryList = categoryService.loadAllCategories();
             vo.setCategories(categoryList);
             vo.setTags(Collections.emptyList());
         }
         model.addAttribute("vo", vo);
-        return "biz/article/edit";
+        return "views/article-edit/index";
     }
 
 
@@ -122,8 +125,6 @@ public class ArticleViewController extends BaseViewController {
         List<SideBarDTO> sideBars = articleRecommendService.recommend(articleDTO);
         vo.setSideBarItems(sideBars);
         model.addAttribute("vo", vo);
-        return "biz/article/detail";
+        return "views/article-detail/index";
     }
-
-
 }

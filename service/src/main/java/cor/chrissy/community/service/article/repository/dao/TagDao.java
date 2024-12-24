@@ -52,5 +52,13 @@ public class TagDao extends ServiceImpl<TagMapper, TagDO> {
                 .count()
                 .intValue();
     }
+
+    public Long selectTagIdByTag(String tag) {
+        TagDO record = lambdaQuery().select(TagDO::getId)
+                .eq(TagDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(TagDO::getTagName, tag)
+                .one();
+        return record == null ? 0L : record.getId();
+    }
 }
 

@@ -29,5 +29,7 @@ public class ImageProperties {
      * 上传文件的临时存储目录
      */
     private String tmpUploadPath;
+
+    private String cdnHost;
 }
 

@@ -2,10 +2,13 @@ package cor.chrissy.community.service.user.service.impl;
 
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
+import cor.chrissy.community.common.enums.NotifyTypeEnum;
 import cor.chrissy.community.common.enums.StatusEnum;
+import cor.chrissy.community.common.notify.NotifyMsgEvent;
 import cor.chrissy.community.common.req.user.UserInfoSaveReq;
 import cor.chrissy.community.common.req.user.UserSaveReq;
 import cor.chrissy.community.core.util.ExceptionUtil;
+import cor.chrissy.community.core.util.SpringUtil;
 import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
 import cor.chrissy.community.service.article.dto.YearArticleDTO;
 import cor.chrissy.community.service.article.repository.dao.ArticleDao;
@@ -63,6 +66,8 @@ public class UserServiceImpl implements UserService {
         if (record != null) {
             // 用户存在，不需要注册
             req.setUserId(record.getId());
+
+            SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.LOGIN, record.getId()));
             return;
         }
 
@@ -77,12 +82,14 @@ public class UserServiceImpl implements UserService {
         userInfo.setUserName(UserRandomGenHelper.genNickName());
         userInfo.setPhoto(UserRandomGenHelper.genAvatar());
         userDao.save(userInfo);
+
+        SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.REGISTER, userInfo.getId()));
     }
 
     @Override
     public void saveUserInfo(UserInfoSaveReq req) {
         UserInfoDO userInfoDO = UserConverter.toDO(req);
-        userDao.updateById(userInfoDO);
+        userDao.updateUserInfo(userInfoDO);
     }
 
     @Override

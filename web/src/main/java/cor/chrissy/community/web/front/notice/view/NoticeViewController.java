@@ -14,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Map;
+
 /**
  * @author wx128
  * @createAt 2024/12/19
@@ -25,21 +27,27 @@ public class NoticeViewController extends BaseViewController {
     @Autowired
     private NotifyService notifyService;
 
-    @RequestMapping("/{type}")
+    @RequestMapping({"/{type}", "/"})
     public String list(@PathVariable(name = "type", required = false) String type, Model model) {
-        NotifyTypeEnum typeEnum = NotifyTypeEnum.typeOf(type);
+
+        Long loginUserId = ReqInfoContext.getReqInfo().getUserId();
+        Map<String, Integer> map = notifyService.queryUnreadCounts(loginUserId);
+
+        NotifyTypeEnum typeEnum = type == null ? null : NotifyTypeEnum.typeOf(type);
         if (typeEnum == null) {
-            // 默认显示评论消息通知
-            typeEnum = NotifyTypeEnum.COMMENT;
+            typeEnum = map.entrySet().stream()
+                    .filter(s -> s.getValue() > 0)
+                    .map(s -> NotifyTypeEnum.typeOf(s.getKey()))
+                    .findAny()
+                    .orElse(NotifyTypeEnum.COMMENT);
         }
 
         NoticeResVo vo = new NoticeResVo();
-        Long loginUserId = ReqInfoContext.getReqInfo().getUserId();
         vo.setList(notifyService.queryUserNotices(loginUserId, typeEnum, PageParam.newPageInstance()));
 
         vo.setSelectType(typeEnum.name().toLowerCase());
         vo.setUnreadCountMap(notifyService.queryUnreadCounts(loginUserId));
         model.addAttribute("vo", vo);
-        return "biz/notice/msg";
+        return "views/notice/index";
     }
 }

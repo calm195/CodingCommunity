@@ -19,6 +19,7 @@ $('#getToken').click(function () {
 })
 
 $('#mockLogin').click(function () {
+    console.log("mock login!");
     const code = this.dataset.verifyCode;
     $.ajax({
         method: 'POST',
@@ -29,8 +30,6 @@ $('#mockLogin').click(function () {
             console.log("data", data);
             if (!data) {
                 toastr.error(data.message);
-            } else {
-                toastr.info("登录成功！");
             }
         },
         error: function (data) {

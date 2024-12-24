@@ -49,7 +49,7 @@ public class LoginViewController extends BaseViewController {
             // 已经登录时，直接跳转到主页
             return "/";
         }
-        return "biz/login/code";
+        return "views/login/code";
     }
 
     /**
@@ -76,7 +76,7 @@ public class LoginViewController extends BaseViewController {
                 .asString();
         vo.setQr(DomUtil.toDomSrc(qrCode, MediaType.ImagePng));
         model.addAttribute("vo", vo);
-        return "biz/login/wx";
+        return "views/login/wx";
     }
 
     /**

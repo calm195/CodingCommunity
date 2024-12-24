@@ -1,9 +1,8 @@
 package cor.chrissy.community.test.dao;
 
-import cor.chrissy.community.common.enums.FollowStateEnum;
 import cor.chrissy.community.common.req.PageParam;
-import cor.chrissy.community.common.req.user.UserRelationReq;
-import cor.chrissy.community.service.user.dto.UserFollowListDTO;
+import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.service.user.dto.FollowUserInfoDTO;
 import cor.chrissy.community.service.user.service.UserRelationService;
 import cor.chrissy.community.service.user.service.UserService;
 import cor.chrissy.community.test.BasicTest;
@@ -35,10 +34,10 @@ public class UserRelationDaoTest extends BasicTest {
 
     @Test
     public void testUserRelation() {
-        UserFollowListDTO userFollowListDTO = userRelationService.getUserFollowList(1L, PageParam.newPageInstance(1L, 10L));
+        PageListVo<FollowUserInfoDTO> userFollowListDTO = userRelationService.getUserFollowList(1L, PageParam.newPageInstance(1L, 10L));
         log.info("query userFollowDTOS: {}", userFollowListDTO);
 
-        UserFollowListDTO userFansListDTO = userRelationService.getUserFansList(1L, PageParam.newPageInstance(1L, 10L));
+        PageListVo<FollowUserInfoDTO> userFansListDTO = userRelationService.getUserFansList(1L, PageParam.newPageInstance(1L, 10L));
         log.info("query userFansList: {}", userFansListDTO);
     }
 }

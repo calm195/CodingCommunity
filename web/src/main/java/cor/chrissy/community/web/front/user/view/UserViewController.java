@@ -1,14 +1,17 @@
 package cor.chrissy.community.web.front.user.view;
 
+import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.enums.FollowSelectEnum;
 import cor.chrissy.community.common.enums.FollowTypeEnum;
 import cor.chrissy.community.common.enums.HomeSelectEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.core.permission.Permission;
+import cor.chrissy.community.core.permission.UserRole;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.TagSelectDTO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
-import cor.chrissy.community.service.user.dto.UserFollowListDTO;
+import cor.chrissy.community.service.user.dto.FollowUserInfoDTO;
 import cor.chrissy.community.service.user.dto.UserStatisticInfoDTO;
 import cor.chrissy.community.service.user.service.UserRelationService;
 import cor.chrissy.community.service.user.service.UserService;
@@ -27,6 +30,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author wx128
@@ -55,6 +59,7 @@ public class UserViewController extends BaseViewController {
      * @return
      */
     @GetMapping(path = "home")
+    @Permission(role = UserRole.LOGIN)
     public String getUserHome(@RequestParam(name = "userId") Long userId,
                               @RequestParam(name = "homeSelectType", required = false) String homeSelectType,
                               @RequestParam(name = "followSelectType", required = false) String followSelectType,
@@ -71,7 +76,7 @@ public class UserViewController extends BaseViewController {
 
         userHomeSelectList(vo, userId);
         model.addAttribute("vo", vo);
-        return "biz/user/home";
+        return "views/user/index";
     }
 
     @GetMapping(path = "/{userId}")
@@ -90,7 +95,7 @@ public class UserViewController extends BaseViewController {
 
         userHomeSelectList(vo, userId);
         model.addAttribute("vo", vo);
-        return "biz/user/home";
+        return "views/user/index";
     }
 
     /**
@@ -161,15 +166,20 @@ public class UserViewController extends BaseViewController {
     }
 
     private void initFollowFansList(UserHomeVo vo, long userId, PageParam pageParam) {
+        PageListVo<FollowUserInfoDTO> followList;
+        boolean needUpdateRelation = false;
         if (vo.getFollowSelectType().equals(FollowTypeEnum.FOLLOW.getCode())) {
-            UserFollowListDTO userFollowListDTO = userRelationService.getUserFollowList(userId, pageParam);
-            vo.setFollowList(userFollowListDTO);
-            vo.setFansList(UserFollowListDTO.emptyInstance());
+            followList = userRelationService.getUserFollowList(userId, pageParam);
         } else {
-            UserFollowListDTO userFollowListDTO = userRelationService.getUserFansList(userId, pageParam);
-            vo.setFansList(userFollowListDTO);
-            vo.setFollowList(UserFollowListDTO.emptyInstance());
+            followList = userRelationService.getUserFansList(userId, pageParam);
+            needUpdateRelation = true;
         }
+
+        Long loginUserId = ReqInfoContext.getReqInfo().getUserId();
+        if (!Objects.equals(loginUserId, userId) || needUpdateRelation) {
+            userRelationService.updateUserFollowRelationId(followList, userId);
+        }
+        vo.setFollowList(followList);
     }
 }
 

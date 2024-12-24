@@ -74,9 +74,13 @@ public class WxRestController {
                 res.setContent("登录验证码: 【" + loginService.getVerifyCode(msg.getFromUserName()) + "】 五分钟内有效");
             } else if (NumberUtils.isDigits(content)) {
                 String verifyCode = loginService.getVerifyCode(msg.getFromUserName());
-                qrLoginHelper.login(content, verifyCode);
+                if (qrLoginHelper.login(content, verifyCode)) {
+                    res.setContent("login success!");
+                } else {
+                    res.setContent("the code was outdated!");
+                }
             } else {
-                res.setContent("欢迎关注公众号!");
+                res.setContent("welcome!");
             }
         }
         return res;

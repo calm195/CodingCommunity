@@ -13,14 +13,21 @@ import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
 import cor.chrissy.community.core.util.NumUtil;
 import cor.chrissy.community.core.util.SpringUtil;
+import cor.chrissy.community.service.article.conveter.ArticleConverter;
+import cor.chrissy.community.service.article.repository.entity.ArticleDO;
+import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.comment.dto.TopCommentDTO;
 import cor.chrissy.community.service.comment.repository.entity.CommentDO;
 import cor.chrissy.community.service.comment.service.CommentReadService;
 import cor.chrissy.community.service.comment.service.CommentWriteService;
 import cor.chrissy.community.service.user.repository.entity.UserFootDO;
 import cor.chrissy.community.service.user.service.UserFootService;
+import cor.chrissy.community.web.component.TemplateEngineHelper;
+import cor.chrissy.community.web.front.article.vo.ArticleDetailVo;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +49,12 @@ public class CommentRestController {
 
     @Autowired
     private UserFootService userFootService;
+
+    @Autowired
+    private ArticleReadService articleReadService;
+
+    @Autowired
+    private TemplateEngineHelper templateEngineHelper;
 
     /**
      * 评论列表页
@@ -70,14 +83,27 @@ public class CommentRestController {
     @Permission(role = UserRole.LOGIN)
     @PostMapping(path = "post")
     @ResponseBody
-    public Result<Boolean> save(@RequestBody CommentSaveReq req) {
+    public Result<String> save(@RequestBody CommentSaveReq req) {
         if (req.getArticleId() == null) {
             return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "文章id为空");
         }
+        ArticleDO articleDO = articleReadService.queryBasicArticle(req.getArticleId());
+        if (articleDO == null) {
+            return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "the article is not exist");
+        }
         req.setUserId(ReqInfoContext.getReqInfo().getUserId());
         req.setCommentContent(StringEscapeUtils.escapeHtml3(req.getCommentContent()));
-        Long commentId = commentWriteService.saveComment(req);
-        return Result.ok(NumUtil.upZero(commentId));
+        commentWriteService.saveComment(req);
+
+        ArticleDetailVo articleDetailVo = new ArticleDetailVo();
+        articleDetailVo.setArticle(ArticleConverter.toDto(articleDO));
+        List<TopCommentDTO> commentDTOS = commentReadService.getArticleComments(req.getArticleId(), PageParam.newPageInstance());
+        articleDetailVo.setComments(commentDTOS);
+
+        TopCommentDTO hotCommentDTO = commentReadService.queryHotComment(req.getArticleId());
+        articleDetailVo.setHotComment(hotCommentDTO);
+        String content = templateEngineHelper.render("views/article-detail/comment/index", articleDetailVo);
+        return Result.ok(content);
     }
 
     /**

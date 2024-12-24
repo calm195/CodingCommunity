@@ -73,7 +73,7 @@ public class NoticeRestController {
      * @return
      */
     @RequestMapping(path = "items")
-    public Result<NextPageHtmlVo> list2(@RequestParam(name = "type") String type,
+    public Result<NextPageHtmlVo> listForView(@RequestParam(name = "type") String type,
                                         @RequestParam("page") Long page,
                                         @RequestParam(name = "pageSize", required = false) Long pageSize) {
         type = type.toLowerCase().trim();
@@ -81,7 +81,7 @@ public class NoticeRestController {
         NoticeResVo vo = new NoticeResVo();
         vo.setList(list);
         vo.setSelectType(type);
-        String html = templateEngineHelper.render("biz/notice/notify-" + type, vo);
+        String html = templateEngineHelper.render("views/notice/notify-" + type, vo);
         return Result.ok(new NextPageHtmlVo(html, list.getHasMore()));
     }
 }
