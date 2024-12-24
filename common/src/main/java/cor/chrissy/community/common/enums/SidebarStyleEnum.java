@@ -19,7 +19,7 @@ public enum SidebarStyleEnum {
     PDF(6),
     ;
 
-    private int style;
+    private final int style;
 
     SidebarStyleEnum(int style) {
         this.style = style;

@@ -39,7 +39,7 @@ public class ConfigSettingServiceImpl implements ConfigSettingService {
     @Override
     public void deleteConfig(Integer configId) {
         ConfigDO configDO = configDao.getById(configId);
-        if (configDO != null){
+        if (configDO != null) {
             configDO.setDeleted(YesOrNoEnum.YES.getCode());
             configDao.updateById(configDO);
         }
@@ -48,7 +48,7 @@ public class ConfigSettingServiceImpl implements ConfigSettingService {
     @Override
     public void operateConfig(Integer configId, Integer pushStatus) {
         ConfigDO configDO = configDao.getById(configId);
-        if (configDO != null){
+        if (configDO != null) {
             configDO.setStatus(pushStatus);
             configDao.updateById(configDO);
         }

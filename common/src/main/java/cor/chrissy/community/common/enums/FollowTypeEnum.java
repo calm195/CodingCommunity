@@ -3,7 +3,7 @@ package cor.chrissy.community.common.enums;
 import lombok.Getter;
 
 /**
- * TODO：不明枚举？
+ * 用户关系状态枚举
  *
  * @author wx128
  * @createAt 2024/12/13
@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum FollowTypeEnum {
 
     FOLLOW("follow", "我关注的用户"),
-    FANS("fans", "关注我的粉丝");
+    FANS("fans", "关注我的粉丝"),
+    ;
 
     FollowTypeEnum(String code, String desc) {
         this.code = code;

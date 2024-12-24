@@ -74,8 +74,8 @@ public class NoticeRestController {
      */
     @RequestMapping(path = "items")
     public Result<NextPageHtmlVo> listForView(@RequestParam(name = "type") String type,
-                                        @RequestParam("page") Long page,
-                                        @RequestParam(name = "pageSize", required = false) Long pageSize) {
+                                              @RequestParam("page") Long page,
+                                              @RequestParam(name = "pageSize", required = false) Long pageSize) {
         type = type.toLowerCase().trim();
         PageListVo<NotifyMsgDTO> list = listItems(type, page, pageSize);
         NoticeResVo vo = new NoticeResVo();

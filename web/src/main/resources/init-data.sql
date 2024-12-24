@@ -152,56 +152,69 @@ values ('1', 'Java', '1', '1', '1', '0'),
 
 
 -- 配置相关信息
-insert into config(`type`,`name`,`banner_url`,`jump_url`,`content`,`rank`, `status`) values(1, '加入社区1', 'https://imgs.hhui.top/forum/banner/01.png', 'https://blog.csdn.net/qing_gee', '', 1, 1);
-insert into config(`type`,`name`,`banner_url`,`jump_url`,`content`,`rank`, `status`) values(1, '加入社区2', 'https://imgs.hhui.top/forum/banner/01.png', 'https://hhui.top/', '', 2, 1);
-insert into config(`type`,`name`,`banner_url`,`jump_url`,`content`,`rank`, `status`, `tags`) values(4, '社区上线公告', '', '', '技术社区正式上线啦！', 1, 1, '1,2,3');
-insert into config(`type`,`name`,`banner_url`,`jump_url`,`content`,`rank`, `status`, `tags`) values(4, '二哥博客公告', '', 'https://blog.csdn.net/qing_gee/category_9264687.html', '戳这里，访问二哥的博客！', 2, 1, '1,2,3');
+insert into config(`type`, `name`, `banner_url`, `jump_url`, `content`, `rank`, `status`)
+values (1, '加入社区1', 'https://imgs.hhui.top/forum/banner/01.png', 'https://blog.csdn.net/qing_gee', '', 1, 1);
+insert into config(`type`, `name`, `banner_url`, `jump_url`, `content`, `rank`, `status`)
+values (1, '加入社区2', 'https://imgs.hhui.top/forum/banner/01.png', 'https://hhui.top/', '', 2, 1);
+insert into config(`type`, `name`, `banner_url`, `jump_url`, `content`, `rank`, `status`, `tags`)
+values (4, '社区上线公告', '', '', '技术社区正式上线啦！', 1, 1, '1,2,3');
+insert into config(`type`, `name`, `banner_url`, `jump_url`, `content`, `rank`, `status`, `tags`)
+values (4, '二哥博客公告', '', 'https://blog.csdn.net/qing_gee/category_9264687.html', '戳这里，访问二哥的博客！', 2, 1,
+        '1,2,3');
 
 -- 初始化文章
 -- fixme 下面这个文章后续使用论坛的介绍进行替换
 
 INSERT INTO `user`
-(id, third_account_id, login_type, deleted)
-VALUES(1, 'a7cb7228-0f85-4dd5-845c-7c5df3746e92', 0, 0);
+    (id, third_account_id, login_type, deleted)
+VALUES (1, 'a7cb7228-0f85-4dd5-845c-7c5df3746e92', 0, 0);
 
 INSERT INTO user_info
 (id, user_id, user_name, photo, `position`, company, profile, extend, deleted)
-VALUES(1, 1, '管理员', 'https://imgs.hhui.top/forum/avatar/0066.png', 'java', 'xm', '码农', '', 0);
-
+VALUES (1, 1, '管理员', 'https://imgs.hhui.top/forum/avatar/0066.png', 'java', 'xm', '码农', '', 0);
 
 
 -- 准备数据
 INSERT INTO column_info
 (id, column_name, user_id, introduction, cover, state, publish_time, create_time, update_time)
-VALUES(1, '一灰灰的专栏', 1, '这里是小灰灰的技术专栏，欢迎关注', 'https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ba0bc79579c488eb79df93cecd12390~tplv-k3u1fbpfcp-watermark.image', 1, '2022-09-15 01:00:00', '2022-09-15 01:00:00', '2022-09-15 01:00:00');
+VALUES (1, '一灰灰的专栏', 1, '这里是小灰灰的技术专栏，欢迎关注',
+        'https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ba0bc79579c488eb79df93cecd12390~tplv-k3u1fbpfcp-watermark.image',
+        1, '2022-09-15 01:00:00', '2022-09-15 01:00:00', '2022-09-15 01:00:00');
 
 
 -- 添加专栏文章
 
 INSERT INTO article
-(id, author_id, article_type, title, short_title, picture, summary, category_id, source, source_url, status, deleted, create_time, update_time)
-VALUES(100, 1, 1, '分布式系统的38个知识点', '38个知识点', '', '分布式系统的38个精选知识点', 1, 2, '', 1, 0, '2022-10-08 19:12:32', '2022-10-08 19:12:32');
+(id, author_id, article_type, title, short_title, picture, summary, category_id, source, source_url, status, deleted,
+ create_time, update_time)
+VALUES (100, 1, 1, '分布式系统的38个知识点', '38个知识点', '', '分布式系统的38个精选知识点', 1, 2, '', 1, 0,
+        '2022-10-08 19:12:32', '2022-10-08 19:12:32');
 INSERT INTO article
-(id, author_id, article_type, title, short_title, picture, summary, category_id, source, source_url, status, deleted, create_time, update_time)
-VALUES(101, 1, 1, '分布式系统的8个谬误', '8个经典谬误', '', '分布式系统常见的8个理解偏差', 1, 2, '', 1, 0, '2022-10-08 19:13:38', '2022-10-08 19:13:38');
+(id, author_id, article_type, title, short_title, picture, summary, category_id, source, source_url, status, deleted,
+ create_time, update_time)
+VALUES (101, 1, 1, '分布式系统的8个谬误', '8个经典谬误', '', '分布式系统常见的8个理解偏差', 1, 2, '', 1, 0,
+        '2022-10-08 19:13:38', '2022-10-08 19:13:38');
 INSERT INTO article
-(id, author_id, article_type, title, short_title, picture, summary, category_id, source, source_url, status, deleted, create_time, update_time, official_stat)
-VALUES(102, 1, 1, '分布式系统的特征、瓶颈以及性能指标介绍', '分布式系统概要', 'https://spring.hhui.top/spring-blog/imgs/220819/logo.jpg', '什么是分布式系统，特点是什么，问题又有哪些？', 1, 2, '', 1, 0, '2022-10-08 19:14:17', '2022-10-08 19:14:17', 1);
+(id, author_id, article_type, title, short_title, picture, summary, category_id, source, source_url, status, deleted,
+ create_time, update_time, official_stat)
+VALUES (102, 1, 1, '分布式系统的特征、瓶颈以及性能指标介绍', '分布式系统概要',
+        'https://spring.hhui.top/spring-blog/imgs/220819/logo.jpg', '什么是分布式系统，特点是什么，问题又有哪些？', 1, 2,
+        '', 1, 0, '2022-10-08 19:14:17', '2022-10-08 19:14:17', 1);
 
 INSERT INTO article_tag
-(article_id, tag_id, deleted, create_time, update_time)
-VALUES(100, 1, 0, '2022-10-08 19:23:14', '2022-10-08 19:23:14');
+    (article_id, tag_id, deleted, create_time, update_time)
+VALUES (100, 1, 0, '2022-10-08 19:23:14', '2022-10-08 19:23:14');
 INSERT INTO article_tag
-(article_id, tag_id, deleted, create_time, update_time)
-VALUES(101, 1, 0, '2022-10-08 19:23:35', '2022-10-08 19:23:35');
+    (article_id, tag_id, deleted, create_time, update_time)
+VALUES (101, 1, 0, '2022-10-08 19:23:35', '2022-10-08 19:23:35');
 INSERT INTO article_tag
-(article_id, tag_id, deleted, create_time, update_time)
-VALUES(102, 1, 0, '2022-10-08 19:23:43', '2022-10-08 19:23:43');
+    (article_id, tag_id, deleted, create_time, update_time)
+VALUES (102, 1, 0, '2022-10-08 19:23:43', '2022-10-08 19:23:43');
 
 
 INSERT INTO article_detail
-(article_id, version, content, deleted, create_time, update_time)
-VALUES(100, 2, '
+    (article_id, version, content, deleted, create_time, update_time)
+VALUES (100, 2, '
 > 大家好我是咸鱼了大半年的一灰灰，终于放暑假了，把小孩送回老家，作为咸鱼的我也可以翻翻身了，接下来将趁着暑假的这段时间，将准备一个全新的分布式专栏，为了给大家提供更好的阅读体验，可以再我的个人站点上查看系列的专栏内容：
 >
 > [https://hhui.top/分布式](https://hhui.top/分布式)
@@ -1055,8 +1068,8 @@ Bloom过滤器是一种节省空间的概率数据结构，用于测试元素是
 ', 0, '2022-10-08 19:12:32', '2022-10-08 19:23:14');
 
 INSERT INTO article_detail
-(article_id, version, content, deleted, create_time, update_time)
-VALUES(101, 2, '![](https://files.mdnice.com/user/6227/49529ff9-2c47-42bf-ba9b-480ac43eb913.png)
+    (article_id, version, content, deleted, create_time, update_time)
+VALUES (101, 2, '![](https://files.mdnice.com/user/6227/49529ff9-2c47-42bf-ba9b-480ac43eb913.png)
 
 你在分布式系统上工作吗？微服务，Web API，SOA，Web服务器，应用服务器，数据库服务器，缓存服务器，负载均衡器 - 如果这些描述了系统设计中的组件，那么答案是肯定的。分布式系统由许多计算机组成，这些计算机协调以实现共同的目标。
 
@@ -1348,8 +1361,8 @@ foreach (var peer in manager.Employees;)
 ', 0, '2022-10-08 19:13:38', '2022-10-08 19:23:35');
 
 INSERT INTO article_detail
-(article_id, version, content, deleted, create_time, update_time)
-VALUES(102, 2, '![](https://files.mdnice.com/user/6227/3452f706-fdf4-4a60-b449-e1f8b94a2db5.png)
+    (article_id, version, content, deleted, create_time, update_time)
+VALUES (102, 2, '![](https://files.mdnice.com/user/6227/3452f706-fdf4-4a60-b449-e1f8b94a2db5.png)
 
 
 分布式的概念存在年头有点久了，在正式进入我们《分布式专栏》之前，感觉有必要来聊一聊，什么是分布式，分布式特点是什么，它又有哪些问题，在了解完这个概念之后，再去看它的架构设计，理论奠基可能帮助会更大
@@ -1529,43 +1542,62 @@ VALUES(102, 2, '![](https://files.mdnice.com/user/6227/3452f706-fdf4-4a60-b449-e
 -- 将文章绑定到专栏
 
 INSERT INTO column_article
-(column_id, article_id, `section`)
-VALUES(1, 100, 1);
+    (column_id, article_id, `section`)
+VALUES (1, 100, 1);
 
 INSERT INTO column_article
-(column_id, article_id, `section`)
-VALUES(1, 101, 2);
+    (column_id, article_id, `section`)
+VALUES (1, 101, 2);
 
 INSERT INTO column_article
-(column_id, article_id, `section`)
-VALUES(1, 102, 3);
-
+    (column_id, article_id, `section`)
+VALUES (1, 102, 3);
 
 
 -- 通用字典数据
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ConfigType','1','首页Banner',1);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ConfigType','2','侧边Banner',2);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ConfigType','3','广告Banner',3);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ConfigType','4','公告',4);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ConfigType','5','教程',5);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ConfigType','6','电子书',6);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ConfigType', '1', '首页Banner', 1);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ConfigType', '2', '侧边Banner', 2);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ConfigType', '3', '广告Banner', 3);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ConfigType', '4', '公告', 4);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ConfigType', '5', '教程', 5);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ConfigType', '6', '电子书', 6);
 
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('PushStat','0','未发布',1);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('PushStat','1','已发布',2);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('PushStat', '0', '未发布', 1);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('PushStat', '1', '已发布', 2);
 
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ArticleTag','1','热门',1);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ArticleTag','2','官方',2);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ArticleTag','3','推荐',3);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ArticleTag', '1', '热门', 1);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ArticleTag', '2', '官方', 2);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ArticleTag', '3', '推荐', 3);
 
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ArticleSource','1','转载',1);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ArticleSource','2','原创',2);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ArticleSource','3','翻译',3);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ArticleSource', '1', '转载', 1);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ArticleSource', '2', '原创', 2);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ArticleSource', '3', '翻译', 3);
 
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('OfficialStatus','0','非官方',1);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('OfficialStatus','1','官方',2);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('OfficialStatus', '0', '非官方', 1);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('OfficialStatus', '1', '官方', 2);
 
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ToppingStatus','0','不置顶',1);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('ToppingStatus','1','置顶',2);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ToppingStatus', '0', '不置顶', 1);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('ToppingStatus', '1', '置顶', 2);
 
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('CreamStat','0','不加精',1);
-insert into dict_common(`type_code`,`dict_code`,`dict_desc`,`sort_no`) values('CreamStat','1','加精',2);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('CreamStat', '0', '不加精', 1);
+insert into dict_common(`type_code`, `dict_code`, `dict_desc`, `sort_no`)
+values ('CreamStat', '1', '加精', 2);

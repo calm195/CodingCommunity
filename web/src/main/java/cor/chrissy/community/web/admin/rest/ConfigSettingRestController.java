@@ -36,8 +36,8 @@ public class ConfigSettingRestController {
     @ResponseBody
     @GetMapping(path = "operate")
     public Result<String> operate(@RequestParam(name = "configId") Integer configId,
-                                 @RequestParam(name = "operateType") Integer operateType) {
-        if (operateType != PushStatEnum.OFFLINE.getCode() && operateType!= PushStatEnum.ONLINE.getCode()) {
+                                  @RequestParam(name = "operateType") Integer operateType) {
+        if (operateType != PushStatEnum.OFFLINE.getCode() && operateType != PushStatEnum.ONLINE.getCode()) {
             return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS);
         }
         configSettingService.operateConfig(configId, operateType);

@@ -1,8 +1,8 @@
 package cor.chrissy.community.service.notify.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import cor.chrissy.community.service.notify.dto.NotifyMsgDTO;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.service.notify.dto.NotifyMsgDTO;
 import cor.chrissy.community.service.notify.repository.entity.NotifyMsgDO;
 import org.apache.ibatis.annotations.Param;
 

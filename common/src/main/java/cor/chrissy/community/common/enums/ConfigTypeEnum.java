@@ -3,7 +3,7 @@ package cor.chrissy.community.common.enums;
 import lombok.Getter;
 
 /**
- * Banner类型枚举
+ * 网页通用部位类型枚举
  *
  * @author wx128
  * @createAt 2024/12/17
@@ -17,8 +17,7 @@ public enum ConfigTypeEnum {
     ADVERTISEMENT(3, "广告Banner"),
     NOTICE(4, "公告"),
     COLUMN(5, "教程"),
-    PDF(6, "电子书")
-    ;
+    PDF(6, "电子书");
 
     ConfigTypeEnum(Integer code, String desc) {
         this.code = code;

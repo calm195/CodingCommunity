@@ -28,7 +28,7 @@
         </p>
         <div class="approval-box" id="praiseUsers">
             <a class="g-user-popover approval-img" th:href="'/user/' + ${item.userId}"
-                  th:each="item: ${vo.article.praisedUsers}">
+               th:each="item: ${vo.article.praisedUsers}">
                 <img th:src="${item.avatar}">
             </a>
         </div>

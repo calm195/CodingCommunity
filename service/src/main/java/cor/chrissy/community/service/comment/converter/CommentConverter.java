@@ -5,7 +5,6 @@ import cor.chrissy.community.service.comment.dto.BaseCommentDTO;
 import cor.chrissy.community.service.comment.dto.SubCommentDTO;
 import cor.chrissy.community.service.comment.dto.TopCommentDTO;
 import cor.chrissy.community.service.comment.repository.entity.CommentDO;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 

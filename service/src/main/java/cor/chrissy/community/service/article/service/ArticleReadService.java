@@ -49,8 +49,9 @@ public interface ArticleReadService {
      */
     PageListVo<ArticleDTO> queryArticlesByCategory(Long categoryId, PageParam page);
 
-      /**
+    /**
      * 获取 Top 文章
+     *
      * @param categoryId
      * @return
      */

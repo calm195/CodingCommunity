@@ -20,7 +20,6 @@ import java.util.Set;
 @Repository
 public class ArticleTagDao extends ServiceImpl<ArticleTagMapper, ArticleTagDO> {
 
-
     /**
      * 批量保存
      *
@@ -36,6 +35,7 @@ public class ArticleTagDao extends ServiceImpl<ArticleTagMapper, ArticleTagDO> {
             tag.setDeleted(YesOrNoEnum.NO.getCode());
             insertList.add(tag);
         });
+        // fixme：无法完成事务
         saveBatch(insertList);
     }
 

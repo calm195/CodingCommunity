@@ -23,7 +23,7 @@ public class ColumnInfoDO extends BaseDO {
     private String columnName;
 
     /**
-     * 作者
+     * 作者 TODO：rename
      */
     private Long userId;
 

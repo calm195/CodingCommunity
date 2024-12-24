@@ -3,7 +3,6 @@ package cor.chrissy.community.service.article.repository.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleTagDO;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

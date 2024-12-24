@@ -104,9 +104,9 @@ public class UserRestController {
 
     @GetMapping(path = "followList")
     public Result<NextPageHtmlVo> followList(@RequestParam(name = "userId") Long userId,
-                                            @RequestParam(name = "followSelectType") String followSelectType,
-                                            @RequestParam("page") Long page,
-                                            @RequestParam(name = "pageSize", required = false) Long pageSize) {
+                                             @RequestParam(name = "followSelectType") String followSelectType,
+                                             @RequestParam("page") Long page,
+                                             @RequestParam(name = "pageSize", required = false) Long pageSize) {
         if (pageSize == null) pageSize = PageParam.DEFAULT_PAGE_SIZE;
         PageParam pageParam = PageParam.newPageInstance(page, pageSize);
         PageListVo<FollowUserInfoDTO> followList;

@@ -13,7 +13,6 @@ import lombok.Data;
 @Data
 @JacksonXmlRootElement(localName = "xml")
 public class WxTxtMsgRes {
-
     @JacksonXmlProperty(localName = "ToUserName")
     private String toUserName;
     @JacksonXmlProperty(localName = "FromUserName")
@@ -24,5 +23,4 @@ public class WxTxtMsgRes {
     private String msgType;
     @JacksonXmlProperty(localName = "Content")
     private String content;
-
 }

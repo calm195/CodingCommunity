@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.springframework.context.ApplicationEvent;
 
 /**
+ * 通知事件，封装了事件信息
+ *
  * @author wx128
  * @createAt 2024/12/17
  */

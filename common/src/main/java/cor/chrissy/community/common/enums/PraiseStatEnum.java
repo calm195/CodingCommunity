@@ -13,7 +13,8 @@ public enum PraiseStatEnum {
 
     NOT_PRAISE(0, "未点赞"),
     PRAISE(1, "已点赞"),
-    CANCEL_PRAISE(2, "取消点赞");
+    CANCEL_PRAISE(2, "取消点赞"),
+    ;
 
     PraiseStatEnum(Integer code, String desc) {
         this.code = code;

@@ -12,16 +12,16 @@
             resultType="cor.chrissy.community.service.user.dto.FollowUserInfoDTO">
 
         SELECT
-            u.user_id as userId,
-            u.user_name as userName,
-            u.photo as avatar,
-            r.id as relationId,
-            true as followed
+        u.user_id as userId,
+        u.user_name as userName,
+        u.photo as avatar,
+        r.id as relationId,
+        true as followed
         FROM user_relation as r
-            left join user_info as u on r.user_id = u.user_id
+        left join user_info as u on r.user_id = u.user_id
         WHERE
-            r.follow_user_id = #{followUserId}
-          and r.follow_stat = ${@cor.chrissy.community.common.enums.FollowStateEnum@FOLLOW.code}
+        r.follow_user_id = #{followUserId}
+        and r.follow_stat = ${@cor.chrissy.community.common.enums.FollowStateEnum@FOLLOW.code}
         ORDER BY u.id desc
 
         <include refid="limit"/>
@@ -31,15 +31,15 @@
             resultType="cor.chrissy.community.service.user.dto.FollowUserInfoDTO">
 
         SELECT
-            u.user_id as userId,
-            u.user_name as userName,
-            u.photo as avatar,
-            r.id as relationId
+        u.user_id as userId,
+        u.user_name as userName,
+        u.photo as avatar,
+        r.id as relationId
         FROM user_relation as r
-            left join user_info as u on r.follow_user_id = u.user_id
+        left join user_info as u on r.follow_user_id = u.user_id
         WHERE
-            r.user_id = #{userId}
-            and r.follow_stat = ${@cor.chrissy.community.common.enums.FollowStateEnum@FOLLOW.code}
+        r.user_id = #{userId}
+        and r.follow_stat = ${@cor.chrissy.community.common.enums.FollowStateEnum@FOLLOW.code}
         ORDER BY u.id desc
 
         <include refid="limit"/>

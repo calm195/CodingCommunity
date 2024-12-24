@@ -3,6 +3,8 @@ package cor.chrissy.community.common.enums;
 import lombok.Getter;
 
 /**
+ * 是否置顶
+ *
  * @author wx128
  * @createAt 2024/12/23
  */
@@ -10,7 +12,8 @@ import lombok.Getter;
 public enum ToppingStatEnum {
 
     NOT_TOPPING(0, "不置顶"),
-    TOPPING(1, "置顶");
+    TOPPING(1, "置顶"),
+    ;
 
     ToppingStatEnum(Integer code, String desc) {
         this.code = code;
@@ -20,7 +23,7 @@ public enum ToppingStatEnum {
     private final Integer code;
     private final String desc;
 
-    public static ToppingStatEnum formCode(Integer code) {
+    public static ToppingStatEnum fromCode(Integer code) {
         for (ToppingStatEnum value : ToppingStatEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

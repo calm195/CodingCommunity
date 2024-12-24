@@ -1,14 +1,10 @@
 package cor.chrissy.community.test.dao;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
-import cor.chrissy.community.service.article.dto.ArticleListDTO;
-import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.dao.CategoryDao;
 import cor.chrissy.community.service.article.repository.dao.TagDao;
-import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.repository.entity.CategoryDO;
 import cor.chrissy.community.service.article.repository.entity.TagDO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
@@ -16,10 +12,6 @@ import cor.chrissy.community.test.BasicTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author wx128

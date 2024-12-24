@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
+ * TODO：table field remove?
+ *
  * @author wx128
  * @createAt 2024/12/24
  */

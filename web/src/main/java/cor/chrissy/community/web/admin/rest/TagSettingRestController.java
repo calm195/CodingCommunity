@@ -36,7 +36,7 @@ public class TagSettingRestController {
     @ResponseBody
     @GetMapping(path = "operate")
     public Result<String> operate(@RequestParam(name = "tagId") Integer tagId,
-                                 @RequestParam(name = "pushStatus") Integer pushStatus) {
+                                  @RequestParam(name = "pushStatus") Integer pushStatus) {
         if (pushStatus != PushStatEnum.OFFLINE.getCode() || pushStatus != PushStatEnum.ONLINE.getCode()) {
             return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS);
         }

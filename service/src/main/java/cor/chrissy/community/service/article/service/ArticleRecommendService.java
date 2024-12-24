@@ -1,9 +1,9 @@
 package cor.chrissy.community.service.article.service;
 
 import cor.chrissy.community.common.req.PageParam;
-import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
+import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
 
 import java.util.List;
 

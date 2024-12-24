@@ -1,9 +1,9 @@
 package cor.chrissy.community.service.notify.service;
 
 import cor.chrissy.community.common.enums.NotifyTypeEnum;
-import cor.chrissy.community.service.notify.dto.NotifyMsgDTO;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.service.notify.dto.NotifyMsgDTO;
 
 import java.util.Map;
 
@@ -32,6 +32,7 @@ public interface NotifyService {
 
     /**
      * 查询未读消息数
+     *
      * @param userId
      * @return
      */

@@ -28,7 +28,7 @@ public class Result<T> implements Serializable {
     }
 
     public static <T> Result<T> ok(T t) {
-        return new Result<T>(t);
+        return new Result<>(t);
     }
 
     public static <T> Result<T> fail(StatusEnum status, Object... messages) {

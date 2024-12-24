@@ -3,21 +3,24 @@
 <mapper namespace="cor.chrissy.community.service.statistics.repository.mapper.RequestCountMapper">
 
     <select id="getPvTotalCount" resultType="java.lang.Long">
-        select sum(cnt) from request_count
+        select sum(cnt)
+        from request_count
     </select>
 
     <select id="getPvDayList" resultType="cor.chrissy.community.service.statistics.dto.StatisticsDayDTO">
         SELECT sum(cnt) as count, date
         FROM request_count
-        group by date order by date desc
-            limit #{day};
+        group by date
+        order by date desc
+        limit #{day};
     </select>
 
     <select id="getUvDayList" resultType="cor.chrissy.community.service.statistics.dto.StatisticsDayDTO">
         SELECT count(*) as count, date
         FROM request_count
-        group by date order by date desc
-            limit #{day};
+        group by date
+        order by date desc
+        limit #{day};
     </select>
 
 </mapper>

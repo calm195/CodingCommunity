@@ -1,10 +1,8 @@
 package cor.chrissy.community.web.hook.filter;
 
 import cor.chrissy.community.common.context.ReqInfoContext;
-import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.core.util.CrossUtil;
 import cor.chrissy.community.core.util.IpUtil;
-import cor.chrissy.community.service.account.service.LoginService;
 import cor.chrissy.community.service.statistics.service.StatisticsSettingService;
 import cor.chrissy.community.web.global.GlobalInitService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +14,6 @@ import org.springframework.http.HttpMethod;
 import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -130,5 +127,4 @@ public class ReqRecordFilter implements Filter {
         reqInfo.setPayload(requestWrapper.getBodyString());
         return requestWrapper;
     }
-
 }

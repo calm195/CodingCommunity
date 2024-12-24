@@ -7,9 +7,8 @@ import lombok.Data;
 /**
  * 微信官方提供的请求体参数，用于与公众号后台交互
  *
- * @link <a href="https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Receiving_standard_messages.html"/>
- *
  * @author wx128
+ * @link <a href="https://developers.weixin.qq.com/doc/offiaccount/Message_Management/Receiving_standard_messages.html"/>
  * @createAt 2024/12/13
  */
 @Data

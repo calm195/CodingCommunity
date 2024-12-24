@@ -15,8 +15,8 @@ public @interface Permission {
     /**
      * 权限角色。默认普通访客
      *
-     * @see cor.chrissy.community.core.permission.UserRole
      * @return
+     * @see cor.chrissy.community.core.permission.UserRole
      */
     UserRole role() default UserRole.ALL;
 }

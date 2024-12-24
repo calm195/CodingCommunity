@@ -18,9 +18,7 @@ import java.util.List;
  */
 @Repository
 public class CategoryDao extends ServiceImpl<CategoryMapper, CategoryDO> {
-    /**
-     * @return
-     */
+
     public List<CategoryDO> listAllCategoriesFromDb() {
         return lambdaQuery()
                 .eq(CategoryDO::getDeleted, YesOrNoEnum.NO.getCode())

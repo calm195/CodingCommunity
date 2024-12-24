@@ -1,7 +1,6 @@
 package cor.chrissy.community.service.image.service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.awt.image.BufferedImage;
 
 /**
  * @author wx128
@@ -11,6 +10,7 @@ public interface ImageService {
 
     /**
      * 图片转存
+     *
      * @param content
      * @return
      */

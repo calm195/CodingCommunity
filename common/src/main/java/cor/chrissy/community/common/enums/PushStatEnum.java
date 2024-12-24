@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum PushStatEnum {
 
     OFFLINE(0, "未发布"),
-    ONLINE(1, "已发布");
+    ONLINE(1, "已发布"),
+    ;
 
     PushStatEnum(int code, String desc) {
         this.code = code;

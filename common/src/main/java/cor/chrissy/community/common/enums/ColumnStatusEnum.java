@@ -13,7 +13,8 @@ public enum ColumnStatusEnum {
 
     OFFLINE(0, "未发布"),
     CONTINUE(1, "连载"),
-    OVER(2, "已完结");
+    OVER(2, "已完结"),
+    ;
 
     ColumnStatusEnum(int code, String desc) {
         this.code = code;

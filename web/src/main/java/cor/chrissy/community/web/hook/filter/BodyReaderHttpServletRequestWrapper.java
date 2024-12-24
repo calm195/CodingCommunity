@@ -76,10 +76,6 @@ public class BodyReaderHttpServletRequestWrapper extends HttpServletRequestWrapp
         };
     }
 
-    public boolean hasPayload() {
-        return bodyString != null;
-    }
-
     private String getBodyString(HttpServletRequest request) {
         BufferedReader br;
         try {
