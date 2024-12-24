@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import cor.chrissy.community.common.enums.*;
+import cor.chrissy.community.common.enums.DocumentTypeEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
+import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
@@ -28,8 +30,10 @@ import java.util.Optional;
  */
 @Repository
 public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
+
     @Resource
     private ArticleDetailMapper articleDetailMapper;
+
     @Resource
     private ReadCountMapper readCountMapper;
 
@@ -52,7 +56,6 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         dto.setContent(detail.getContent());
         return dto;
     }
-
 
     // ------------ article content  ----------------
 
@@ -118,7 +121,7 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         return baseMapper.selectList(query);
     }
 
-        /**
+    /**
      * 通过关键词，从标题中找出相似的进行推荐，只返回主键 + 标题
      *
      * @param key
@@ -128,14 +131,10 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
-                .and(!StringUtils.isEmpty(key),
-                        v -> v.like(ArticleDO::getTitle, key)
-                                .or()
-                                .like(ArticleDO::getShortTitle, key)
-                );
+                .and(!StringUtils.isEmpty(key), v -> v.like(ArticleDO::getTitle, key).or().like(ArticleDO::getShortTitle, key));
         query.select(ArticleDO::getId, ArticleDO::getTitle, ArticleDO::getShortTitle)
                 .last("limit 10")
-                .orderByDesc(ArticleDO::getId);;
+                .orderByDesc(ArticleDO::getId);
         return baseMapper.selectList(query);
     }
 
@@ -144,11 +143,8 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
                 .and(!StringUtils.isEmpty(key),
-                        v -> v.like(ArticleDO::getTitle, key)
-                                .or()
-                                .like(ArticleDO::getShortTitle, key)
-                                .or()
-                                .like(ArticleDO::getSummary, key));
+                        v ->
+                                v.like(ArticleDO::getTitle, key).or().like(ArticleDO::getShortTitle, key).or().like(ArticleDO::getSummary, key));
         query.last(PageParam.getLimitSql(pageParam))
                 .orderByDesc(ArticleDO::getId);
         return baseMapper.selectList(query);

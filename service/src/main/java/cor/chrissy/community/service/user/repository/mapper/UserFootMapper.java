@@ -3,7 +3,6 @@ package cor.chrissy.community.service.user.repository.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
-import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.user.dto.SimpleUserInfoDTO;
 import cor.chrissy.community.service.user.repository.entity.UserFootDO;
 import org.apache.ibatis.annotations.Param;

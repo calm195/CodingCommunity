@@ -36,8 +36,8 @@ public class CategorySettingRestController {
     @ResponseBody
     @GetMapping(path = "operate")
     public Result<String> operate(@RequestParam(name = "categoryId") Integer categoryId,
-                                 @RequestParam(name = "pushStatus") Integer pushStatus) {
-        if (pushStatus != PushStatEnum.OFFLINE.getCode() || pushStatus!= PushStatEnum.ONLINE.getCode()) {
+                                  @RequestParam(name = "pushStatus") Integer pushStatus) {
+        if (pushStatus != PushStatEnum.OFFLINE.getCode() || pushStatus != PushStatEnum.ONLINE.getCode()) {
             return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS);
         }
         categorySettingService.operateCategory(categoryId, pushStatus);

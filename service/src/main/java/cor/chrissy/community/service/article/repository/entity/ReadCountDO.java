@@ -28,8 +28,7 @@ public class ReadCountDO extends BaseDO {
     private Integer documentType;
 
     /**
-     * 计数
+     * 计数 TODO：rename
      */
     private Integer cnt;
-
 }

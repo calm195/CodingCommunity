@@ -93,7 +93,6 @@ public class ArticleConverter {
         return tags.stream().map(ArticleConverter::toDto).collect(Collectors.toList());
     }
 
-
     public static CategoryDTO toDto(CategoryDO category) {
         CategoryDTO dto = new CategoryDTO();
         dto.setCategory(category.getCategoryName());

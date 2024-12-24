@@ -2,8 +2,8 @@ package cor.chrissy.community.web.front.article.rest;
 
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.enums.DocumentTypeEnum;
-import cor.chrissy.community.common.enums.OperateTypeEnum;
 import cor.chrissy.community.common.enums.NotifyTypeEnum;
+import cor.chrissy.community.common.enums.OperateTypeEnum;
 import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.notify.NotifyMsgEvent;
 import cor.chrissy.community.common.req.PageParam;
@@ -22,7 +22,6 @@ import cor.chrissy.community.service.article.service.*;
 import cor.chrissy.community.service.user.repository.entity.UserFootDO;
 import cor.chrissy.community.service.user.service.UserFootService;
 import cor.chrissy.community.web.component.TemplateEngineHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -66,8 +65,8 @@ public class ArticleRestController {
      */
     @RequestMapping(path = "recommend")
     public Result<NextPageHtmlVo> recommend(@RequestParam(value = "articleId") Long articleId,
-                                           @RequestParam(name = "page") Long page,
-                                           @RequestParam(name = "size", required = false) Long size) {
+                                            @RequestParam(name = "page") Long page,
+                                            @RequestParam(name = "size", required = false) Long size) {
         size = Optional.ofNullable(size).orElse(PageParam.DEFAULT_PAGE_SIZE);
         size = Math.min(size, PageParam.DEFAULT_PAGE_SIZE);
         PageListVo<ArticleDTO> articles = articleRecommendService.relatedRecommend(articleId, PageParam.newPageInstance(page, size));
@@ -113,7 +112,7 @@ public class ArticleRestController {
     @Permission(role = UserRole.LOGIN)
     @GetMapping(path = "favor")
     public Result<Boolean> favor(@RequestParam(name = "articleId") Long articleId,
-                                @RequestParam(name = "type") Integer type) {
+                                 @RequestParam(name = "type") Integer type) {
         OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
         if (operate == OperateTypeEnum.EMPTY) {
             return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");

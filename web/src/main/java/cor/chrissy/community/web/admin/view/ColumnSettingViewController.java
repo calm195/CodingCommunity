@@ -5,12 +5,9 @@ import cor.chrissy.community.common.result.Result;
 import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.core.util.NumUtil;
 import cor.chrissy.community.service.article.dto.ColumnDTO;
-import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
 import cor.chrissy.community.service.article.service.ColumnSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @author wx128

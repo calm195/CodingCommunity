@@ -5,7 +5,6 @@ import cor.chrissy.community.service.comment.repository.entity.CommentDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author wx128

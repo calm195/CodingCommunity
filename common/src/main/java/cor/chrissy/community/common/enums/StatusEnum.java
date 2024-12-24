@@ -46,9 +46,9 @@ public enum StatusEnum {
     USER_NOT_EXISTS(400_500_001, "用户不存在:%s"),
     ;
 
-    private int code;
+    private final int code;
 
-    private String msg;
+    private final String msg;
 
     StatusEnum(int code, String msg) {
         this.code = code;

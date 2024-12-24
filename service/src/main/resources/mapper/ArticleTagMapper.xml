@@ -5,9 +5,9 @@
     <select id="listArticleTagDetails" resultType="cor.chrissy.community.service.article.dto.TagDTO">
         select a.article_id as articleId, a.tag_id as tagId, t.tag_name as tag
         from article_tag as a
-            left join tag as t
-                on a.tag_id  = t.id
-        where a.article_id  = #{articleId}
+                 left join tag as t
+                           on a.tag_id = t.id
+        where a.article_id = #{articleId}
           and a.deleted = 0
     </select>
 

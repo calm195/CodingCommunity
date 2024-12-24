@@ -112,10 +112,10 @@ public class SidebarServiceImpl implements SidebarService {
     private SideBarDTO hotArticles() {
         PageListVo<SimpleArticleDTO> vo = articleReadService.queryHotArticlesForRecommend(PageParam.newPageInstance());
         List<SideBarItemDto> items = vo.getList().stream().map(
-                s -> new SideBarItemDto()
-                        .setTitle(s.getTitle())
-                        .setUrl("/article/detail/" + s.getId())
-                        .setTime(s.getCreateTime().getTime())
+                        s -> new SideBarItemDto()
+                                .setTitle(s.getTitle())
+                                .setUrl("/article/detail/" + s.getId())
+                                .setTime(s.getCreateTime().getTime())
                 )
                 .collect(Collectors.toList());
         return new SideBarDTO().setTitle("热门推荐").setItems(items).setStyle(SidebarStyleEnum.ARTICLES.getStyle());

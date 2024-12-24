@@ -38,7 +38,7 @@ public class CategorySettingServiceImpl implements CategorySettingService {
     @Override
     public void deleteCategory(Integer categoryId) {
         CategoryDO categoryDO = categoryDao.getById(categoryId);
-        if (categoryDO != null){
+        if (categoryDO != null) {
             categoryDao.removeById(categoryDO);
         }
     }
@@ -46,7 +46,7 @@ public class CategorySettingServiceImpl implements CategorySettingService {
     @Override
     public void operateCategory(Integer categoryId, Integer pushStatus) {
         CategoryDO categoryDO = categoryDao.getById(categoryId);
-        if (categoryDO != null){
+        if (categoryDO != null) {
             categoryDO.setStatus(pushStatus);
             categoryDao.updateById(categoryDO);
         }

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cor.chrissy.community.common.enums.NotifyStatEnum;
 import cor.chrissy.community.common.enums.NotifyTypeEnum;
-import cor.chrissy.community.service.notify.dto.NotifyMsgDTO;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.service.notify.dto.NotifyMsgDTO;
 import cor.chrissy.community.service.notify.repository.entity.NotifyMsgDO;
 import cor.chrissy.community.service.notify.repository.mapper.NotifyMsgMapper;
 import org.springframework.stereotype.Repository;
@@ -106,7 +106,7 @@ public class NotifyMsgDao extends ServiceImpl<NotifyMsgMapper, NotifyMsgDO> {
     public void updateNotifyMsgToRead(List<NotifyMsgDTO> list) {
         List<Long> ids = list.stream().filter(
                 s -> s.getState() == NotifyStatEnum.UNREAD.getStat()).map(NotifyMsgDTO::getMsgId
-                ).collect(Collectors.toList());
+        ).collect(Collectors.toList());
         if (!ids.isEmpty()) {
             baseMapper.updateNoticeRead(ids);
         }

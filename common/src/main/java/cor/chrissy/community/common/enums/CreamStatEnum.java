@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum CreamStatEnum {
 
     NOT_CREAM(0, "不加精"),
-    CREAM(1, "加精");
+    CREAM(1, "加精"),
+    ;
 
     CreamStatEnum(Integer code, String desc) {
         this.code = code;
@@ -22,7 +23,7 @@ public enum CreamStatEnum {
     private final Integer code;
     private final String desc;
 
-    public static CreamStatEnum formCode(Integer code) {
+    public static CreamStatEnum fromCode(Integer code) {
         for (CreamStatEnum value : CreamStatEnum.values()) {
             if (value.getCode().equals(code)) {
                 return value;

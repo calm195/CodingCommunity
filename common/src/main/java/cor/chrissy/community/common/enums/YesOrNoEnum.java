@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum YesOrNoEnum {
 
     NO(0, "N", "否", "no"),
-    YES(1, "Y", "是", "yes");
+    YES(1, "Y", "是", "yes"),
+    ;
 
     YesOrNoEnum(int code, String desc, String cnDesc, String enDesc) {
         this.code = code;
@@ -44,10 +45,7 @@ public enum YesOrNoEnum {
         if (code == null) {
             return false;
         }
-        if (code != null && (code.equals(YES.code) || code.equals(NO.code))) {
-            return true;
-        }
-        return false;
+        return code.equals(YES.code) || code.equals(NO.code);
     }
 
     /**

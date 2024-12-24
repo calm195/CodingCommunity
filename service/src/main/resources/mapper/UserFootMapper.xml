@@ -5,29 +5,32 @@
     <select id="countArticleByArticleId"
             resultType="cor.chrissy.community.service.article.dto.ArticleFootCountDTO">
 
-        SELECT sum(if(f.praise_stat = ${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1, 0)) as praiseCount,
-               sum(if(f.collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1, 0)) as collectionCount,
+        SELECT sum(if(f.praise_stat = ${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1,
+                      0))   as praiseCount,
+               sum(if(f.collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1,
+                      0))   as collectionCount,
                sum(r.`cnt`) as readCount
         FROM read_count as r
-            left join
-            user_foot as f
-        on f.document_id = r.document_id
-            and f.document_type = r.document_type
-        WHERE
-            r.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
-            AND r.document_id = #{articleId}
+                 left join
+             user_foot as f
+             on f.document_id = r.document_id
+                 and f.document_type = r.document_type
+        WHERE r.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
+          AND r.document_id = #{articleId}
 
     </select>
 
     <select id="countArticleByUserId"
             resultType="cor.chrissy.community.service.article.dto.ArticleFootCountDTO">
 
-        SELECT sum(if(f.praise_stat = ${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1, 0)) as praiseCount,
-               sum(if(f.collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1, 0)) as collectionCount,
+        SELECT sum(if(f.praise_stat = ${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1,
+                      0))   as praiseCount,
+               sum(if(f.collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1,
+                      0))   as collectionCount,
                sum(r.`cnt`) as readCount
-        FROM read_count as r left join user_foot as f on f.document_id = r.document_id and f.document_type = r.document_type
-        WHERE
-            r.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
+        FROM read_count as r
+                 left join user_foot as f on f.document_id = r.document_id and f.document_type = r.document_type
+        WHERE r.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
           AND f.document_author_id = #{userId}
 
     </select>
@@ -58,15 +61,16 @@
 
     <select id="listSimpleUserInfosByArticleId"
             resultType="cor.chrissy.community.service.user.dto.SimpleUserInfoDTO">
-        SELECT ui.user_id as userId,
+        SELECT ui.user_id   as userId,
                ui.user_name as name,
-               ui.photo as avatar
+               ui.photo     as avatar
         FROM user_foot uf
                  left join user_info ui on uf.document_author_id = ui.user_id
         WHERE uf.document_type = #{type}
           AND uf.document_id = #{documentId}
           AND uf.praise_stat = 1
-        order by uf.update_time desc limit #{size}
+        order by uf.update_time desc
+        limit #{size}
     </select>
 
 </mapper>

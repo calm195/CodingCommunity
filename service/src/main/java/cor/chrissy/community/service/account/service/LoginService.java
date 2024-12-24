@@ -10,6 +10,7 @@ import java.util.Set;
  * @createAt 2024/12/15
  */
 public interface LoginService {
+
     String SESSION_KEY = "f-session";
     String USER_DEVICE_KEY = "f-device";
     Set<String> LOGIN_CODE_KEY = Sets.newHashSet("登录", "login");

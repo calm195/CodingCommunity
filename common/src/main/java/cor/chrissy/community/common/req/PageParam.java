@@ -20,7 +20,7 @@ public class PageParam {
     private long offset;
     private long limit;
 
-    public static PageParam newPageInstance(){
+    public static PageParam newPageInstance() {
         return newPageInstance(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE);
     }
 

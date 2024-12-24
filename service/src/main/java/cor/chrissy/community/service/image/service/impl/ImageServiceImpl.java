@@ -1,7 +1,6 @@
 package cor.chrissy.community.service.image.service.impl;
 
 import com.github.hui.quick.plugin.base.ImageLoadUtil;
-import com.github.hui.quick.plugin.base.ProcessUtil;
 import com.github.hui.quick.plugin.base.constants.MediaType;
 import cor.chrissy.community.core.config.ImageProperties;
 import cor.chrissy.community.core.util.DateUtil;
@@ -183,7 +182,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-   /**
+    /**
      * 图片格式校验
      *
      * @param mime

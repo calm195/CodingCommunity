@@ -29,7 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     private LoadingCache<Long, CategoryDTO> categoryCaches;
 
-    private CategoryDao categoryDao;
+    private final CategoryDao categoryDao;
 
     public CategoryServiceImpl(CategoryDao categoryDao) {
         this.categoryDao = categoryDao;
@@ -67,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<CategoryDTO> loadAllCategories() {
-        if (categoryCaches.size() <= 5){
+        if (categoryCaches.size() <= 5) {
             refreshCache();
         }
         List<CategoryDTO> list = new ArrayList<>(categoryCaches.asMap().values());

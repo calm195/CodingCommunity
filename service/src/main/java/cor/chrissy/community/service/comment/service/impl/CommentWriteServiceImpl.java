@@ -119,11 +119,9 @@ public class CommentWriteServiceImpl implements CommentWriteService {
         }
     }
 
-
     private Long getParentCommentUser(Long parentCommentId) {
         if (NumUtil.nullOrZero(parentCommentId)) {
             return null;
-
         }
         CommentDO parent = commentDao.getById(parentCommentId);
         if (parent == null) {
@@ -131,5 +129,4 @@ public class CommentWriteServiceImpl implements CommentWriteService {
         }
         return parent.getUserId();
     }
-
 }

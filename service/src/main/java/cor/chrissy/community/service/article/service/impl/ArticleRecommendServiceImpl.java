@@ -2,8 +2,6 @@ package cor.chrissy.community.service.article.service.impl;
 
 import cor.chrissy.community.common.enums.SidebarStyleEnum;
 import cor.chrissy.community.common.req.PageParam;
-import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
-import cor.chrissy.community.service.sidebar.dto.SideBarItemDto;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
@@ -13,6 +11,8 @@ import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.repository.entity.ArticleTagDO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.article.service.ArticleRecommendService;
+import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
+import cor.chrissy.community.service.sidebar.dto.SideBarItemDto;
 import cor.chrissy.community.service.sidebar.service.SidebarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,7 +81,6 @@ public class ArticleRecommendServiceImpl implements ArticleRecommendService {
                 .setContent("联系信息:<br/> yihuihuiyi@gmail.com")
                 .setStyle(SidebarStyleEnum.RECOMMEND.getStyle());
     }
-
 
     /**
      * 查询文章关联推荐列表

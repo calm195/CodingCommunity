@@ -102,7 +102,7 @@ public class QrLoginHelper {
         return sseEmitter;
     }
 
-        /**
+    /**
      * 刷新验证码
      *
      * @param request
@@ -159,7 +159,7 @@ public class QrLoginHelper {
         return false;
     }
 
-        /**
+    /**
      * 初始化设备id
      *
      * @param request

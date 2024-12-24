@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum FollowSelectEnum {
 
     FOLLOW("follow", "我关注的用户"),
-    FANS("fans", "关注我的粉丝");
+    FANS("fans", "关注我的粉丝"),
+    ;
 
     FollowSelectEnum(String code, String desc) {
         this.code = code;

@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum ReadStatEnum {
 
     NOT_READ(0, "未读"),
-    READ(1, "已读");
+    READ(1, "已读"),
+    ;
 
     ReadStatEnum(Integer code, String desc) {
         this.code = code;

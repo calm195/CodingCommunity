@@ -49,8 +49,8 @@ public class ArticleListRestController extends BaseViewController {
      */
     @GetMapping(path = "tag/{tag}")
     public Result<NextPageHtmlVo> tagList(@PathVariable("tag") Long tagId,
-                                         @RequestParam(name = "page") Long page,
-                                         @RequestParam(name = "size", required = false) Long size) {
+                                          @RequestParam(name = "page") Long page,
+                                          @RequestParam(name = "size", required = false) Long size) {
         PageParam pageParam = buildPageParam(page, size);
         PageListVo<ArticleDTO> list = articleService.queryArticlesByTag(tagId, pageParam);
         String html = templateEngineHelper.renderToVo("views/article-tag-list/article/list", "articles", list);

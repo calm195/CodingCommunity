@@ -19,7 +19,7 @@ public class ImgPickerTest {
         String pattern = "!\\[(.*?)\\]\\((.*?)\\)";
         String text = "hello ![](https://text.jpg) world!![描述](http))!图片";
         Pattern r = Pattern.compile(pattern);
-        Matcher m =  r.matcher(text);
+        Matcher m = r.matcher(text);
         while (m.find()) {
             String ans = m.group(0);
             System.out.println(ans);

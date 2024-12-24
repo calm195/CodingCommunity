@@ -14,14 +14,14 @@ public enum HomeSelectEnum {
     ARTICLE("article", "文章"),
     READ("read", "浏览记录"),
     FOLLOW("follow", "关注"),
-    COLLECTION("collection", "收藏");
+    COLLECTION("collection", "收藏"),
+    ;
 
     HomeSelectEnum(String code, String desc) {
         this.code = code;
         this.desc = desc;
     }
 
-    // TODO: code 是否能优化
     private final String code;
     private final String desc;
 

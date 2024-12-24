@@ -2,8 +2,6 @@ package cor.chrissy.community.web.account.rest;
 
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.enums.StatusEnum;
-import cor.chrissy.community.common.req.user.wx.WxTxtMsgReq;
-import cor.chrissy.community.common.req.user.wx.WxTxtMsgRes;
 import cor.chrissy.community.common.result.Result;
 import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
@@ -12,7 +10,6 @@ import cor.chrissy.community.web.account.helper.QrLoginHelper;
 import cor.chrissy.community.web.account.vo.QrLoginVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -56,8 +53,8 @@ public class LoginRestController {
         response.sendRedirect("/");
         return Result.ok(true);
     }
-    
-     /**
+
+    /**
      * 获取登录的验证码
      *
      * @return

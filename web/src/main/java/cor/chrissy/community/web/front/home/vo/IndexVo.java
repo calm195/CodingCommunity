@@ -49,7 +49,7 @@ public class IndexVo {
     /**
      * 侧边栏信息
      */
-    private  List<SideBarDTO> sideBarItems;
+    private List<SideBarDTO> sideBarItems;
 
     /**
      * 轮播图

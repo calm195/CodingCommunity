@@ -6,22 +6,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 网页标签字段常量与图片位置
+ *
  * @author wx128
  * @createAt 2024/12/23
  */
 public class CommonConstants {
 
     // 分类类型
-    public static final String CATEGORY_ALL             = "全部";
-    public static final String CATEGORY_BACK_EMD        = "后端";
-    public static final String CATEGORY_FORNT_END       = "前端";
-    public static final String CATEGORY_ANDROID         = "Android";
-    public static final String CATEGORY_IOS             = "IOS";
-    public static final String CATEGORY_BIG_DATA        = "大数据";
-    public static final String CATEGORY_INTELLIGENCE    = "人工智能";
-    public static final String CATEGORY_CODE_LIFE       = "代码人生";
-    public static final String CATEGORY_TOOL            = "开发工具";
-    public static final String CATEGORY_READ            = "阅读";
+    public static final String CATEGORY_ALL = "全部";
+    public static final String CATEGORY_BACKEND = "后端";
+    public static final String CATEGORY_FRONTEND = "前端";
+    public static final String CATEGORY_ANDROID = "Android";
+    public static final String CATEGORY_IOS = "IOS";
+    public static final String CATEGORY_BIG_DATA = "大数据";
+    public static final String CATEGORY_INTELLIGENCE = "人工智能";
+    public static final String CATEGORY_CODE_LIFE = "代码人生";
+    public static final String CATEGORY_TOOL = "开发工具";
+    public static final String CATEGORY_READ = "阅读";
 
     // 首页图片
     public static final Map<String, List<String>> HOMEPAGE_TOP_PIC_MAP = new HashMap<String, List<String>>() {
@@ -34,7 +36,7 @@ public class CommonConstants {
                     add("https://img12.360buyimg.com/ddimg/jfs/t1/169217/34/31577/31440/63606c72E7a4f58b3/a72b7df2ec84d79f.webp");
                 }
             });
-            put(CATEGORY_BACK_EMD, new ArrayList<String>() {
+            put(CATEGORY_BACKEND, new ArrayList<String>() {
                 {
                     add("https://img12.360buyimg.com/ddimg/jfs/t1/144729/17/31034/367421/636076adE5b5f7c6b/fa4de8bb58f74a63.gif");
                     add("https://img14.360buyimg.com/ddimg/jfs/t1/138738/8/31452/12286/636076f0Ef18f77d8/fde4de8bbf0b5380.webp");
@@ -42,7 +44,7 @@ public class CommonConstants {
                     add("https://img12.360buyimg.com/ddimg/jfs/t1/23649/3/19923/65450/636076f0Ec39e3fd9/763afa10946ef984.webp");
                 }
             });
-            put(CATEGORY_FORNT_END, new ArrayList<String>() {
+            put(CATEGORY_FRONTEND, new ArrayList<String>() {
                 {
                     add("https://img14.360buyimg.com/ddimg/jfs/t1/143513/1/30950/11464/6360767bEada4a5db/eb24093e34dd6991.webp");
                     add("https://img12.360buyimg.com/ddimg/jfs/t1/100700/30/30797/18850/6360767bE752105f6/df6b065028fd0344.webp");

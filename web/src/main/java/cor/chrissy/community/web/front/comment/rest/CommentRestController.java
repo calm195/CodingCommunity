@@ -25,9 +25,7 @@ import cor.chrissy.community.service.user.service.UserFootService;
 import cor.chrissy.community.web.component.TemplateEngineHelper;
 import cor.chrissy.community.web.front.article.vo.ArticleDetailVo;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -129,7 +127,7 @@ public class CommentRestController {
     @Permission(role = UserRole.LOGIN)
     @GetMapping(path = "favor")
     public Result<Boolean> favor(@RequestParam(name = "commentId") Long commendId,
-                                @RequestParam(name = "type") Integer type) {
+                                 @RequestParam(name = "type") Integer type) {
         OperateTypeEnum operate = OperateTypeEnum.fromCode(type);
         if (operate == OperateTypeEnum.EMPTY) {
             return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, type + "非法");

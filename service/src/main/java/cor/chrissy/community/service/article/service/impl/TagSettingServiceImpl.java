@@ -43,7 +43,7 @@ public class TagSettingServiceImpl implements TagSettingService {
     @Override
     public void deleteTag(Integer tagId) {
         TagDO tagDO = tagDao.getById(tagId);
-        if (tagDO != null){
+        if (tagDO != null) {
             tagDao.removeById(tagId);
         }
     }
@@ -51,7 +51,7 @@ public class TagSettingServiceImpl implements TagSettingService {
     @Override
     public void operateTag(Integer tagId, Integer pushStatus) {
         TagDO tagDO = tagDao.getById(tagId);
-        if (tagDO != null){
+        if (tagDO != null) {
             tagDO.setStatus(pushStatus);
             tagDao.updateById(tagDO);
         }

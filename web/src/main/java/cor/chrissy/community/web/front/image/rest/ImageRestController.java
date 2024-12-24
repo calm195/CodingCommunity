@@ -5,13 +5,11 @@ import cor.chrissy.community.service.image.service.ImageService;
 import cor.chrissy.community.web.front.image.vo.ImageVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.awt.image.BufferedImage;
 
 /**
  * @author wx128

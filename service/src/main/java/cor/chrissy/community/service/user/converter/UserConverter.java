@@ -11,7 +11,6 @@ import cor.chrissy.community.service.user.repository.entity.UserDO;
 import cor.chrissy.community.service.user.repository.entity.UserInfoDO;
 import cor.chrissy.community.service.user.repository.entity.UserRelationDO;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 /**
  * 用户信息转换工具

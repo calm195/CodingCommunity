@@ -72,8 +72,8 @@ public class UserRelationDao extends ServiceImpl<UserRelationMapper, UserRelatio
     /**
      * 获取关注信息
      *
-     * @param userId  登录用户
-     * @param followUserId  关注的用户
+     * @param userId       登录用户
+     * @param followUserId 关注的用户
      * @return
      */
     public UserRelationDO getUserRelationByUserId(Long userId, Long followUserId) {
@@ -88,8 +88,8 @@ public class UserRelationDao extends ServiceImpl<UserRelationMapper, UserRelatio
     /**
      * 获取关注记录
      *
-     * @param userId  登录用户
-     * @param followUserId  关注的用户
+     * @param userId       登录用户
+     * @param followUserId 关注的用户
      * @return
      */
     public UserRelationDO getUserRelationRecord(Long userId, Long followUserId) {

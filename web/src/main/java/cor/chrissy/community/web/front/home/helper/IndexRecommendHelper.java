@@ -52,7 +52,7 @@ public class IndexRecommendHelper {
         vo.setTopArticles(topArticleList(categoryId));
         vo.setHomeCarouselList(homeCarouselList());
         vo.setSideBarItems(sidebarService.queryHomeSidebarList());
-        vo.setCurrentCategory(categoryId == null ? "全部": activeTab);
+        vo.setCurrentCategory(categoryId == null ? "全部" : activeTab);
         vo.setCategoryId(categoryId == null ? 0 : categoryId);
         vo.setUser(loginInfo());
         return vo;
@@ -127,7 +127,7 @@ public class IndexRecommendHelper {
         return null;
     }
 
-        /**
+    /**
      * top 文章列表
      */
     private List<ArticleDTO> topArticleList(Long categoryId) {

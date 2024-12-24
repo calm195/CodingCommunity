@@ -3,13 +3,8 @@ package cor.chrissy.community.web.hook.interceptor;
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
-import cor.chrissy.community.service.user.service.UserService;
-import cor.chrissy.community.web.config.GlobalViewConfig;
 import cor.chrissy.community.web.global.GlobalInitService;
-import lombok.Data;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -20,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 
 /**
  * 注入全局配置信息，如站点信息，thymleaf

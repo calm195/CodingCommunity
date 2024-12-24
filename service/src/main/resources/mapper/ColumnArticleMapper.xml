@@ -16,7 +16,11 @@
     </select>
 
     <select id="getColumnArticle" resultType="java.lang.Long">
-        select article_id from column_article where column_id = #{columnId} and `section` = #{section} limit 1
+        select article_id
+        from column_article
+        where column_id = #{columnId}
+          and `section` = #{section}
+        limit 1
     </select>
 
 </mapper>

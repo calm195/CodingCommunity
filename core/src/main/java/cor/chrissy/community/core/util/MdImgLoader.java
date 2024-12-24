@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  * @createAt 2024/12/23
  */
 public class MdImgLoader {
-    private static Pattern IMG_PATTERN = Pattern.compile("!\\[(.*?)\\]\\((.*?)\\)");
+    private static final Pattern IMG_PATTERN = Pattern.compile("!\\[(.*?)\\]\\((.*?)\\)");
 
     @Data
     @NoArgsConstructor

@@ -28,6 +28,7 @@ public class ColumnConverter {
         return dto;
     }
 
+    // todo：rename
     public static List<ColumnDTO> toDtos(List<ColumnInfoDO> columnInfoDOS) {
         List<ColumnDTO> columnDTOS = new ArrayList<>();
         columnInfoDOS.forEach(info -> columnDTOS.add(ColumnConverter.toDto(info)));

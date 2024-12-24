@@ -62,7 +62,8 @@ public class CodingCommunityApplication implements WebMvcConfigurer, Application
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        GlobalViewConfig config = SpringUtil.getBean(GlobalViewConfig.class);;
+        GlobalViewConfig config = SpringUtil.getBean(GlobalViewConfig.class);
+        ;
         if (webPort != null) {
             config.setHost("http://localhost:" + webPort);
         }

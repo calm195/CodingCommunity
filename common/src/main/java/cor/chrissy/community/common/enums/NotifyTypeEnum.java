@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 通知类型 TODO: 规范化
+ * 通知类型
  *
  * @author wx128
  * @createAt 2024/12/17
@@ -30,10 +30,10 @@ public enum NotifyTypeEnum {
     ;
 
 
-    private int type;
-    private String msg;
+    private final int type;
+    private final String msg;
 
-    private static Map<Integer, NotifyTypeEnum> mapper;
+    private static final Map<Integer, NotifyTypeEnum> mapper;
 
     static {
         mapper = new HashMap<>();

@@ -28,12 +28,12 @@ public class DictCommonServiceImpl implements DictCommonService {
 
         Map<String, Map<String, String>> dictCommonMap = Maps.newLinkedHashMap();
         for (DictCommonDTO dictCommon : dictCommonList) {
-                Map<String, String> codeMap = dictCommonMap.get(dictCommon.getTypeCode());
-                if (codeMap == null || codeMap.isEmpty()) {
-                    codeMap = Maps.newLinkedHashMap();
-                    dictCommonMap.put(dictCommon.getTypeCode(), codeMap);
-                }
-                codeMap.put(dictCommon.getDictCode(), dictCommon.getDictDesc());
+            Map<String, String> codeMap = dictCommonMap.get(dictCommon.getTypeCode());
+            if (codeMap == null || codeMap.isEmpty()) {
+                codeMap = Maps.newLinkedHashMap();
+                dictCommonMap.put(dictCommon.getTypeCode(), codeMap);
+            }
+            codeMap.put(dictCommon.getDictCode(), dictCommon.getDictDesc());
         }
 
         result.putAll(dictCommonMap);

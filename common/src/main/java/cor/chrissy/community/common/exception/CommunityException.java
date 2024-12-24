@@ -5,12 +5,14 @@ import cor.chrissy.community.common.result.Status;
 import lombok.Getter;
 
 /**
+ * 该社区系统统一异常类
+ *
  * @author wx128
  * @createAt 2024/12/17
  */
+@Getter
 public class CommunityException extends RuntimeException {
-    @Getter
-    private Status status;
+    private final Status status;
 
     public CommunityException(Status status) {
         this.status = status;
