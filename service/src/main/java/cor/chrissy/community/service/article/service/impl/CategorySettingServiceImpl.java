@@ -44,10 +44,10 @@ public class CategorySettingServiceImpl implements CategorySettingService {
     }
 
     @Override
-    public void operateCategory(Integer categoryId, Integer operateType) {
+    public void operateCategory(Integer categoryId, Integer pushStatus) {
         CategoryDO categoryDO = categoryDao.getById(categoryId);
         if (categoryDO != null){
-            categoryDO.setStatus(operateType);
+            categoryDO.setStatus(pushStatus);
             categoryDao.updateById(categoryDO);
         }
     }

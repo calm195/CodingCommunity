@@ -62,6 +62,11 @@ public class ReqRecordFilter implements Filter {
     }
 
     private HttpServletRequest initReqInfo(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/js/") || uri.startsWith("/css/")) {
+            return request;
+        }
+
         try {
             ReqInfoContext.ReqInfo reqInfo = new ReqInfoContext.ReqInfo();
             reqInfo.setHost(request.getHeader("host"));

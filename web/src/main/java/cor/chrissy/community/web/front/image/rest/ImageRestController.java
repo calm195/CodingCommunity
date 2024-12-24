@@ -31,12 +31,11 @@ public class ImageRestController {
      * @return
      */
     @ResponseBody
-    @GetMapping(path = "upload")
+    @RequestMapping(path = "upload")
     public Result<ImageVo> upload(HttpServletRequest request) {
         ImageVo imageVo = new ImageVo();
         try {
-            BufferedImage img = imageServiceImpl.getImg(request);
-            String imagePath = imageServiceImpl.saveImg(img);
+            String imagePath = imageServiceImpl.saveImg(request);
             imageVo.setImagePath(imagePath);
         } catch (Exception e) {
             log.error("save upload file error! e: {}", e.toString());

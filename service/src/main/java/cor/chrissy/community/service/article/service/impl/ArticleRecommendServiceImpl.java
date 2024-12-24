@@ -13,6 +13,7 @@ import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.repository.entity.ArticleTagDO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.article.service.ArticleRecommendService;
+import cor.chrissy.community.service.sidebar.service.SidebarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -27,12 +28,18 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ArticleRecommendServiceImpl implements ArticleRecommendService {
+
     @Autowired
     private ArticleDao articleDao;
+
     @Autowired
     private ArticleTagDao articleTagDao;
+
     @Autowired
     private ArticleReadService articleReadService;
+
+    @Autowired
+    private SidebarService sidebarService;
 
     @Override
     public List<SideBarDTO> recommend(ArticleDTO articleDO) {
@@ -40,9 +47,9 @@ public class ArticleRecommendServiceImpl implements ArticleRecommendService {
         SideBarDTO recommend = recommendByAuthor(articleDO.getAuthor(), articleDO.getArticleId(), PageParam.DEFAULT_PAGE_SIZE);
 
         // 社区圈子
-        SideBarDTO join = joinUs();
+        SideBarDTO pdf = sidebarService.pdfSideBar();
 
-        return Arrays.asList(recommend, join);
+        return Arrays.asList(pdf, recommend);
     }
 
 
@@ -95,7 +102,7 @@ public class ArticleRecommendServiceImpl implements ArticleRecommendService {
             return PageListVo.emptyVo();
         }
 
-        List<ArticleDO> recommendArticles = articleDao.listRelatedArticles(article.getCategoryId(), tagIds, page);
+        List<ArticleDO> recommendArticles = articleDao.listRelatedArticlesOrderByReadCount(article.getCategoryId(), tagIds, page);
         return articleReadService.buildArticleListVo(recommendArticles, page.getPageSize());
     }
 }

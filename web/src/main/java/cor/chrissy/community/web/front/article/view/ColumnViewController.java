@@ -49,7 +49,7 @@ public class ColumnViewController {
      * @param model
      * @return
      */
-    @GetMapping(path = {"list", "/", ""})
+    @GetMapping(path = {"list", "/", "", "home"})
     public String list(Model model) {
         PageListVo<ColumnDTO> columns = columnService.listColumn(PageParam.newPageInstance());
         List<SideBarDTO> sidebars = sidebarService.queryHomeSidebarList();
@@ -57,7 +57,7 @@ public class ColumnViewController {
         vo.setColumns(columns);
         vo.setSideBarItems(sidebars);
         model.addAttribute("vo", vo);
-        return "biz/column/index";
+        return "views/column-home/index";
     }
 
 
@@ -74,7 +74,7 @@ public class ColumnViewController {
             throw ExceptionUtil.of(StatusEnum.RECORDS_NOT_EXISTS, "专栏不存在");
         }
         model.addAttribute("vo", dto);
-        return "/biz/column/detail";
+        return "/views/column-index/index"; // TODO 未完成
     }
 
 
@@ -109,6 +109,6 @@ public class ColumnViewController {
         vo.setColumn(columnId);
         vo.setArticleList(articles);
         model.addAttribute("vo", vo);
-        return "biz/column/article";
+        return "/views/column-detail/index";
     }
 }

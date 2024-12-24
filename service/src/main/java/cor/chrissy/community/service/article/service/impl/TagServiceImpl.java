@@ -23,4 +23,9 @@ public class TagServiceImpl implements TagService {
     public List<TagDTO> queryTagsByCategoryId(Long categoryId) {
         return tagDao.listTagsByCategoryId(categoryId);
     }
+
+    @Override
+    public Long queryTagId(String tagName) {
+        return tagDao.selectTagIdByTag(tagName);
+    }
 }

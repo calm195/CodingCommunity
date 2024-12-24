@@ -1,5 +1,6 @@
 package cor.chrissy.community.service.article.service;
 
+import cor.chrissy.community.common.enums.OperateArticleEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
@@ -31,5 +32,5 @@ public interface ArticleSettingService {
      * @param articleId
      * @param operateType
      */
-    void operateArticle(Long articleId, Integer operateType);
+    void operateArticle(Long articleId, OperateArticleEnum operateType);
 }

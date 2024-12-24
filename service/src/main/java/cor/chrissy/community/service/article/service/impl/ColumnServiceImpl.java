@@ -6,7 +6,9 @@ import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.core.util.ExceptionUtil;
+import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.conveter.ColumnConverter;
+import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.ColumnDTO;
 import cor.chrissy.community.service.article.dto.ColumnFootCountDTO;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
@@ -111,5 +113,17 @@ public class ColumnServiceImpl implements ColumnService {
         return articleList;
     }
 
+    /**
+     * 查询专栏的文章详情
+     *
+     * @param columnId
+     * @return
+     */
+    @Override
+    public List<ArticleDTO> queryColumnArticlesDetail(long columnId) {
+        List<Long> articleIds = columnDao.listColumnArticles(columnId);
+        List<ArticleDO> articles = articleDao.listByIds(articleIds);
+        return ArticleConverter.toArticleDtoList(articles);
+    }
 }
 

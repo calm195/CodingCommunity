@@ -1,6 +1,7 @@
 package cor.chrissy.community.service.notify.service.impl;
 
 import cor.chrissy.community.common.enums.NotifyStatEnum;
+import cor.chrissy.community.common.enums.NotifyTypeEnum;
 import cor.chrissy.community.common.notify.NotifyMsgEvent;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
@@ -23,6 +24,9 @@ import org.springframework.stereotype.Service;
 @Async
 @Service
 public class NotifyMsgListener<T> implements ApplicationListener<NotifyMsgEvent<T>> {
+
+    private static final Long ADMIN_ID = 1L;
+
     private final ArticleReadService articleReadService;
 
     private final CommentReadService commentReadService;
@@ -59,6 +63,12 @@ public class NotifyMsgListener<T> implements ApplicationListener<NotifyMsgEvent<
             case CANCEL_FOLLOW:
                 // todo 取消操作，若之前的消息是未读状态，则移除对应的记录
                 log.info("取消操作: {}", msgEvent);
+            case LOGIN:
+                // todo:
+                break;
+            case REGISTER:
+                saveRegisterSystemNotify((Long) msgEvent.getContent());
+                break;
             default:
                 // todo 系统消息
         }
@@ -135,6 +145,20 @@ public class NotifyMsgListener<T> implements ApplicationListener<NotifyMsgEvent<
                 .setType(event.getNotifyType().getType())
                 .setState(NotifyStatEnum.UNREAD.getStat())
                 .setMsg("");
+        NotifyMsgDO record = notifyMsgDao.getByUserIdRelatedIdAndType(msg);
+        if (record == null) {
+            // 若之前已经有对应的通知，则不重复记录；因为用户的关注是一对一的，可以重复的关注、取消，但是最终我们只通知一次
+            notifyMsgDao.save(msg);
+        }
+    }
+
+    private void saveRegisterSystemNotify(Long userId) {
+        NotifyMsgDO msg = new NotifyMsgDO().setRelatedId(0L)
+                .setNotifyUserId(userId)
+                .setOperateUserId(ADMIN_ID)
+                .setType(NotifyTypeEnum.REGISTER.getType())
+                .setState(NotifyStatEnum.UNREAD.getStat())
+                .setMsg("欢迎注册使用论坛，更多的使用姿势请参考：<a href=\"/\">使用教程<a/>");
         NotifyMsgDO record = notifyMsgDao.getByUserIdRelatedIdAndType(msg);
         if (record == null) {
             // 若之前已经有对应的通知，则不重复记录；因为用户的关注是一对一的，可以重复的关注、取消，但是最终我们只通知一次

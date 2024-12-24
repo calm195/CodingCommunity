@@ -5,6 +5,7 @@ import com.github.hui.quick.plugin.base.ProcessUtil;
 import com.github.hui.quick.plugin.base.constants.MediaType;
 import cor.chrissy.community.core.config.ImageProperties;
 import cor.chrissy.community.core.util.DateUtil;
+import cor.chrissy.community.core.util.MdImgLoader;
 import cor.chrissy.community.service.image.service.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -36,7 +38,8 @@ public class ImageServiceImpl implements ImageService {
 
     private static final MediaType[] STATIC_IMG_TYPE = new MediaType[]{MediaType.ImagePng, MediaType.ImageJpg, MediaType.ImageWebp};
 
-    public BufferedImage getImg(HttpServletRequest request) {
+    @Override
+    public String saveImg(HttpServletRequest request) {
 
         MultipartFile file = null;
         if (request instanceof MultipartHttpServletRequest) {
@@ -44,45 +47,73 @@ public class ImageServiceImpl implements ImageService {
         }
 
         if (file == null) {
-            try {
-                String image = request.getParameter("image");
-                if (StringUtils.isNotBlank(image) && !image.startsWith("/") && !image.startsWith("http")) {
-                    image = imageProperties.getTmpUploadPath() + image;
-                }
-                return ImageLoadUtil.getImageByPath(image);
-            } catch (IOException e) {
-                log.error("load upload image error! e: {}", e.toString());
-                throw new IllegalArgumentException("图片不能为空!");
-            }
+            log.error("load upload image error! The image url is empty!");
+            throw new IllegalArgumentException("图片不能为空!");
         }
 
         // 目前只支持 jpg, png, webp 等静态图片格式
         String contentType = file.getContentType();
-        assert contentType != null;
-        if (!validateStaticImg(contentType)) {
+        MediaType type = validateStaticImg(contentType);
+        if (type == null) {
             throw new IllegalArgumentException("不支持的图片类型");
         }
 
         // 获取BufferedImage对象
         try {
-            return ImageIO.read(file.getInputStream());
+            BufferedImage image = ImageIO.read(file.getInputStream());
+            String path = saveImg(image, type);
+            if (StringUtils.isBlank(path)) {
+                throw new IllegalStateException("image upload error!");
+            }
+            return imageProperties.getCdnHost() + path;
         } catch (IOException e) {
-            log.error("WxImgCreateAction! Parse img from httpRequest to BufferedImage error! not supported type: {}", e.toString());
+            log.error("Parse image from httpRequest to BufferedImage error!  not supported type: {}", e.toString());
             throw new IllegalArgumentException("不支持的图片类型!");
         }
     }
 
-    public String saveImg(BufferedImage bf) {
+    @Override
+    public String mdImgReplace(String content) {
+        List<MdImgLoader.MdImg> imgList = MdImgLoader.loadImgs(content);
+        for (MdImgLoader.MdImg img : imgList) {
+            // fixme 下面可以调整为并发转存
+            if (img.getUrl().startsWith(imageProperties.getCdnHost()) ||
+                    !img.getUrl().startsWith("http")) {
+                // 已经转存过，不需要再次转存；非http图片，不处理
+                continue;
+            }
+
+            String newImg = imageProperties.getCdnHost() + saveImg(img.getUrl());
+            content = StringUtils.replace(content, img.getOrigin(), "![" + img.getDesc() + "](" + newImg + ")");
+        }
+        return content;
+    }
+
+    /**
+     * 外网图片转存
+     *
+     * @param img
+     * @return
+     */
+    public String saveImg(String img) {
         try {
-            String path = genTmpImg("png");
+            BufferedImage bufferedImage = ImageLoadUtil.getImageByPath(img);
+            return saveImg(bufferedImage, MediaType.ImagePng);
+        } catch (Exception e) {
+            log.error("外网图片转存异常! img:{}", img, e);
+            return null;
+        }
+    }
+
+    public String saveImg(BufferedImage bf, MediaType mediaType) {
+        try {
+            String path = genTmpImg(mediaType.getExt());
             File file = new File(imageProperties.getAbsTmpPath() + path);
             mkDir(file.getParentFile());
-            ImageIO.write(bf, "png", file);
-
-            ProcessUtil.instance().process("chmod -R 755 " + imageProperties.getAbsTmpPath() + imageProperties.getWebImgPath());
+            ImageIO.write(bf, mediaType.getExt(), file);
             return path;
         } catch (Exception e) {
-            log.error("save file error!");
+            log.error("save file error!", e);
             return null;
         }
     }
@@ -152,22 +183,25 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-    /**
+   /**
      * 图片格式校验
      *
      * @param mime
      * @return
      */
-    private boolean validateStaticImg(String mime) {
-        if (mime.contains("jpg")) {
+    private MediaType validateStaticImg(String mime) {
+        if (mime == null) {
+            return null;
+        }
+        if (mime.contains(MediaType.ImageJpg.getExt())) {
             mime = mime.replace("jpg", "jpeg");
         }
-        for(MediaType type: STATIC_IMG_TYPE) {
+        for (MediaType type : STATIC_IMG_TYPE) {
             if (type.getMime().equals(mime)) {
-                return true;
+                return type;
             }
         }
-        return false;
+        return null;
     }
 }
 

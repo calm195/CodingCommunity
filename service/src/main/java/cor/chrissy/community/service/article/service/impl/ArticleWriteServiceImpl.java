@@ -11,6 +11,7 @@ import cor.chrissy.community.service.article.repository.dao.ArticleDao;
 import cor.chrissy.community.service.article.repository.dao.ArticleTagDao;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.service.ArticleWriteService;
+import cor.chrissy.community.service.image.service.ImageService;
 import cor.chrissy.community.service.user.service.UserFootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class ArticleWriteServiceImpl implements ArticleWriteService {
     @Autowired
     private UserFootService userFootService;
 
+    @Autowired
+    private ImageService imageService;
+
     public ArticleWriteServiceImpl(ArticleDao articleDao, ArticleTagDao articleTagDao) {
         this.articleDao = articleDao;
         this.articleTagDao = articleTagDao;
@@ -47,10 +51,11 @@ public class ArticleWriteServiceImpl implements ArticleWriteService {
     @Override
     public Long saveArticle(ArticlePostReq req, Long author) {
         ArticleDO article = ArticleConverter.toArticleDo(req, author);
+        String content = imageService.mdImgReplace(req.getContent());
         if (NumUtil.nullOrZero(req.getArticleId())) {
-            return insertArticle(article, req.getContent(), req.getTagIds());
+            return insertArticle(article, content, req.getTagIds());
         } else {
-            return updateArticle(article, req.getContent(), req.getTagIds());
+            return updateArticle(article, content, req.getTagIds());
         }
     }
 

@@ -10,6 +10,9 @@ spring:
     async:
       request-timeout: 3000
 
+database:
+  name: forum
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true

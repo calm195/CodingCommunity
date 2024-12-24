@@ -27,21 +27,7 @@ public class IndexController extends BaseViewController {
         String activeTab = request.getParameter("category");
         IndexVo vo = indexRecommendHelper.buildIndexVo(activeTab);
         model.addAttribute("vo", vo);
-        return "index";
-    }
-
-    /**
-     * 查询文章列表
-     *
-     * @param model
-     */
-    @GetMapping(path = "search")
-    public String searchArticleList(@RequestParam(name = "key") String key, Model model) {
-        if (!StringUtils.isBlank(key)) {
-            IndexVo vo = indexRecommendHelper.buildSearchVo(key);
-            model.addAttribute("vo", vo);
-        }
-        return "biz/article/search";
+        return "views/home/index";
     }
 }
 

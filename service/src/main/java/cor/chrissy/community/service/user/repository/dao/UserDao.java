@@ -1,6 +1,7 @@
 package cor.chrissy.community.service.user.repository.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
@@ -40,6 +41,30 @@ public class UserDao extends ServiceImpl<UserInfoMapper, UserInfoDO> {
         return lambdaQuery()
                 .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .count().intValue();
+    }
+
+    public void updateUserInfo(UserInfoDO user) {
+        UserInfoDO record = getByUserId(user.getUserId());
+        if (record.equals(user)) {
+            return;
+        }
+        if (StringUtils.isEmpty(user.getPosition())) {
+            user.setPosition(null);
+        }
+        if (StringUtils.isEmpty(user.getCompany())) {
+            user.setPosition(null);
+        }
+        if (StringUtils.isEmpty(user.getProfile())) {
+            user.setProfile(null);
+        }
+        if (StringUtils.isEmpty(user.getPhoto())) {
+            user.setPhoto(null);
+        }
+        if (StringUtils.isEmpty(user.getUserName())) {
+            user.setUserName(null);
+        }
+        user.setId(record.getId());
+        updateById(user);
     }
 }
 

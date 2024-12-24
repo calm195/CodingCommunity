@@ -2,3 +2,10 @@ image:
   abs-tmp-path: D:\\myCode\\CodingCommunity\\img
   web-img-path: CodingCommunity/img
   tmp-upload-path: D:\\temp\\upload
+  cdn-host:
+
+spring:
+  web:
+    resources:
+      # 支持本地图片上传之后的链接，其中 file:///d的用于win系统，后面的file: 适用于mac/linux系统
+      static-locations: classpath:/static/, file:///${image.abs-tmp-path}, file:${image.abs-tmp-path}

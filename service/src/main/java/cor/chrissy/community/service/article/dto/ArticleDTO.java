@@ -67,13 +67,11 @@ public class ArticleDTO implements Serializable {
      */
     private Integer status;
 
-    private Integer flagBit;
+    private Integer officialStat;
 
-    private Boolean isOfficial;
+    private Integer toppingStat;
 
-    private Boolean isTopping;
-
-    private Boolean isCream;
+    private Integer creamStat;
 
     /**
      * 创建时间

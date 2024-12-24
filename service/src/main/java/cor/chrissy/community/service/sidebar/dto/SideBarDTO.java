@@ -21,6 +21,8 @@ public class SideBarDTO {
 
     private String img;
 
+    private String url;
+
     private String content;
 
     private List<SideBarItemDto> items;

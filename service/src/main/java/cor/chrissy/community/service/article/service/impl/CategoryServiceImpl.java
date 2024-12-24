@@ -47,8 +47,6 @@ public class CategoryServiceImpl implements CategoryService {
                 return new CategoryDTO(categoryId, category.getCategoryName());
             }
         });
-        // 预热全量缓存
-        refreshCache();
     }
 
     /**
@@ -67,8 +65,13 @@ public class CategoryServiceImpl implements CategoryService {
      *
      * @return
      */
+    @Override
     public List<CategoryDTO> loadAllCategories() {
+        if (categoryCaches.size() <= 5){
+            refreshCache();
+        }
         List<CategoryDTO> list = new ArrayList<>(categoryCaches.asMap().values());
+        list.removeIf(s -> s.getCategoryId() <= 0);
         list.sort(Comparator.comparingLong(CategoryDTO::getCategoryId));
         return list;
     }

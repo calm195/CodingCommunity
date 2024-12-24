@@ -24,8 +24,8 @@
         from read_count as rc left join article as a on rc.document_id = a.id
         where rc.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
         and a.status = ${@cor.chrissy.community.common.enums.PushStatEnum@ONLINE.code}
-        and a.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code} and a.user_id = #{userId} order
-        by rc.cnt desc
+        and a.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code} and a.author_id = #{userId}
+        order by rc.cnt desc
         <include refid="limit"/>
     </select>
 
@@ -38,17 +38,22 @@
         where rc.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
         and a.status = ${@cor.chrissy.community.common.enums.PushStatEnum@ONLINE.code}
         and a.deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
-        and a.category_id = #{categoryId} and t.tag_id in
-        <foreach collection="tags" item="tagId" open="(" close=")" separator=",">
-            #{tagId}
-        </foreach>
+        <if test="categoryId != null">
+            and a.category_id = #{categoryId}
+        </if>
+        and t.tag_id in
+        <if test="tags != null and tags.size > 0">
+            <foreach collection="tags" item="tagId" open="(" close=")" separator=",">
+                #{tagId}
+            </foreach>
+        </if>
         order by rc.cnt desc
         <include refid="limit"/>
     </select>
 
     <select id="listYearArticleByUserId"
             resultType="cor.chrissy.community.service.article.dto.YearArticleDTO">
-        select DATE_FORMAT(create_time, "%Y") as year, count(*) as articleCount
+        select DATE_FORMAT(create_time, '%Y') as year, count(*) as articleCount
         from article
         where author_id = #{userId}
           and status = ${@cor.chrissy.community.common.enums.PushStatEnum@ONLINE.code}

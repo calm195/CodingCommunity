@@ -18,6 +18,7 @@ import cor.chrissy.community.service.article.service.CountService;
 import cor.chrissy.community.service.user.repository.entity.UserFootDO;
 import cor.chrissy.community.service.user.service.UserFootService;
 import cor.chrissy.community.service.user.service.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -117,6 +118,32 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         return buildArticleListVo(records, page.getPageSize());
     }
 
+
+    @Override
+    public List<ArticleDTO> queryTopArticlesByCategory(Long categoryId) {
+        PageParam page = PageParam.newPageInstance(PageParam.DEFAULT_PAGE_NUM, (long) 4);
+        List<ArticleDO> articleDTOS = articleDao.listArticlesByCategoryId(categoryId, page);
+        return articleDTOS.stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
+    }
+
+    @Override
+    public PageListVo<ArticleDTO> queryArticlesByTag(Long tagId, PageParam page) {
+        List<ArticleDO> records = articleDao.listRelatedArticlesOrderByReadCount(null, Arrays.asList(tagId), page);
+        return buildArticleListVo(records, page.getPageSize());
+    }
+
+    @Override
+    public List<SimpleArticleDTO> querySimpleArticleBySearchKey(String key) {
+        // todo 当key为空时，返回热门推荐
+        if (StringUtils.isBlank(key)) {
+            return Collections.emptyList();
+        }
+        key = key.trim();
+        List<ArticleDO> records = articleDao.listSimpleArticlesByBySearchKey(key);
+        return records.stream().map(s -> new SimpleArticleDTO().setId(s.getId()).setTitle(s.getTitle()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public PageListVo<ArticleDTO> queryArticlesBySearchKey(String key, PageParam page) {
         List<ArticleDO> records = articleDao.listArticlesByBySearchKey(key, page);
@@ -165,6 +192,7 @@ public class ArticleReadServiceImpl implements ArticleReadService {
         return articleDOS;
     }
 
+    @Override
     public PageListVo<ArticleDTO> buildArticleListVo(List<ArticleDO> records, long pageSize) {
         List<ArticleDTO> result = records.stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
         return PageListVo.newVo(result, pageSize);

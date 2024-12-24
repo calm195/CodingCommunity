@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import cor.chrissy.community.common.enums.DocumentTypeEnum;
-import cor.chrissy.community.common.enums.PushStatEnum;
-import cor.chrissy.community.common.enums.YesOrNoEnum;
+import cor.chrissy.community.common.enums.*;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
@@ -93,17 +91,6 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         articleDetailMapper.updateContent(articleId, content);
     }
 
-    /**
-     * 更新标记位
-     *
-     * @param articleId
-     * @param falgBit
-     */
-    public void updateArticleFlagBit(Long articleId, Integer falgBit) {
-        articleDetailMapper.updateFlagBit(articleId, falgBit);
-    }
-
-
     // ------------- 文章列表查询 --------------
 
     public List<ArticleDO> listArticlesByAuthorId(Long authorId, PageParam pageParam) {
@@ -127,10 +114,30 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
                 .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode());
         Optional.ofNullable(categoryId).ifPresent(cid -> query.eq(ArticleDO::getCategoryId, cid));
         query.last(PageParam.getLimitSql(pageParam))
-                .orderByDesc(ArticleDO::getId);
+                .orderByDesc(ArticleDO::getOfficialStat, ArticleDO::getToppingStat, ArticleDO::getCreateTime);
         return baseMapper.selectList(query);
     }
 
+        /**
+     * 通过关键词，从标题中找出相似的进行推荐，只返回主键 + 标题
+     *
+     * @param key
+     * @return
+     */
+    public List<ArticleDO> listSimpleArticlesByBySearchKey(String key) {
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
+                .and(!StringUtils.isEmpty(key),
+                        v -> v.like(ArticleDO::getTitle, key)
+                                .or()
+                                .like(ArticleDO::getShortTitle, key)
+                );
+        query.select(ArticleDO::getId, ArticleDO::getTitle, ArticleDO::getShortTitle)
+                .last("limit 10")
+                .orderByDesc(ArticleDO::getId);;
+        return baseMapper.selectList(query);
+    }
 
     public List<ArticleDO> listArticlesByBySearchKey(String key, PageParam pageParam) {
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
@@ -211,7 +218,7 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
      * @param tagIds
      * @return
      */
-    public List<ArticleDO> listRelatedArticles(Long categoryId, List<Long> tagIds, PageParam pageParam) {
+    public List<ArticleDO> listRelatedArticlesOrderByReadCount(Long categoryId, List<Long> tagIds, PageParam pageParam) {
         return baseMapper.listArticleByCategoryAndTags(categoryId, tagIds, pageParam);
     }
 

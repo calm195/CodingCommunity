@@ -54,7 +54,7 @@ public class UserRandomGenHelper {
 
     private static final int AVATAR_NUM = 92;
 
-    private static final String AVATAR_TEMPLATE = "https://cdn.hhui.top/forum/avatar/%04d.png";
+    private static final String AVATAR_TEMPLATE = "https://imgs.hhui.top/forum/avatar/%04d.png";
 
     /**
      * 昵称自动生成器
