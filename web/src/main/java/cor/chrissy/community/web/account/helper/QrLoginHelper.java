@@ -7,6 +7,7 @@ import cor.chrissy.community.common.exception.NoVlaInGuavaException;
 import cor.chrissy.community.core.util.CodeGenerateUtil;
 import cor.chrissy.community.service.account.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -37,6 +38,7 @@ public class QrLoginHelper {
 
 
     private final LoginService loginService;
+
     /**
      * key = 验证码, value = 长连接
      */
@@ -46,7 +48,7 @@ public class QrLoginHelper {
      */
     private LoadingCache<String, String> deviceCodeCache;
 
-    public QrLoginHelper(LoginService loginService) {
+    public QrLoginHelper(@Qualifier(value = "pwdLoginServiceImpl") LoginService loginService) {
         this.loginService = loginService;
         verifyCodeCache = CacheBuilder.newBuilder().maximumSize(300).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<String, SseEmitter>() {
             @Override
@@ -58,8 +60,9 @@ public class QrLoginHelper {
         deviceCodeCache = CacheBuilder.newBuilder().maximumSize(300).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
             @Override
             public String load(String s) {
+                int cnt = 0;
                 while (true) {
-                    String code = CodeGenerateUtil.genCode();
+                    String code = CodeGenerateUtil.genCode(cnt++);
                     if (!verifyCodeCache.asMap().containsKey(code)) {
                         return code;
                     }

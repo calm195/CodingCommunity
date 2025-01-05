@@ -5,6 +5,9 @@ import cor.chrissy.community.common.req.user.UserRelationReq;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.service.user.dto.FollowUserInfoDTO;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author wx128
  * @createAt 2024/12/9
@@ -43,4 +46,6 @@ public interface UserRelationService {
      * @param req
      */
     void saveUserRelation(UserRelationReq req);
+
+    Set<Long> getFollowedUserId(List<Long> userIds, Long loginUserId);
 }

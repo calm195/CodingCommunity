@@ -27,4 +27,7 @@ public class UserDO extends BaseDO {
     private Integer loginType;
 
     private Integer deleted;
+
+    private String userName;
+    private String password;
 }

@@ -9,6 +9,18 @@ spring:
   mvc:
     async:
       request-timeout: 3000
+  liquibase:
+    change-log: classpath:liquibase/master.xml
+    enabled: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+servlet:
+  tomcat:
+    max-swallow-size: -1
 
 database:
   name: forum
@@ -16,3 +28,7 @@ database:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
+
+security:
+  salt: fawefasedfjal
+  salt-index: 2

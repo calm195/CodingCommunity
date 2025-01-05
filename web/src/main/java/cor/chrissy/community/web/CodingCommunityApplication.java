@@ -1,5 +1,7 @@
 package cor.chrissy.community.web;
 
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import cor.chrissy.community.core.util.SocketUtil;
 import cor.chrissy.community.core.util.SpringUtil;
 import cor.chrissy.community.web.config.GlobalViewConfig;
@@ -62,8 +64,9 @@ public class CodingCommunityApplication implements WebMvcConfigurer, Application
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        JacksonTypeHandler.setObjectMapper(new ObjectMapper());
+
         GlobalViewConfig config = SpringUtil.getBean(GlobalViewConfig.class);
-        ;
         if (webPort != null) {
             config.setHost("http://localhost:" + webPort);
         }

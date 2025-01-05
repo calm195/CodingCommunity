@@ -5,6 +5,7 @@ import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
 import cor.chrissy.community.service.article.dto.YearArticleDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
+import cor.chrissy.community.service.article.repository.entity.ReadCountDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -39,9 +40,9 @@ public interface ArticleMapper extends BaseMapper<ArticleDO> {
      * @param pageParam
      * @return
      */
-    List<ArticleDO> listArticleByCategoryAndTags(@Param("categoryId") Long category,
-                                                 @Param("tags") List<Long> tagIds,
-                                                 @Param("pageParam") PageParam pageParam);
+    List<ReadCountDO> listArticleByCategoryAndTags(@Param("categoryId") Long category,
+                                                   @Param("tags") List<Long> tagIds,
+                                                   @Param("pageParam") PageParam pageParam);
 
     /**
      * 根据用户ID获取创作历程

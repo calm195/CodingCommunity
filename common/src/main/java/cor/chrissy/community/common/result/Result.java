@@ -34,4 +34,8 @@ public class Result<T> implements Serializable {
     public static <T> Result<T> fail(StatusEnum status, Object... messages) {
         return new Result<>(Status.newStatus(status, messages));
     }
+
+    public static <T> Result<T> fail(Status status) {
+        return new Result<>(status);
+    }
 }

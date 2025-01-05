@@ -17,9 +17,11 @@ public interface SidebarService {
     List<SideBarDTO> queryHomeSidebarList();
 
     /**
-     * 查询 PDF 的侧边栏
+     * 查询侧边栏
      *
      * @return
      */
-    SideBarDTO pdfSideBar();
+    List<SideBarDTO> queryColumnSidebarList();
+
+    List<SideBarDTO> queryArticleDetailSidebarList();
 }

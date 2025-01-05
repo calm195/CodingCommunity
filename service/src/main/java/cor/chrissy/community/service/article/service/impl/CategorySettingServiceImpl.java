@@ -8,6 +8,7 @@ import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.CategoryDTO;
 import cor.chrissy.community.service.article.repository.dao.CategoryDao;
 import cor.chrissy.community.service.article.repository.entity.CategoryDO;
+import cor.chrissy.community.service.article.service.CategoryService;
 import cor.chrissy.community.service.article.service.CategorySettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class CategorySettingServiceImpl implements CategorySettingService {
     @Autowired
     private CategoryDao categoryDao;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @Override
     public void saveCategory(CategoryReq categoryReq) {
         CategoryDO categoryDO = ArticleConverter.toDO(categoryReq);
@@ -33,6 +37,7 @@ public class CategorySettingServiceImpl implements CategorySettingService {
             categoryDO.setId(categoryReq.getCategoryId());
             categoryDao.updateById(categoryDO);
         }
+        categoryService.refreshCache();
     }
 
     @Override
@@ -41,6 +46,7 @@ public class CategorySettingServiceImpl implements CategorySettingService {
         if (categoryDO != null) {
             categoryDao.removeById(categoryDO);
         }
+        categoryService.refreshCache();
     }
 
     @Override
@@ -50,6 +56,7 @@ public class CategorySettingServiceImpl implements CategorySettingService {
             categoryDO.setStatus(pushStatus);
             categoryDao.updateById(categoryDO);
         }
+        categoryService.refreshCache();
     }
 
     @Override

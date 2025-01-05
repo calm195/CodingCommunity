@@ -10,6 +10,7 @@ import cor.chrissy.community.web.account.helper.QrLoginHelper;
 import cor.chrissy.community.web.account.vo.QrLoginVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class LoginRestController {
 
     @Autowired
+    @Qualifier("pwdLoginServiceImpl")
     private LoginService loginService;
 
     @Autowired

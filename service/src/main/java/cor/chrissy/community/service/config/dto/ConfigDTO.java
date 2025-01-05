@@ -2,12 +2,14 @@ package cor.chrissy.community.service.config.dto;
 
 import cor.chrissy.community.common.entity.BaseDTO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author wx128
  * @createAt 2024/12/23
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class ConfigDTO extends BaseDTO {
 
     /**
@@ -51,5 +53,7 @@ public class ConfigDTO extends BaseDTO {
      * @see cor.chrissy.community.common.enums.ConfigTagEnum#getCode()
      */
     private String tags;
+
+    private String extra;
 }
 

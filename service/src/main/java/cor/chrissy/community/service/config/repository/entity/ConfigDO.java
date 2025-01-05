@@ -64,4 +64,6 @@ public class ConfigDO extends BaseDO {
      * @see ConfigTagEnum#getCode()
      */
     private String tags;
+
+    private String extra;
 }

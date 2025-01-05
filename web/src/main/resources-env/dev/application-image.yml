@@ -3,6 +3,13 @@ image:
   web-img-path: CodingCommunity/img
   tmp-upload-path: D:\\temp\\upload
   cdn-host:
+  oss:
+    type: local
+    prefix: paicoding/
+    endpoint:
+    ak:
+    bucket:
+    host:
 
 spring:
   web:

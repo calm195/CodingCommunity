@@ -1,3 +1,12 @@
+// $('#logoutBtn').click(function () {
+//     $.ajax({
+//         url: "/logout", dataType: "json", type: "get", success: function (data) {
+//             toastr.success("已退出登录")
+//             window.location.href = "/";
+//         }
+//     })
+// })
+
 $('#loginBtn').click(function () {
     const code = $('#loginCode').val();
     console.log("开始登录：" + code);

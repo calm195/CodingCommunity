@@ -65,4 +65,23 @@ public class ColumnDTO {
      * 统计计数相关信息
      */
     private ColumnFootCountDTO count;
+
+    private Integer section;
+
+    private Integer nums;
+
+    /**
+     * 专栏类型
+     */
+    private Integer type;
+
+    /**
+     * 限时免费开始时间
+     */
+    private Long freeStartTime;
+
+    /**
+     * 限时免费结束时间
+     */
+    private Long freeEndTime;
 }

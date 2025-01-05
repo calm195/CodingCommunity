@@ -2,9 +2,10 @@ package cor.chrissy.community.service.article.service.impl;
 
 import cor.chrissy.community.common.enums.DocumentTypeEnum;
 import cor.chrissy.community.common.enums.OperateTypeEnum;
-import cor.chrissy.community.common.enums.PushStatEnum;
+import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
+import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.core.util.NumUtil;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.repository.dao.ArticleDao;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -108,26 +110,17 @@ public class ArticleWriteServiceImpl implements ArticleWriteService {
      * @param articleId
      */
     @Override
-    public void deleteArticle(Long articleId) {
+    public void deleteArticle(Long articleId, Long loginUserId) {
         ArticleDO articleDO = articleDao.getById(articleId);
+
+        if (articleDO != null && !Objects.equals(loginUserId, articleDO.getAuthorId())) {
+            articleDO.setDeleted(YesOrNoEnum.YES.getCode());
+            throw ExceptionUtil.of(StatusEnum.FORBID_ERROR_MIXED, "you cannot delete the article");
+        }
+
         if (articleDO != null && articleDO.getDeleted() != YesOrNoEnum.YES.getCode()) {
             articleDO.setDeleted(YesOrNoEnum.YES.getCode());
             articleDao.updateById(articleDO);
-        }
-    }
-
-    /**
-     * 文章上下线
-     *
-     * @param articleId
-     * @param pushStatusEnum
-     */
-    @Override
-    public void operateArticle(Long articleId, PushStatEnum pushStatusEnum) {
-        ArticleDO dto = articleDao.getById(articleId);
-        if (dto != null && dto.getStatus() != pushStatusEnum.getCode()) {
-            dto.setStatus(pushStatusEnum.getCode());
-            articleDao.updateById(dto);
         }
     }
 }

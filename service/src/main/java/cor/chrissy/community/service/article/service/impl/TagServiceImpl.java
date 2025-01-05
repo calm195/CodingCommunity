@@ -1,5 +1,7 @@
 package cor.chrissy.community.service.article.service.impl;
 
+import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.dao.TagDao;
 import cor.chrissy.community.service.article.service.TagService;
@@ -20,8 +22,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> queryTagsByCategoryId(Long categoryId) {
-        return tagDao.listTagsByCategoryId(categoryId);
+    public PageVo<TagDTO> queryTags(String key, PageParam param) {
+        List<TagDTO> tagDTOS = tagDao.listOnlineTag(key, param);
+        int total = tagDao.countOnlineTag(key);
+        return PageVo.build(tagDTOS, param.getPageSize(), param.getPageNum(), total);
     }
 
     @Override

@@ -7,11 +7,14 @@ body {
     /*点击后激活后的颜色*/
     --pai-brand-3-click: #f59e2f;
     /*不可用的颜色*/
-    --pai-brand-4-disable: #abcdff;
+    --pai-brand-4-disable: #f7f8fa;
     /*备用色 非常深的颜色*/
     --pai-brand-5-bak: #fe6617;
     /*消息提醒点*/
     --pai-brand-6-mq: #f85959;
+    --pai-brand-7-light: rgba(255, 105, 0, 0.15);
+    /*浅色时由上一个过度到下一个*/
+    --pai-brand-8-light: rgba(255, 105, 0, 0.35);
     /*颜色白色*/
     --pai-color-fff-normal: #fff;
     /*浅灰色*/
@@ -22,12 +25,16 @@ body {
     --pai-color-4-gray: #515767;
     /*disable 的灰*/
     --pai-color-5-gray: #ddd;
+    /*非常浅的灰*/
+    --pai-color-6-gray: #f3f5f8;
+    /*比上面更灰一点*/
+    --pai-color-7-gray: #eff3f9;
     /*偏黑色*/
     --pai-color-3-black: #212529;
     /*背景色*/
     --pai-bg-white-fff: #fff;
-    /*边框颜色*/
-    --pai-border-color-1: #d2d9e7;
+    /*淡黄色*/
+    --pai-bg-normal-1: #fff3db;
     --pai-bg-light-1: #eeeeee;
     /*浅一点的颜色*/
     --pai-bg-light-2: #f7f8fa;
@@ -39,6 +46,8 @@ body {
     --pai-bg-dark-3: #000000;
     /*横线的颜色*/
     --pai-hr-color-1: #f0f0f0;
+    /*边框颜色*/
+    --pai-border-color-1: #d2d9e7;
     /*外边距*/
     margin: 0;
     /*溢出后隐藏*/
@@ -70,6 +79,7 @@ input:focus {
 
 textarea {
     resize: none;
+    font-size: 14px;
 }
 
 input::placeholder,
@@ -82,10 +92,11 @@ textarea:focus {
     outline: none;
 }
 
+button,
 button:focus {
     outline: none;
+    box-shadow: none !important;
 }
-
 
 /*接下来是 ID 的*/
 #scrollUp {
@@ -112,7 +123,7 @@ button:focus {
 }
 
 #scrollUp:hover {
-    background-color: rgba(255, 105, 0, 0.15);
+    background-color: var(--pai-brand-7-light);
 }
 
 #scrollUp-active {
@@ -120,6 +131,105 @@ button:focus {
 }
 
 /*回到顶部*/
+
+#loginModal .modal-header {
+    border-bottom: none;
+}
+
+#loginModal .modal-dialog {
+    width: 400px;
+}
+
+#loginModal .mdnice-user-dialog-footer {
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(216deg, #f9fafb, #f8fafb 57%, #f0f2f6);
+    padding: 10px 20px;
+    font-size: 14px;
+}
+
+#loginModal a {
+    color: var(--pai-brand-1-normal);
+    cursor: pointer;
+}
+
+#loginModal a:hover {
+    color: var(--pai-brand-2-hover);
+}
+
+#loginModal .mdnice-user-dialog-footer p {
+    margin: 0;
+}
+
+#loginModal .close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.45);
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+#loginModal .close span {
+    display: block;
+    width: 54px;
+    height: 54px;
+    line-height: 54px;
+    text-align: center;
+    text-transform: none;
+    text-rendering: auto;
+}
+
+#loginModal .modal-content {
+    border-radius: 2px;
+}
+
+#loginModal .modal-content h2 {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+#loginModal .modal-content .modal-body {
+    padding: 30px 0 0;
+}
+
+#loginModal .modal-content .modal-body .tabpane-container {
+    margin: 10px auto 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 80%;
+}
+
+#loginModal .first {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#loginModal .first .signin-qrcode {
+    width: 220px;
+}
+
+#loginModal .explain {
+    text-align: center;
+    font-size: 12px;
+}
+
+#loginModal #code {
+    color: var(--pai-brand-6-mq);
+    font-size: 20px;
+}
 
 /*接下来是 class 的*/
 
@@ -133,16 +243,38 @@ button:focus {
     background-color: var(--pai-bg-white-fff);
 }
 
+.dropdown-item {
+    color: var(--pai-color-3-black);
+}
+
 /*下拉菜单的颜色覆盖*/
 .dropdown-item.active,
 .dropdown-item:active {
-    color: var(--pai-color-fff-normal);
+    color: var(--pai-color-3-black);
     background-color: var(--pai-brand-3-click);
 }
 
 .dropdown-item:focus,
 .dropdown-item:hover {
-    color: var(--pai-brand-2-hover);
+    background-color: var(--pai-bg-normal-1);
+}
+
+/*覆盖 bootstrap*/
+.card {
+    border: none;
+    margin-bottom: 20px;
+}
+
+/*右侧贴片*/
+.home-right,
+.custom-home-right {
+    width: 24%;
+    border-radius: 20px;
+    position: relative;
+}
+
+.custom-home-right {
+    width: 28%;
 }
 
 /*评论*/
@@ -201,7 +333,6 @@ button:focus {
 .no-comment-box,
 .posts-author-box,
 .posts-box,
-.card,
 .user-info-box,
 .page-box,
 .carousel {
@@ -242,18 +373,16 @@ button:focus {
 .btn-outline-primary,
 .posts-admin-tag-official,
 .custom-font-color {
-    color: #007fff;
+    color: var(--pai-bg-normal-1);
 }
 
-.dropdown-menu,
-.card {
+.dropdown-menu {
     border: 0;
 }
 
 .input-group-text,
 .navbar-toggler,
-.modal-content,
-.card {
+.modal-content {
     margin-bottom: 10px;
 }
 
@@ -384,10 +513,6 @@ button:focus {
     padding-right: 40px;
 }
 
-.container-bg-light {
-    background: #ffffff;
-}
-
 .input-icon {
     position: relative;
 }
@@ -504,82 +629,87 @@ button:focus {
     text-align: center;
 }
 
+/* @media (max-width: 768px) {
+  body {
+    color: red !important;
+  }
+} */
+
 /* 设备适配样式 */
-@media (max-width: 768px) {
-    html {
-        padding-top: 68px;
-    }
+/* @media (max-width: 768px) {
+  html {
+    padding-top: 68px;
+  }
 
-    .navbar {
-        padding: 0.5rem 1rem;
-    }
+  .navbar {
+    padding: 0.5rem 1rem;
+  }
 
-    .foot-link {
-        padding: 10px 0;
-    }
+  .foot-link {
+    padding: 10px 0;
+  }
 
-    .foot li {
-        display: block;
-        padding: 10px 0 0 0;
-    }
+  .foot li {
+    display: block;
+    padding: 10px 0 0 0;
+  }
 
-    .foot li:last-child {
-        float: none;
-    }
+  .foot li:last-child {
+    float: none;
+  }
 
-    .tag-box,
-    .no-comment-box,
-    .posts-author-box,
-    .posts-box,
-    .card {
-        margin-bottom: 10px;
-    }
+  .tag-box,
+  .no-comment-box,
+  .posts-author-box,
+  .posts-box,
+  .card {
+    margin-bottom: 10px;
+  }
+  .carousel .page-box,
+  .user-info-box {
+    margin-bottom: 10px;
+  }
 
-    .carousel .page-box,
-    .user-info-box {
-        margin-bottom: 10px;
-    }
+  .user-info-date-box {
+    display: none;
+  }
 
-    .user-info-date-box {
-        display: none;
-    }
+  .user-info-desc-box {
+    padding-left: 10px;
+    padding-right: 0;
+  }
 
-    .user-info-desc-box {
-        padding-left: 10px;
-        padding-right: 0;
-    }
+  .best-answer {
+    margin-left: 10px;
+  }
 
-    .best-answer {
-        margin-left: 10px;
-    }
+  .posts-comment-box,
+  .posts-box,
+  .editor-form-box,
+  .card-body,
+  .card-header,
+  .list-group-item,
+  .faq-solution-box,
+  .editor-title {
+    padding: 10px;
+  }
 
-    .posts-comment-box,
-    .posts-box,
-    .editor-form-box,
-    .card-body,
-    .card-header,
-    .list-group-item,
-    .faq-solution-box,
-    .editor-title {
-        padding: 10px;
-    }
+  .type-box {
+    padding: 0;
+  }
 
-    .type-box {
-        padding: 0;
-    }
+  .posts-comment-input-box {
+    margin-top: -10px;
+  }
 
-    .posts-comment-input-box {
-        margin-top: -10px;
-    }
+  .user-edit-btn {
+    display: none;
+  }
 
-    .user-edit-btn {
-        display: none;
-    }
-
-    .message-block {
-        margin-right: 5px;
-    }
-}
+  .message-block {
+    margin-right: 5px;
+  }
+} */
 
 .hidden {
     display: none;
@@ -713,10 +843,154 @@ button:focus {
     display: inline-block;
 }
 
+/*文章详情*/
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5 {
+    color: var(--pai-brand-1-normal);
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+}
 
+.article-detail .home-right-item-wrap .com-2-panel-title {
+    font-size: 16px;
+}
 
+.article-content img {
+    max-width: 100%;
+    max-height: 500px;
+    box-sizing: content-box;
+    background-color: #fff;
+    margin: 0 auto;
+}
 
+.article-content h1 {
+    border-bottom: 1px solid #eaecef;
+    font-size: 1.7em;
+}
 
+.article-content h2 {
+    font-size: 1.5em;
+}
 
+.article-content h3 {
+    font-size: 1.3em;
+}
 
+.article-content h4 {
+    font-size: 1.1em;
+}
 
+.article-content h5 {
+    font-size: 1em;
+}
+
+.article-content strong {
+    color: var(--pai-brand-1-normal);
+}
+
+.article-content p,
+.article-content ol,
+.article-content ul,
+.article-content table,
+.article-content pre,
+.article-content blockquote {
+    /* font-weight: 400; */
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+.article-content blockquote {
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+}
+
+.article-content ol,
+.article-content ul {
+    padding-left: 20px;
+}
+
+.article-content table {
+    display: table;
+    border-collapse: separate;
+    border-spacing: 2px;
+    border-color: grey;
+    border-spacing: 0;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.article-content table th,
+.article-content table tr,
+.article-content table td {
+    padding: 6px 13px;
+    border: 1px solid #dfe2e5;
+}
+
+.article-content pre {
+    padding: 5px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #fafafa;
+    border-radius: 3px;
+    word-wrap: normal;
+}
+
+.article-content pre div {
+    background-color: #fafafa;
+}
+
+.article-content li {
+    list-style: disc;
+    line-height: 1.4;
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.article-content a {
+    color: var(--pai-brand-1-normal);
+    text-decoration: underline;
+}
+
+.article-content a:hover {
+    color: var(--pai-brand-2-hover);
+}
+
+.article-content .hljs-center {
+    text-align: center;
+}
+
+.article-content .hljs-left {
+    text-align: left;
+}
+
+.article-content .hljs-right {
+    text-align: right;
+}
+
+.article-suspended-panel {
+    position: fixed;
+    margin-left: -80px;
+    top: 140px;
+    z-index: 2;
+}
+
+.article-suspended-panel-md {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    padding: 12px 0;
+    visibility: hidden;
+}
+
+.article-suspended-panel-md .panel-btn {
+    margin-bottom: 0;
+}

@@ -17,6 +17,7 @@ public enum SidebarStyleEnum {
     ABOUT(4),
     COLUMN(5),
     PDF(6),
+    SUBSCRIBE(7),
     ;
 
     private final int style;

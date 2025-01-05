@@ -27,4 +27,7 @@ public class GlobalViewConfig {
 
     private String wxLoginUrl;
     private String host;
+
+    private String welcomeInfo;
+    private String contactMeWxQrCode;
 }

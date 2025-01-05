@@ -1,12 +1,14 @@
 package cor.chrissy.community.web.account.rest;
 
+import cor.chrissy.community.common.req.user.wx.BaseWxMsgRes;
 import cor.chrissy.community.common.req.user.wx.WxTxtMsgReq;
 import cor.chrissy.community.common.req.user.wx.WxTxtMsgRes;
 import cor.chrissy.community.service.account.service.LoginService;
 import cor.chrissy.community.web.account.helper.QrLoginHelper;
+import cor.chrissy.community.web.account.helper.WxHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +21,12 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class WxRestController {
     @Autowired
+    @Qualifier("pwdLoginServiceImpl")
     private LoginService loginService;
     @Autowired
     private QrLoginHelper qrLoginHelper;
+    @Autowired
+    private WxHelper wxHelper;
 
     /**
      * 微信的公众号接入 token 验证，即返回echostr的参数值
@@ -49,13 +54,8 @@ public class WxRestController {
     @PostMapping(path = "callback",
             consumes = {"application/xml", "text/xml"},
             produces = "application/xml;charset=utf-8")
-    public WxTxtMsgRes callBack(@RequestBody WxTxtMsgReq msg) {
+    public BaseWxMsgRes callBack(@RequestBody WxTxtMsgReq msg) {
         String content = msg.getContent();
-        WxTxtMsgRes res = new WxTxtMsgRes();
-        res.setFromUserName(msg.getToUserName());
-        res.setToUserName(msg.getFromUserName());
-        res.setCreateTime(System.currentTimeMillis() / 1000);
-        res.setMsgType("text");
         if ("subscribe".equals(msg.getEvent()) || "scan".equalsIgnoreCase(msg.getEvent())) {
             // 关注公众号
             String key = msg.getEventKey();
@@ -65,44 +65,20 @@ public class WxRestController {
                 String code = key.substring("qrscene_".length());
                 String verifyCode = loginService.getVerifyCode(msg.getFromUserName());
                 qrLoginHelper.login(code, verifyCode);
+                WxTxtMsgRes res = new WxTxtMsgRes();
                 res.setContent("登录成功");
-            } else {
-                res.setContent("欢迎关注公众号!");
-            }
-        } else {
-            if (loginSymbol(content)) {
-                res.setContent("登录验证码: 【" + loginService.getVerifyCode(msg.getFromUserName()) + "】 五分钟内有效");
-            } else if (NumberUtils.isDigits(content)) {
-                String verifyCode = loginService.getVerifyCode(msg.getFromUserName());
-                if (qrLoginHelper.login(content, verifyCode)) {
-                    res.setContent("login success!");
-                } else {
-                    res.setContent("the code was outdated!");
-                }
-            } else {
-                res.setContent("welcome!");
+                fillRes(res, msg);
+                return res;
             }
         }
+        BaseWxMsgRes res = wxHelper.buildResponseBody(msg.getEvent(), content, msg.getFromUserName());
+        fillRes(res, msg);
         return res;
     }
 
-    /**
-     * 判断是否为登录指令，后续扩展其他的响应
-     *
-     * @param msg
-     * @return
-     */
-    private boolean loginSymbol(String msg) {
-        if (StringUtils.isBlank(msg)) {
-            return false;
-        }
-
-        msg = msg.trim();
-        for (String key : LoginService.LOGIN_CODE_KEY) {
-            if (msg.equalsIgnoreCase(key)) {
-                return true;
-            }
-        }
-        return false;
+    private void fillRes(BaseWxMsgRes res, WxTxtMsgReq msg) {
+        res.setFromUserName(msg.getFromUserName());
+        res.setCreateTime(msg.getCreateTime());
+        res.setToUserName(msg.getToUserName());
     }
 }

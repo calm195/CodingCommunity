@@ -4,7 +4,7 @@ import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.req.article.ColumnArticleReq;
 import cor.chrissy.community.common.req.article.ColumnReq;
 import cor.chrissy.community.common.vo.PageVo;
-import cor.chrissy.community.service.article.dto.ArticleDTO;
+import cor.chrissy.community.service.article.dto.ColumnArticleDTO;
 import cor.chrissy.community.service.article.dto.ColumnDTO;
 
 import java.util.List;
@@ -63,5 +63,5 @@ public interface ColumnSettingService {
      * @param columnId
      * @return
      */
-    List<ArticleDTO> queryColumnArticles(long columnId);
+    PageVo<ColumnArticleDTO> queryColumnArticles(long columnId, PageParam pageParam) throws Exception;
 }

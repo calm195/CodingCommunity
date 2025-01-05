@@ -54,7 +54,7 @@ public class ConfigDao extends ServiceImpl<ConfigMapper, ConfigDO> {
         List<ConfigDO> configDOS = lambdaQuery()
                 .in(ConfigDO::getType, typeList)
                 .eq(ConfigDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .orderByDesc(ConfigDO::getCreateTime)
+                .orderByAsc(ConfigDO::getRank)
                 .last(PageParam.getLimitSql(pageParam))
                 .list();
         return ConfigConverter.toDTOS(configDOS);
@@ -107,5 +107,11 @@ public class ConfigDao extends ServiceImpl<ConfigMapper, ConfigDO> {
                 .eq(ConfigDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .count()
                 .intValue();
+    }
+
+    public void updatePdfConfigVisitNum(long configId, String extra) {
+        lambdaUpdate().set(ConfigDO::getExtra, extra)
+                .eq(ConfigDO::getId, configId)
+                .update();
     }
 }

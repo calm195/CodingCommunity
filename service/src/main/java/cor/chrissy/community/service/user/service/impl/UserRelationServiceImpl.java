@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +56,19 @@ public class UserRelationServiceImpl implements UserRelationService {
         userRelationDO.setFollowStat(req.getFollowed() ? FollowStateEnum.FOLLOW.getCode() : FollowStateEnum.CANCEL_FOLLOW.getCode());
         userRelationDao.updateById(userRelationDO);
         // 发布关注事件
-        SpringUtil.publishEvent(new NotifyMsgEvent<>(this, NotifyTypeEnum.FOLLOW, userRelationDO));
+        SpringUtil.publishEvent(new NotifyMsgEvent<>(this, req.getFollowed() ? NotifyTypeEnum.FOLLOW : NotifyTypeEnum.CANCEL_FOLLOW, userRelationDO));
+    }
+
+    @Override
+    public Set<Long> getFollowedUserId(List<Long> userIds, Long loginUserId) {
+        if (CollectionUtils.isEmpty(userIds)) {
+            return Collections.emptySet();
+        }
+        List<UserRelationDO> relationList = userRelationDao.listUserRelations(loginUserId, userIds);
+        Map<Long, UserRelationDO> relationDOMap = MapUtil.toMap(relationList, UserRelationDO::getUserId, r -> r);
+        return relationDOMap.values().stream()
+                .filter(s -> s.getFollowStat().equals(FollowStateEnum.FOLLOW.getCode()))
+                .map(UserRelationDO::getUserId).collect(Collectors.toSet());
     }
 
     @Override

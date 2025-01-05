@@ -25,6 +25,11 @@ public class ColumnConverter {
         dto.setState(info.getState());
         dto.setAuthor(info.getUserId());
         dto.setPublishTime(info.getPublishTime().getTime());
+        dto.setNums(info.getNums());
+        dto.setSection(info.getSection());
+        dto.setType(info.getType());
+        dto.setFreeStartTime(info.getFreeStartTime().getTime());
+        dto.setFreeEndTime(info.getFreeEndTime().getTime());
         return dto;
     }
 
@@ -40,12 +45,16 @@ public class ColumnConverter {
             return null;
         }
         ColumnInfoDO columnInfoDO = new ColumnInfoDO();
-        columnInfoDO.setColumnName(columnReq.getColumnName());
-        columnInfoDO.setUserId(columnReq.getUserId());
+        columnInfoDO.setColumnName(columnReq.getColumn());
+        columnInfoDO.setUserId(columnReq.getAuthor());
         columnInfoDO.setIntroduction(columnReq.getIntroduction());
         columnInfoDO.setCover(columnReq.getCover());
         columnInfoDO.setState(columnReq.getState());
-        columnInfoDO.setPublishTime(new Date(columnReq.getPublishTime()));
+        columnInfoDO.setSection(columnReq.getSection());
+        columnInfoDO.setNums(columnReq.getNums());
+        columnInfoDO.setType(columnReq.getType());
+        columnInfoDO.setFreeStartTime(new Date(columnReq.getFreeStartTime()));
+        columnInfoDO.setFreeEndTime(new Date(columnReq.getFreeEndTime()));
         return columnInfoDO;
     }
 
@@ -56,7 +65,7 @@ public class ColumnConverter {
         ColumnArticleDO columnArticleDO = new ColumnArticleDO();
         columnArticleDO.setColumnId(columnArticleReq.getColumnId());
         columnArticleDO.setArticleId(columnArticleReq.getArticleId());
-        columnArticleDO.setSection(columnArticleReq.getSection());
+        columnArticleDO.setSection(columnArticleReq.getSort());
         return columnArticleDO;
     }
 }

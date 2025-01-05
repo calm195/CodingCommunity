@@ -20,7 +20,9 @@ CREATE TABLE `article`
     `create_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
     PRIMARY KEY (`id`),
-    KEY `idx_category_id` (`category_id`)
+    KEY `idx_category_id` (`category_id`),
+    KEY `idx_title` (`title`),
+    KEY `idx_short_title` (`short_title`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
     COMMENT ='文章表';
@@ -60,6 +62,22 @@ CREATE TABLE `article_tag`
   DEFAULT CHARSET = utf8mb4
     COMMENT ='文章标签映射';
 
+-- forum.banner definition
+
+CREATE TABLE `banner`
+(
+    `id`          int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `banner_name` varchar(64)  NOT NULL DEFAULT '' COMMENT '名称',
+    `banner_url`  varchar(256) NOT NULL DEFAULT '' COMMENT '图片url',
+    `banner_type` tinyint      NOT NULL DEFAULT '0' COMMENT '类型：1-首页，2-侧边栏，3-广告位',
+    `rank`        tinyint      NOT NULL DEFAULT '0' COMMENT '排序',
+    `status`      tinyint      NOT NULL DEFAULT '0' COMMENT '状态：0-未发布，1-已发布',
+    `deleted`     tinyint      NOT NULL DEFAULT '0' COMMENT '是否删除',
+    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='banner表';
 
 -- forum.category definition
 
@@ -68,6 +86,7 @@ CREATE TABLE `category`
     `id`            int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `category_name` varchar(64)  NOT NULL COMMENT '类目名称',
     `status`        tinyint      NOT NULL DEFAULT '0' COMMENT '状态：0-未发布，1-已发布',
+    `rank`          tinyint      NOT NULL default '0' COMMENT '排序',
     `deleted`       tinyint      NOT NULL DEFAULT '0' COMMENT '是否删除',
     `create_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`   timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
@@ -124,6 +143,8 @@ CREATE TABLE `user`
 (
     `id`               int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `third_account_id` varchar(128) NOT NULL DEFAULT '' COMMENT '第三方用户ID',
+    `user_name`        varchar(64)  NOT NULL DEFAULT '' COMMENT '用户名',
+    `password`         varchar(128) NOT NULL DEFAULT '' COMMENT '密码',
     `login_type`       tinyint      NOT NULL DEFAULT '0' COMMENT '登录方式: 0-微信登录，1-账号密码登录',
     `deleted`          tinyint      NOT NULL DEFAULT '0' COMMENT '是否删除',
     `create_time`      timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -185,6 +206,7 @@ CREATE TABLE `user_info`
     `company`     varchar(50)   NOT NULL DEFAULT '' COMMENT '公司',
     `profile`     varchar(225)  NOT NULL DEFAULT '' COMMENT '个人简介',
     `extend`      varchar(1024) NOT NULL DEFAULT '' COMMENT '扩展字段',
+    `ip`          json          not null comment '用户的ip信息',
     `deleted`     tinyint       NOT NULL DEFAULT '0' COMMENT '是否删除',
     `create_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
@@ -234,15 +256,19 @@ CREATE TABLE `notify_msg`
 -- 专栏
 CREATE TABLE `column_info`
 (
-    `id`           int unsigned        NOT NULL AUTO_INCREMENT COMMENT '专栏ID',
-    `column_name`  varchar(64)         NOT NULL default '' COMMENT '专栏名',
-    `user_id`      int unsigned        not null default '0' comment '作者id',
-    `introduction` varchar(256)        NOT NULL default '' COMMENT '专栏简述',
-    `cover`        varchar(128)        NOT NULL default '' COMMENT '专栏封面',
-    `state`        tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 0-审核中，1-连载，2-完结',
-    `publish_time` timestamp           NOT NULL DEFAULT '1970-01-02 00:00:00' COMMENT '上线时间',
-    `create_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`  timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+    `id`              int unsigned        NOT NULL AUTO_INCREMENT COMMENT '专栏ID',
+    `column_name`     varchar(64)         NOT NULL default '' COMMENT '专栏名',
+    `user_id`         int unsigned        not null default '0' comment '作者id',
+    `introduction`    varchar(256)        NOT NULL default '' COMMENT '专栏简述',
+    `cover`           varchar(128)        NOT NULL default '' COMMENT '专栏封面',
+    `state`           tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '状态: 0-审核中，1-连载，2-完结',
+    `publish_time`    timestamp           NOT NULL DEFAULT '1970-01-02 00:00:00' COMMENT '上线时间',
+    `nums`            int unsigned        NOT NULL DEFAULT '0' COMMENT '专栏预计的更新的文章数',
+    `type`            int unsigned        NOT NULL DEFAULT '0' COMMENT '专栏类型 0-免费 1-登录阅读 2-限时免费',
+    `free_start_time` timestamp           NOT NULL DEFAULT '1970-01-02 00:00:00' COMMENT '限时免费开始时间',
+    `free_end_time`   timestamp           NOT NULL DEFAULT '1970-01-02 00:00:00' COMMENT '限时免费结束时间',
+    `create_time`     timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`     timestamp           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
     PRIMARY KEY (`id`),
     KEY `user_id` (`user_id`)
 ) ENGINE = InnoDB
@@ -265,18 +291,19 @@ CREATE TABLE `column_article`
 
 CREATE TABLE `config`
 (
-    `id`          int unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `type`        tinyint      NOT NULL default '0' COMMENT '配置类型：1-首页，2-侧边栏，3-广告位，4-公告',
-    `name`        varchar(64)  NOT NULL default '' COMMENT '名称',
-    `banner_url`  varchar(256) NOT NULL default '' COMMENT '图片url',
-    `jump_url`    varchar(256) NOT NULL default '' COMMENT '跳转链接',
-    `content`     varchar(256) NOT NULL default '' COMMENT '内容',
-    `rank`        tinyint      NOT NULL default '0' COMMENT '排序',
-    `status`      tinyint      NOT NULL DEFAULT '0' COMMENT '状态：0-未发布，1-已发布',
-    `tags`        varchar(64)  not null default '' comment '配置关联标签，英文逗号分隔 1 火 2 官方 3 推荐',
-    `deleted`     tinyint      NOT NULL DEFAULT '0' COMMENT '是否删除',
-    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+    `id`          int unsigned  NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `type`        tinyint       NOT NULL default '0' COMMENT '配置类型：1-首页，2-侧边栏，3-广告位，4-公告',
+    `name`        varchar(64)   NOT NULL default '' COMMENT '名称',
+    `banner_url`  varchar(256)  NOT NULL default '' COMMENT '图片url',
+    `jump_url`    varchar(256)  NOT NULL default '' COMMENT '跳转链接',
+    `content`     varchar(256)  NOT NULL default '' COMMENT '内容',
+    `rank`        tinyint       NOT NULL default '0' COMMENT '排序',
+    `status`      tinyint       NOT NULL DEFAULT '0' COMMENT '状态：0-未发布，1-已发布',
+    `tags`        varchar(64)   not null default '' comment '配置关联标签，英文逗号分隔 1 火 2 官方 3 推荐',
+    `extra`       varchar(1024) not null default '{}' comment '扩展信息',
+    `deleted`     tinyint       NOT NULL DEFAULT '0' COMMENT '是否删除',
+    `create_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 1

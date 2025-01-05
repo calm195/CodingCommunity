@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="components/layout/header :: head(~{::title}, ~{}, ~{})">
-    <title th:text="${global.siteInfo.name}">Coding 社区</title>
+    <title th:text="${global.siteInfo.name}">Coding</title>
 </div>
 
 <link href="/css/views/user.css" rel="stylesheet"/>
@@ -12,51 +12,50 @@
 
 <!-- 正文内容 -->
 <div class="user">
-    <!-- <img src="/img/mine-bg.png" alt="" /> -->
+    <div th:replace="views/user/info/index :: user_info(${vo.userHome})"></div>
     <div class="user-wrap">
-        <!-- 左侧内容 -->
-        <div class="user-left">
-            <div
-                    th:replace="views/user/info/index :: user_info(${vo.userHome})"
-            ></div>
-            <div
-                    th:replace="views/user/achievement/index :: user_achievement(${vo.userHome})"
-            ></div>
-            <div
-                    th:replace="views/user/history/index :: user_process(${vo.userHome})"
-            ></div>
-        </div>
-
-        <!-- 主要内容 -->
-        <div class="user-body">
-            <!-- 选择标签列表 -->
-            <div
-                    th:replace="views/user/navbar/home-bar :: select_tag(${vo.homeSelectTags}, ${vo.userHome.userId})"
-            ></div>
-
-            <!-- 标签内容列表 -->
-            <div class="user-article-wrap">
-                <!-- 文章列表 -->
+        <div class="user-content">
+            <!-- 主要内容 -->
+            <div class="user-body">
+                <!-- 选择标签列表 -->
                 <div
-                        id="articleList"
-                        th:if="${vo.homeSelectType == 'article' || vo.homeSelectType == 'read' || vo.homeSelectType == 'collection'}"
-                >
-                    <div th:replace="views/user/articles/index">文章列表</div>
-                </div>
+                        th:replace="views/user/navbar/home-bar :: select_tag(${vo.homeSelectTags}, ${vo.userHome.userId})"
+                ></div>
 
-                <!-- 粉丝关注列表-->
-                <a th:if="${vo.homeSelectType == 'follow'}">
+                <!-- 标签内容列表 -->
+                <div class="user-article-wrap">
+                    <!-- 文章列表 -->
                     <div
-                            th:replace="views/user/navbar/follow-bar :: select_tag(${vo.followSelectTags}, ${vo.userHome.userId})"
-                    ></div>
-                    <div th:replace="views/user/follows/index">关注列表</div>
-                    <div
-                            th:if="${#lists.isEmpty(vo.followList.list)}"
-                            id="followList"
+                            id="articleList"
+                            th:if="${vo.homeSelectType == 'article' || vo.homeSelectType == 'read' || vo.homeSelectType == 'collection'}"
                     >
-                        <div style="color: gray">列表为空~</div>
+                        <div th:replace="views/user/articles/index">文章列表</div>
                     </div>
-                </a>
+
+                    <!-- 粉丝关注列表-->
+                    <a th:if="${vo.homeSelectType == 'follow'}">
+                        <div th:replace="views/user/navbar/follow-bar :: select_tag(${vo.followSelectTags}, ${vo.userHome.userId})">
+                        </div>
+                        <div th:replace="views/user/follows/index">关注列表</div>
+                        <div
+                                th:if="${#lists.isEmpty(vo.followList.list)}"
+                                id="followList">
+                            <div style="color: gray">列表为空~</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <!-- 左侧内容 -->
+            <div class="user-left">
+                <!-- <div
+                th:replace="views/user/info/index :: user_info(${vo.userHome})"
+              ></div> -->
+                <div
+                        th:replace="views/user/achievement/index :: user_achievement(${vo.userHome})"
+                ></div>
+                <div
+                        th:replace="views/user/history/index :: user_process(${vo.userHome})"
+                ></div>
             </div>
         </div>
     </div>

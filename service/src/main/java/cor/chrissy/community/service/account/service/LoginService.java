@@ -46,5 +46,7 @@ public interface LoginService {
      * @param session
      * @return
      */
-    BaseUserInfoDTO getUserBySessionId(String session);
+    BaseUserInfoDTO getAndUpdateUserIpInfoBySessionId(String session, String ip);
+
+    String login(Long userId);
 }

@@ -1,6 +1,7 @@
 package cor.chrissy.community.service.article.repository.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,11 +19,16 @@ import cor.chrissy.community.service.article.repository.entity.ReadCountDO;
 import cor.chrissy.community.service.article.repository.mapper.ArticleDetailMapper;
 import cor.chrissy.community.service.article.repository.mapper.ArticleMapper;
 import cor.chrissy.community.service.article.repository.mapper.ReadCountMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author wx128
@@ -36,6 +42,8 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
 
     @Resource
     private ReadCountMapper readCountMapper;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     /**
      * 查询文章详情
@@ -46,7 +54,7 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
     public ArticleDTO queryArticleDetail(Long articleId) {
         // 查询文章记录
         ArticleDO article = baseMapper.selectById(articleId);
-        if (article == null) {
+        if (article == null || Objects.equals(article.getDeleted(), YesOrNoEnum.YES.getCode())) {
             return null;
         }
 
@@ -55,6 +63,14 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         ArticleDetailDO detail = findLatestDetail(articleId);
         dto.setContent(detail.getContent());
         return dto;
+    }
+
+    public Long countArticleByCategoryId(Long categoryId) {
+        LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
+        query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
+                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
+                .eq(ArticleDO::getCategoryId, categoryId);
+        return baseMapper.selectCount(query);
     }
 
     // ------------ article content  ----------------
@@ -215,7 +231,19 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
      * @return
      */
     public List<ArticleDO> listRelatedArticlesOrderByReadCount(Long categoryId, List<Long> tagIds, PageParam pageParam) {
-        return baseMapper.listArticleByCategoryAndTags(categoryId, tagIds, pageParam);
+        List<ReadCountDO> list = baseMapper.listArticleByCategoryAndTags(categoryId, tagIds, pageParam);
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+
+        List<Long> ids = list.stream().map(ReadCountDO::getDocumentId).collect(Collectors.toList());
+        List<ArticleDO> result = baseMapper.selectBatchIds(ids);
+        result.sort((o1, o2) -> {
+            int i1 = ids.indexOf(o1.getId());
+            int i2 = ids.indexOf(o2.getId());
+            return Integer.compare(i1, i2);
+        });
+        return result;
     }
 
 

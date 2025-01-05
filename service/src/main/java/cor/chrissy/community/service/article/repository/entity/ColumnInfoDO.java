@@ -46,4 +46,14 @@ public class ColumnInfoDO extends BaseDO {
      * 上线时间
      */
     private Date publishTime;
+
+    private Integer section;
+
+    private Integer nums;
+
+    private Integer type;
+
+    private Date freeStartTime;
+
+    private Date freeEndTime;
 }
