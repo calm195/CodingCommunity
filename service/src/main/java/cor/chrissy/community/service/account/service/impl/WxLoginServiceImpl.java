@@ -9,7 +9,6 @@ import cor.chrissy.community.common.req.user.UserSaveReq;
 import cor.chrissy.community.core.util.CodeGenerateUtil;
 import cor.chrissy.community.service.account.service.LoginService;
 import cor.chrissy.community.service.user.service.UserService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +47,7 @@ public class WxLoginServiceImpl implements LoginService {
         verifyCodeCache = CacheBuilder.newBuilder().maximumSize(300).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<Long, String>() {
             @Override
             public String load(Long userId) {
-                String code = CodeGenerateUtil.genCode();
+                String code = CodeGenerateUtil.genCode(1);
                 codeUserIdCache.put(code, userId);
                 return code;
             }
@@ -107,14 +106,13 @@ public class WxLoginServiceImpl implements LoginService {
         sessionMap.cleanUp();
     }
 
+    @Override
+    public BaseUserInfoDTO getAndUpdateUserIpInfoBySessionId(String session, String ip) {
+        return null;
+    }
 
     @Override
-    public BaseUserInfoDTO getUserBySessionId(String session) {
-        if (StringUtils.isBlank(session)) {
-            return null;
-        }
-
-        Long userId = sessionMap.getIfPresent(session);
-        return userId == null ? null : userService.queryBasicUserInfo(userId);
+    public String login(Long userId) {
+        return "";
     }
 }

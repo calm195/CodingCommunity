@@ -1,8 +1,11 @@
 package cor.chrissy.community.service.article.service.impl;
 
+import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.OperateArticleEnum;
 import cor.chrissy.community.common.enums.StatusEnum;
+import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.req.article.ArticlePostReq;
 import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
@@ -10,6 +13,7 @@ import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.repository.dao.ArticleDao;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.service.ArticleSettingService;
+import cor.chrissy.community.service.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +32,9 @@ public class ArticleSettingServiceImpl implements ArticleSettingService {
     @Autowired
     private ArticleDao articleDao;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     public Integer getArticleCount() {
         return articleDao.countArticle();
@@ -36,19 +43,42 @@ public class ArticleSettingServiceImpl implements ArticleSettingService {
     @Override
     public PageVo<ArticleDTO> getArticleList(PageParam pageParam) {
         List<ArticleDO> articleDOS = articleDao.listArticles(pageParam);
+        List<ArticleDTO> articleDTOS = ArticleConverter.toArticleDtoList(articleDOS);
+        articleDTOS.forEach(articleDTO -> {
+            BaseUserInfoDTO user = userService.queryBasicUserInfo(articleDTO.getAuthor());
+            articleDTO.setAuthorName(user.getUserName());
+        });
         Integer totalCount = articleDao.countArticle();
-        return PageVo.build(ArticleConverter.toArticleDtoList(articleDOS), pageParam.getPageSize(), pageParam.getPageNum(), totalCount);
+        return PageVo.build(articleDTOS, pageParam.getPageSize(), pageParam.getPageNum(), totalCount);
     }
 
     @Override
     public void operateArticle(Long articleId, OperateArticleEnum operateType) {
         ArticleDO articleDO = articleDao.getById(articleId);
         if (articleDO == null) {
-            throw ExceptionUtil.of(StatusEnum.RECORDS_NOT_EXISTS, "article not exists");
+            throw ExceptionUtil.of(StatusEnum.ARTICLE_NOT_EXISTS, "article not exists");
         }
 
         setArticleStat(articleDO, operateType);
         articleDao.updateById(articleDO);
+    }
+
+    @Override
+    public void updateArticle(ArticlePostReq req) {
+        ArticleDO articleDO = articleDao.getById(req.getArticleId());
+        if (articleDO != null) {
+            articleDO.setShortTitle(req.getShortTitle());
+            articleDao.updateById(articleDO);
+        }
+    }
+
+    @Override
+    public void deleteArticle(Long articleId) {
+        ArticleDO articleDO = articleDao.getById(articleId);
+        if (articleDO != null && articleDO.getDeleted() != YesOrNoEnum.YES.getCode()) {
+            articleDO.setDeleted(YesOrNoEnum.YES.getCode());
+            articleDao.updateById(articleDO);
+        }
     }
 
     private boolean setArticleStat(ArticleDO articleDO, OperateArticleEnum operate) {

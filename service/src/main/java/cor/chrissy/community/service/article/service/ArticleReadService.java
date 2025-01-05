@@ -3,8 +3,10 @@ package cor.chrissy.community.service.article.service;
 import cor.chrissy.community.common.enums.HomeSelectEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
+import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 
 import java.util.List;
@@ -117,4 +119,10 @@ public interface ArticleReadService {
      * @return
      */
     int queryArticleCount(long authorId);
+
+    String generateSummary(String content);
+
+    PageVo<TagDTO> queryTagsByArticleId(Long articleId);
+
+    Long queryArticleCountByCategoryId(Long categoryId);
 }

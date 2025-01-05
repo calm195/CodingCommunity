@@ -52,14 +52,17 @@
 
 /*文章标题*/
 .user-article-item-title {
+    word-break: break-word;
     font-weight: 500;
     font-size: 18px;
     line-height: 26px;
-    color: #181818;
+    color: var(--pai-color-3-black);
     margin-bottom: 12px;
+    display: -webkit-box;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
 }
 
 /*文章的简介描述*/
@@ -72,13 +75,14 @@
 .cdc-article-panel__desc {
     font-size: 14px;
     line-height: 22px;
-    color: #4b5b76;
+    color: var(--pai-color-4-gray);
     min-height: 44px;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    word-break: break-word;
 }
 
 /*文章列表底部的数据（作者、日期、阅读、留言、点赞、文章标签）*/
@@ -162,7 +166,7 @@
 /*作者名*/
 .cdc-article-panel__user-name {
     font-weight: 500;
-    color: #000;
+    color: var(--pai-color-3-black);
     line-height: 20px;
 }
 
@@ -287,4 +291,16 @@
 
 .cdc-article-panel:hover .user-article-item-title {
     color: var(--pai-brand-2-hover);
+}
+
+.cdc-article-panel__user-name:hover {
+    color: var(--pai-color-3-black);
+}
+
+/* home 适配 */
+@media screen and (max-width: 960px) {
+    .article-title-wrap,
+    .cdc-article-panel__date {
+        display: none;
+    }
 }

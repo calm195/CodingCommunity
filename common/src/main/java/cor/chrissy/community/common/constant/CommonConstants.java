@@ -15,8 +15,8 @@ public class CommonConstants {
 
     // 分类类型
     public static final String CATEGORY_ALL = "全部";
-    public static final String CATEGORY_BACKEND = "后端";
-    public static final String CATEGORY_FRONTEND = "前端";
+    public static final String CATEGORY_BACK_EMD = "后端";
+    public static final String CATEGORY_FRONT_END = "前端";
     public static final String CATEGORY_ANDROID = "Android";
     public static final String CATEGORY_IOS = "IOS";
     public static final String CATEGORY_BIG_DATA = "大数据";
@@ -36,20 +36,20 @@ public class CommonConstants {
                     add("https://img12.360buyimg.com/ddimg/jfs/t1/169217/34/31577/31440/63606c72E7a4f58b3/a72b7df2ec84d79f.webp");
                 }
             });
-            put(CATEGORY_BACKEND, new ArrayList<String>() {
+            put(CATEGORY_BACK_EMD, new ArrayList<String>() {
                 {
-                    add("https://img12.360buyimg.com/ddimg/jfs/t1/144729/17/31034/367421/636076adE5b5f7c6b/fa4de8bb58f74a63.gif");
+                    add("https://img13.360buyimg.com/ddimg/jfs/t1/72497/8/23472/367421/63b3e036F68e9048e/ace40ac4067dff63.gif");
                     add("https://img14.360buyimg.com/ddimg/jfs/t1/138738/8/31452/12286/636076f0Ef18f77d8/fde4de8bbf0b5380.webp");
                     add("https://img12.360buyimg.com/ddimg/jfs/t1/69814/7/22820/21218/636076f0Ed6dea845/f53aaf828ec9c135.webp");
                     add("https://img12.360buyimg.com/ddimg/jfs/t1/23649/3/19923/65450/636076f0Ec39e3fd9/763afa10946ef984.webp");
                 }
             });
-            put(CATEGORY_FRONTEND, new ArrayList<String>() {
+            put(CATEGORY_FRONT_END, new ArrayList<String>() {
                 {
-                    add("https://img14.360buyimg.com/ddimg/jfs/t1/143513/1/30950/11464/6360767bEada4a5db/eb24093e34dd6991.webp");
-                    add("https://img12.360buyimg.com/ddimg/jfs/t1/100700/30/30797/18850/6360767bE752105f6/df6b065028fd0344.webp");
-                    add("https://img14.360buyimg.com/ddimg/jfs/t1/177012/28/29445/19784/6360767bE4a30481e/fecfcd7cfd87c692.webp");
-                    add("https://img11.360buyimg.com/ddimg/jfs/t1/32179/19/18630/11418/6360767fEfb0a2215/299fe71933c4427b.webp");
+                    add("https://img11.360buyimg.com/ddimg/jfs/t1/77817/10/17147/40054/6360781bE6204777c/961a0321b18743e9.webp");
+                    add("https://img14.360buyimg.com/ddimg/jfs/t1/83336/15/23862/19608/6360781bEbf5c07c0/9c6244f0b7647c1f.webp");
+                    add("https://img11.360buyimg.com/ddimg/jfs/t1/204452/27/27780/19702/6360781bE2b6144db/9bf09b93cc4568a2.webp");
+                    add("https://img12.360buyimg.com/ddimg/jfs/t1/181696/4/29961/41932/6360781bE66fc1f29/083e3d75d28f6079.webp");
                 }
             });
             put(CATEGORY_ANDROID, new ArrayList<String>() {
@@ -70,10 +70,10 @@ public class CommonConstants {
             });
             put(CATEGORY_BIG_DATA, new ArrayList<String>() {
                 {
-                    add("https://img14.360buyimg.com/ddimg/jfs/t1/83336/15/23862/19608/6360781bEbf5c07c0/9c6244f0b7647c1f.webp");
-                    add("https://img11.360buyimg.com/ddimg/jfs/t1/204452/27/27780/19702/6360781bE2b6144db/9bf09b93cc4568a2.webp");
-                    add("https://img11.360buyimg.com/ddimg/jfs/t1/77817/10/17147/40054/6360781bE6204777c/961a0321b18743e9.webp");
-                    add("https://img12.360buyimg.com/ddimg/jfs/t1/181696/4/29961/41932/6360781bE66fc1f29/083e3d75d28f6079.webp");
+                    add("https://img14.360buyimg.com/ddimg/jfs/t1/143513/1/30950/11464/6360767bEada4a5db/eb24093e34dd6991.webp");
+                    add("https://img12.360buyimg.com/ddimg/jfs/t1/100700/30/30797/18850/6360767bE752105f6/df6b065028fd0344.webp");
+                    add("https://img14.360buyimg.com/ddimg/jfs/t1/177012/28/29445/19784/6360767bE4a30481e/fecfcd7cfd87c692.webp");
+                    add("https://img11.360buyimg.com/ddimg/jfs/t1/32179/19/18630/11418/6360767fEfb0a2215/299fe71933c4427b.webp");
                 }
             });
             put(CATEGORY_INTELLIGENCE, new ArrayList<String>() {
@@ -111,4 +111,3 @@ public class CommonConstants {
         }
     };
 }
-

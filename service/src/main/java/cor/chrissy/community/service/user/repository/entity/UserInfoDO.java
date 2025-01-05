@@ -1,6 +1,8 @@
 package cor.chrissy.community.service.user.repository.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import cor.chrissy.community.common.entity.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +13,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("user_info")
+@TableName(value = "user_info", autoResultMap = true)
 public class UserInfoDO extends BaseDO {
 
     private static final long serialVersionUID = 1L;
@@ -52,4 +54,14 @@ public class UserInfoDO extends BaseDO {
     private String extend;
 
     private Integer deleted;
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private IpInfo ip;
+
+    public IpInfo getIp() {
+        if (ip == null) {
+            ip = new IpInfo();
+        }
+        return ip;
+    }
 }

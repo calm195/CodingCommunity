@@ -4,11 +4,14 @@ import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.*;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.common.vo.PageVo;
+import cor.chrissy.community.core.util.ArticleUtil;
 import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.CategoryDTO;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
+import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.dao.ArticleDao;
 import cor.chrissy.community.service.article.repository.dao.ArticleTagDao;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
@@ -64,7 +67,7 @@ public class ArticleReadServiceImpl implements ArticleReadService {
     public ArticleDTO queryDetailArticleInfo(Long articleId) {
         ArticleDTO article = articleDao.queryArticleDetail(articleId);
         if (article == null) {
-            throw ExceptionUtil.of(StatusEnum.RECORDS_NOT_EXISTS, "文章不存在");
+            throw ExceptionUtil.of(StatusEnum.ARTICLE_NOT_EXISTS, articleId);
         }
         // 更新分类相关信息
         CategoryDTO category = article.getCategory();
@@ -228,6 +231,22 @@ public class ArticleReadServiceImpl implements ArticleReadService {
     @Override
     public int queryArticleCount(long authorId) {
         return articleDao.countArticleByUser(authorId);
+    }
+
+    @Override
+    public String generateSummary(String content) {
+        return ArticleUtil.pickSummary(content);
+    }
+
+    @Override
+    public PageVo<TagDTO> queryTagsByArticleId(Long articleId) {
+        List<TagDTO> tagDTOS = articleTagDao.queryArticleTagDetails(articleId);
+        return PageVo.build(tagDTOS, 1, 10, tagDTOS.size());
+    }
+
+    @Override
+    public Long queryArticleCountByCategoryId(Long categoryId) {
+        return articleDao.countArticleByCategoryId(categoryId);
     }
 }
 

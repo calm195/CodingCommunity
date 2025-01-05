@@ -1,5 +1,6 @@
 package cor.chrissy.community.service.user.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.NotifyTypeEnum;
@@ -9,6 +10,7 @@ import cor.chrissy.community.common.req.user.UserInfoSaveReq;
 import cor.chrissy.community.common.req.user.UserSaveReq;
 import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.core.util.SpringUtil;
+import cor.chrissy.community.service.account.service.help.PwdEncoder;
 import cor.chrissy.community.service.article.dto.ArticleFootCountDTO;
 import cor.chrissy.community.service.article.dto.YearArticleDTO;
 import cor.chrissy.community.service.article.repository.dao.ArticleDao;
@@ -28,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -53,6 +54,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ArticleDao articleDao;
 
+    @Autowired
+    private PwdEncoder pwdEncoder;
 
     /**
      * 用户存在时，直接返回；不存在时，则初始化
@@ -107,6 +110,18 @@ public class UserServiceImpl implements UserService {
         UserStatisticInfoDTO userHomeDTO = UserConverter.toUserHomeDTO(userInfoDTO);
         userHomeDTO.setRole("normal");
 
+        int cnt = 0;
+        if (StringUtils.isNotBlank(userHomeDTO.getCompany())) {
+            ++cnt;
+        }
+        if (StringUtils.isNotBlank(userHomeDTO.getPosition())) {
+            ++cnt;
+        }
+        if (StringUtils.isNotBlank(userHomeDTO.getProfile())) {
+            ++cnt;
+        }
+        userHomeDTO.setInfoPercent(cnt * 100 / 3);
+
         // 获取文章相关统计
         ArticleFootCountDTO articleFootCountDTO = countService.queryArticleCountInfoByUserId(userId);
         if (articleFootCountDTO != null) {
@@ -141,12 +156,26 @@ public class UserServiceImpl implements UserService {
         }
 
         // 加入天数
-        Integer joinDayCount = (int) ((new Date()).getTime() - userHomeDTO.getCreateTime().getTime()) / (1000 * 3600 * 24);
-        userHomeDTO.setJoinDayCount(joinDayCount);
+        int joinDayCount = (int) (System.currentTimeMillis() - userHomeDTO.getCreateTime().getTime()) / (1000 * 3600 * 24);
+        userHomeDTO.setJoinDayCount(Math.max(joinDayCount, 1));
 
         // 创作历程
         List<YearArticleDTO> yearArticleDTOS = articleDao.listYearArticleByUserId(userId);
         userHomeDTO.setYearArticleList(yearArticleDTOS);
         return userHomeDTO;
+    }
+
+    @Override
+    public BaseUserInfoDTO passwordLogin(String username, String password) {
+        UserDO userDO = userDao.getByUserName(username);
+        if (userDO == null) {
+            throw ExceptionUtil.of(StatusEnum.USER_NOT_EXISTS, "username=" + username);
+        }
+
+        if (!pwdEncoder.match(userDO.getPassword(), password)) {
+            throw ExceptionUtil.of(StatusEnum.USER_PWD_ERROR);
+        }
+
+        return queryBasicUserInfo(userDO.getId());
     }
 }

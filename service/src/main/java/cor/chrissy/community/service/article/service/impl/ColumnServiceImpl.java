@@ -6,9 +6,7 @@ import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.core.util.ExceptionUtil;
-import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.conveter.ColumnConverter;
-import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.ColumnDTO;
 import cor.chrissy.community.service.article.dto.ColumnFootCountDTO;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
@@ -52,33 +50,27 @@ public class ColumnServiceImpl implements ColumnService {
     @Override
     public PageListVo<ColumnDTO> listColumn(PageParam pageParam) {
         List<ColumnInfoDO> columnList = columnDao.listOnlineColumns(pageParam);
-        List<ColumnDTO> result = new ArrayList<>();
-        columnList.forEach(info -> {
-            ColumnDTO dto = ColumnConverter.toDto(info);
-            fillColumnInfo(dto);
-            result.add(dto);
-        });
+        List<ColumnDTO> result = columnList.stream().map(this::buildColumnInfo).collect(Collectors.toList());
         return PageListVo.newVo(result, pageParam.getPageSize());
     }
 
-    private void fillColumnInfo(ColumnDTO dto) {
+    private ColumnDTO buildColumnInfo(ColumnInfoDO columnInfoDO) {
+        return buildColumnInfo(ColumnConverter.toDto(columnInfoDO));
+    }
+
+    private ColumnDTO buildColumnInfo(ColumnDTO dto) {
         // 补齐专栏对应的用户信息
         BaseUserInfoDTO user = userService.queryBasicUserInfo(dto.getAuthor());
         dto.setAuthorName(user.getUserName());
         dto.setAuthorAvatar(user.getPhoto());
         dto.setAuthorProfile(user.getProfile());
 
-        // 统计计数，这里先只返回文章数
+        // 统计
         ColumnFootCountDTO countDTO = new ColumnFootCountDTO();
         countDTO.setArticleCount(columnDao.countColumnArticles(dto.getColumnId()));
+        countDTO.setReadCount(columnDao.countColumnReadPeoples(dto.getColumnId()));
+        countDTO.setTotalNums(dto.getNums());
         dto.setCount(countDTO);
-    }
-
-    @Override
-    public ColumnDTO queryColumnInfo(Long columnId) {
-        ColumnInfoDO column = columnDao.getById(columnId);
-        ColumnDTO dto = ColumnConverter.toDto(column);
-        fillColumnInfo(dto);
         return dto;
     }
 
@@ -86,9 +78,23 @@ public class ColumnServiceImpl implements ColumnService {
     public Long queryColumnArticle(long columnId, Integer section) {
         Long articleId = columnDao.getColumnArticleId(columnId, section);
         if (articleId == null) {
-            throw ExceptionUtil.of(StatusEnum.RECORDS_NOT_EXISTS, "专栏还没有更新到这一章哦");
+            throw ExceptionUtil.of(StatusEnum.ARTICLE_NOT_EXISTS, section);
         }
         return articleId;
+    }
+
+    @Override
+    public ColumnDTO queryBaseColumnInfo(Long columnId) {
+        ColumnInfoDO column = columnDao.getById(columnId);
+        if (column == null) {
+            throw ExceptionUtil.of(StatusEnum.COLUMN_NOT_EXISTS, columnId);
+        }
+        return ColumnConverter.toDto(column);
+    }
+
+    @Override
+    public ColumnDTO queryColumnInfo(long columnId) {
+        return buildColumnInfo(queryBaseColumnInfo(columnId));
     }
 
     /**
@@ -111,19 +117,6 @@ public class ColumnServiceImpl implements ColumnService {
         List<SimpleArticleDTO> articleList = new ArrayList<>();
         articleIds.forEach(id -> Optional.ofNullable(articleMap.get(id)).ifPresent(articleList::add));
         return articleList;
-    }
-
-    /**
-     * 查询专栏的文章详情
-     *
-     * @param columnId
-     * @return
-     */
-    @Override
-    public List<ArticleDTO> queryColumnArticlesDetail(long columnId) {
-        List<Long> articleIds = columnDao.listColumnArticles(columnId);
-        List<ArticleDO> articles = articleDao.listByIds(articleIds);
-        return ArticleConverter.toArticleDtoList(articles);
     }
 }
 

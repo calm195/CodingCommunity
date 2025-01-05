@@ -1,6 +1,7 @@
 package cor.chrissy.community.web.front.article.view;
 
 import cor.chrissy.community.common.context.ReqInfoContext;
+import cor.chrissy.community.common.enums.ColumnTypeEnum;
 import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
@@ -52,7 +53,7 @@ public class ColumnViewController {
     @GetMapping(path = {"list", "/", "", "home"})
     public String list(Model model) {
         PageListVo<ColumnDTO> columns = columnService.listColumn(PageParam.newPageInstance());
-        List<SideBarDTO> sidebars = sidebarService.queryHomeSidebarList();
+        List<SideBarDTO> sidebars = sidebarService.queryColumnSidebarList();
         ColumnVo vo = new ColumnVo();
         vo.setColumns(columns);
         vo.setSideBarItems(sidebars);
@@ -71,7 +72,7 @@ public class ColumnViewController {
     public String column(@PathVariable("columnId") Long columnId, Model model) {
         ColumnDTO dto = columnService.queryColumnInfo(columnId);
         if (dto == null) {
-            throw ExceptionUtil.of(StatusEnum.RECORDS_NOT_EXISTS, "专栏不存在");
+            throw ExceptionUtil.of(StatusEnum.COLUMN_NOT_EXISTS, "专栏不存在");
         }
         model.addAttribute("vo", dto);
         return "/views/column-index/index"; // TODO 未完成
@@ -89,6 +90,9 @@ public class ColumnViewController {
     @GetMapping(path = "{columnId}/{section}")
     public String articles(@PathVariable("columnId") Long columnId, @PathVariable("section") Integer section, Model model) {
         if (section <= 0) section = 1;
+
+        ColumnDTO columnDTO = columnService.queryBaseColumnInfo(columnId);
+
         Long articleId = columnService.queryColumnArticle(columnId, section);
         // 文章信息
         ArticleDTO articleDTO = articleReadService.queryTotalArticleInfo(articleId, ReqInfoContext.getReqInfo().getUserId());
@@ -103,12 +107,41 @@ public class ColumnViewController {
         List<SimpleArticleDTO> articles = columnService.queryColumnArticles(columnId);
 
         ColumnArticlesDTO vo = new ColumnArticlesDTO();
+        updateReadType(vo, columnDTO, articleDTO);
         vo.setArticle(articleDTO);
         vo.setComments(comments);
         vo.setHotComment(hotComment);
         vo.setColumn(columnId);
         vo.setArticleList(articles);
+        vo.setSection(section);
         model.addAttribute("vo", vo);
         return "/views/column-detail/index";
+    }
+
+    private void updateReadType(ColumnArticlesDTO vo, ColumnDTO columnDTO, ArticleDTO articleDTO) {
+        Long loginUserId = ReqInfoContext.getReqInfo().getUserId();
+        if (loginUserId != null && loginUserId.equals(articleDTO.getAuthor())) {
+            vo.setReadType(0);
+            return;
+        }
+
+        if (columnDTO.getType() == ColumnTypeEnum.TIME_FREE.getType()) {
+            long now = System.currentTimeMillis();
+            if (now > columnDTO.getFreeEndTime() || now < columnDTO.getFreeStartTime()) {
+                vo.setReadType(ColumnTypeEnum.LOGIN.getType());
+            } else {
+                vo.setReadType(ColumnTypeEnum.FREE.getType());
+            }
+        } else {
+            vo.setReadType(columnDTO.getType());
+        }
+
+        if (vo.getReadType() == ColumnTypeEnum.LOGIN.getType()) {
+            String content = articleDTO.getContent();
+            if (content.length() > 300) {
+                content = content.substring(0, 300);
+            }
+            articleDTO.setContent(content);
+        }
     }
 }

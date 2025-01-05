@@ -37,6 +37,13 @@ public class UserDao extends ServiceImpl<UserInfoMapper, UserInfoDO> {
         return baseMapper.selectOne(query);
     }
 
+    public UserDO getByUserName(String userName) {
+        LambdaQueryWrapper<UserDO> query = Wrappers.lambdaQuery();
+        query.eq(UserDO::getUserName, userName)
+                .eq(UserDO::getDeleted, YesOrNoEnum.NO.getCode());
+        return userMapper.selectOne(query);
+    }
+
     public Integer getUserCount() {
         return lambdaQuery()
                 .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode())
@@ -47,15 +54,6 @@ public class UserDao extends ServiceImpl<UserInfoMapper, UserInfoDO> {
         UserInfoDO record = getByUserId(user.getUserId());
         if (record.equals(user)) {
             return;
-        }
-        if (StringUtils.isEmpty(user.getPosition())) {
-            user.setPosition(null);
-        }
-        if (StringUtils.isEmpty(user.getCompany())) {
-            user.setPosition(null);
-        }
-        if (StringUtils.isEmpty(user.getProfile())) {
-            user.setProfile(null);
         }
         if (StringUtils.isEmpty(user.getPhoto())) {
             user.setPhoto(null);

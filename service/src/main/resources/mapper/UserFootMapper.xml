@@ -9,7 +9,7 @@
                       0))   as praiseCount,
                sum(if(f.collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1,
                       0))   as collectionCount,
-               sum(r.`cnt`) as readCount
+               avg(r.`cnt`) as readCount
         FROM read_count as r
                  left join
              user_foot as f

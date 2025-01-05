@@ -1,6 +1,5 @@
 package cor.chrissy.community.service.config.converter;
 
-import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.req.banner.ConfigReq;
 import cor.chrissy.community.service.config.dto.ConfigDTO;
 import cor.chrissy.community.service.config.repository.entity.ConfigDO;
@@ -39,6 +38,7 @@ public class ConfigConverter {
         configDTO.setTags(configDO.getTags());
         configDTO.setCreateTime(configDO.getCreateTime());
         configDTO.setUpdateTime(configDO.getUpdateTime());
+        configDTO.setExtra(configDO.getExtra());
         return configDTO;
     }
 
@@ -53,7 +53,6 @@ public class ConfigConverter {
         configDO.setJumpUrl(configReq.getJumpUrl());
         configDO.setContent(configReq.getContent());
         configDO.setRank(configReq.getRank());
-        configDO.setStatus(PushStatEnum.OFFLINE.getCode());
         configDO.setTags(configReq.getTags());
         return configDO;
     }

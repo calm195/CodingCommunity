@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
@@ -25,11 +24,11 @@ import java.util.List;
 @Configuration
 public class CommunityDataSourceInitializer {
 
-    @Value("classpath:schema-all.sql")
-    private Resource schemaSql;
-
-    @Value("classpath:init-data.sql")
-    private Resource initData;
+//    @Value("classpath:schema-all.sql")
+//    private Resource schemaSql;
+//
+//    @Value("classpath:init-data.sql")
+//    private Resource initData;
 
     @Value("${database.name}")
     private String database;
@@ -46,9 +45,9 @@ public class CommunityDataSourceInitializer {
 
     private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        populator.addScripts(schemaSql);
-        populator.addScripts(initData);
-        populator.setSeparator(";");
+//        populator.addScripts(schemaSql);
+//        populator.addScripts(initData);
+//        populator.setSeparator(";");
         return populator;
     }
 

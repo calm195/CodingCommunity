@@ -27,5 +27,7 @@ public interface ColumnArticleMapper extends BaseMapper<ColumnArticleDO> {
      * @return
      */
     Long getColumnArticle(@Param("columnId") Long columnId, @Param("section") Integer section);
+
+    Long countColumnReadUserNums(@Param("columnId") Long columnId);
 }
 

@@ -16,8 +16,8 @@ public class EnvUtil {
         TEST("test", false),
         PRE("pre", false),
         PROD("prod", true);
-        private String env;
-        private boolean prod;
+        private final String env;
+        private final boolean prod;
 
         EnvEnum(String env, boolean prod) {
             this.env = env;

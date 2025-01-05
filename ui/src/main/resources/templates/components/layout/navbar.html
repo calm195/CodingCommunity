@@ -3,14 +3,33 @@
 <div th:fragment="navbar">
     <nav
             th:data-islogin="${global.isLogin}"
-            class="navbar navbar-expand-md container-bg-light fixed-top"
+            class="navbar navbar-expand-md bg-color-white fixed-top"
     >
         <div class="nav-body">
-            <a class="navbar-brand" href="/">
-                <img class="logo" src="/img/logo.svg"/>
-            </a>
-            <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                <ul class="navbar-nav mr-auto">
+            <div class="nav-logo-wrap-lg">
+                <a class="navbar-logo-wrap" href="/">
+                    <img class="logo" src="/img/logo.svg"/>
+                    <img src="/img/icon.png" class="logo-lg" alt=""/>
+                </a>
+                <div class="dropdown nav-menu-lg">
+                    <div class="dropdown">
+                        <div
+                                class="nav-menu-lg-btn dropdown-toggle"
+                                type="button"
+                                data-toggle="dropdown"
+                                aria-expanded="false"
+                        >
+                            首页
+                        </div>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/">首页</a>
+                            <a class="dropdown-item" href="/column">教程</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav">
                     <li
                             th:class="${'nav-item' + (!#strings.equals(global.currentDomain, 'column') && !#strings.equals(global.currentDomain, 'follow') ? ' selected-domain' : '')}"
                             class="nav-item"
@@ -24,7 +43,8 @@
                         <a class="nav-link" href="/column">教程</a>
                     </li>
                 </ul>
-
+            </div>
+            <div class="nav-right">
                 <button
                         type="button"
                         class="btn btn-primary nav-article"
@@ -33,7 +53,7 @@
                 >
                     写文章
                 </button>
-                <ul th:if="${!global.isLogin}" class="navbar-nav my-md-0">
+                <ul th:if="${!global.isLogin}">
                     <!--  待登录 -->
                     <li class="nav-item">
                         <a
@@ -46,19 +66,20 @@
                         </a>
                     </li>
                 </ul>
-                <ul th:if="${global.isLogin}" class="navbar-nav my-md-0">
+                <ul th:if="${global.isLogin}" class="nav-right-user">
                     <!--  已登录 -->
                     <li class="nav-item nav-notice">
                         <a class="nav-link navbar-count-msg-box" href="/notice/">
                 <span
                         th:if="${global.msgNum != null && global.msgNum > 0}"
+                        th:text="${global.msgNum}"
                         class="navbar-count-msg"
                 ></span>
                             <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     class="icon"
-                                    width="18"
-                                    height="18"
+                                    width="24"
+                                    height="24"
                                     viewBox="0 0 24 24"
                                     stroke-width="2"
                                     stroke="currentColor"
@@ -103,7 +124,6 @@
                             <a
                                     th:href="${'/user/home?userId=' + global.user.userId}"
                                     class="dropdown-item"
-                                    target="_blank"
                                     href="#"
                             >
                                 个人主页
@@ -124,52 +144,66 @@
             data-keyboard="false"
             tabindex="-1"
             role="dialog"
-            aria-labelledby="loginModalDropLabel"
             aria-hidden="true"
     >
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="loginModalDropLabel">二维码登录</h5>
-                    <button
-                            type="button"
-                            class="close"
-                            data-dismiss="modal"
-                            aria-label="Close"
-                    >
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+                <button
+                        type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close"
+                >
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 <div class="modal-body">
-                    <div class="input-group">
-                        <img
-                                src="https://blog.hhui.top/hexblog/imgs/info/wx.jpg"
-                                style="max-width: 80%; padding-left: 10%"
-                        />
-                        <small>
-                            <bold>关注微信公众号，输入右边的验证码</bold>
+                    <div class="tabpane-container">
+                        <h2>微信扫码登录/注册</h2>
+                        <div class="first">
+                            <img class="signin-qrcode" th:src="${global.siteInfo.contactMeWxQrCode}"/>
+                        </div>
+
+                        <div class="explain">
+                            <bold>关注楼仔公众号，输入验证码</bold>
                             <span
                                     id="code"
-                                    style="color: red; font-size: 2em"
                                     th:text="''"
                             ></span>
-                            <br/>
-                            <div id="state" style="color: blue"></div>
-                            <br/>
-                            <button id="refreshCode" class="btn btn-primary">刷新</button>
-                        </small>
+                            <div id="state"></div>
+                        </div>
+                    </div>
+                    <div class="mdnice-user-dialog-footer">
+                        <p>登录即同意
+                            <a href="article/detail/141"
+                               target="_blank" rel="noopener noreferrer">
+                                用户协议
+                            </a> 和
+                            <a href="article/detail/142"
+                               target="_blank" rel="noopener noreferrer">
+                                隐私政策
+                            </a>
+                        </p>
+                        <a id="refreshCode">刷新验证码 &gt;</a>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" th:if="${!#strings.equals(global.env, 'prod')}">
                     <!-- 非生产环境，使用模拟登陆  -->
                     <button
-                            th:if="${!#strings.equals(global.env, 'prod')}"
                             id="mockLogin"
                             type="button"
                             th:data-verify-code="''"
                             class="btn btn-danger"
                     >
-                        一键登录(测试用)
+                        一键登录
+                    </button>
+
+                    <button
+                            id="mockLogin2"
+                            type="button"
+                            th:data-verify-code="''"
+                            class="btn btn-danger"
+                    >
+                        随机新用户
                     </button>
                 </div>
                 <div id="testOutput"></div>
@@ -183,7 +217,10 @@
     <script th:inline="javascript">
         $(".nav-article").click(() => {
             if ([[${global.isLogin}]]) {
-                window.location.href = "/article/edit"
+                // 新页面打开文章编辑
+                // 移除本地缓存
+                localStorage.removeItem('articleTitle');
+                window.open("/article/edit")
             }
         })
 
@@ -209,6 +246,7 @@
                 }]])
                     {
                         document.getElementById("mockLogin").setAttribute('data-verify-code', newCode);
+                        document.getElementById("mockLogin2").setAttribute('data-verify-code', newCode);
                     }
                 } else if (text === 'scan') {
                     // 二维码扫描
@@ -233,7 +271,7 @@
                 console.log("开始订阅");
             }
             codeTag.innerText = code;
-            stateTag.innerText = '请在五分钟内输入微信公众号内输入验证码';
+            stateTag.innerText = '验证码有效期为五分钟，若过期后可刷新验证码';
         }
 
         $('#loginModal').on('show.bs.modal', function () {
@@ -246,6 +284,7 @@
                 }]])
                     {
                         document.getElementById('mockLogin').setAttribute('data-verify-code', code);
+                        document.getElementById('mockLogin2').setAttribute('data-verify-code', code);
                     }
                 }
             })

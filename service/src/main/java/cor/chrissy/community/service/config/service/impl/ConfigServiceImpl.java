@@ -23,4 +23,9 @@ public class ConfigServiceImpl implements ConfigService {
     public List<ConfigDTO> getConfigList(ConfigTypeEnum configTypeEnum) {
         return configDao.listConfigByType(configTypeEnum.getCode());
     }
+
+    @Override
+    public void updateVisit(long configId, String extra) {
+        configDao.updatePdfConfigVisitNum(configId, extra);
+    }
 }

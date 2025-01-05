@@ -11,7 +11,7 @@
         SELECT sum(cnt) as count, date
         FROM request_count
         group by date
-        order by date desc
+        order by date
         limit #{day};
     </select>
 
@@ -19,7 +19,7 @@
         SELECT count(*) as count, date
         FROM request_count
         group by date
-        order by date desc
+        order by date
         limit #{day};
     </select>
 

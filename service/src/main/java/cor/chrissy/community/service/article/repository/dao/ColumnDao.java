@@ -34,7 +34,7 @@ public class ColumnDao extends ServiceImpl<ColumnInfoMapper, ColumnInfoDO> {
         LambdaQueryWrapper<ColumnInfoDO> query = Wrappers.lambdaQuery();
         query.gt(ColumnInfoDO::getState, ColumnStatusEnum.OFFLINE.getCode())
                 .last(PageParam.getLimitSql(pageParam))
-                .orderByDesc(ColumnInfoDO::getId);
+                .orderByAsc(ColumnInfoDO::getSection);
         return baseMapper.selectList(query);
     }
 
@@ -45,7 +45,9 @@ public class ColumnDao extends ServiceImpl<ColumnInfoMapper, ColumnInfoDO> {
      */
     public int countColumnArticles(Long columnId) {
         LambdaQueryWrapper<ColumnArticleDO> query = Wrappers.lambdaQuery();
-        query.eq(ColumnArticleDO::getColumnId, columnId);
+        if (columnId != null && columnId > 0) {
+            query.eq(ColumnArticleDO::getColumnId, columnId);
+        }
         return columnArticleMapper.selectCount(query).intValue();
     }
 
@@ -72,7 +74,7 @@ public class ColumnDao extends ServiceImpl<ColumnInfoMapper, ColumnInfoDO> {
     public List<ColumnInfoDO> listColumns(PageParam pageParam) {
         LambdaQueryWrapper<ColumnInfoDO> query = Wrappers.lambdaQuery();
         query.last(PageParam.getLimitSql(pageParam))
-                .orderByDesc(ColumnInfoDO::getId);
+                .orderByAsc(ColumnInfoDO::getSection);
         return baseMapper.selectList(query);
     }
 
@@ -99,4 +101,19 @@ public class ColumnDao extends ServiceImpl<ColumnInfoMapper, ColumnInfoDO> {
             baseMapper.deleteById(columnId);
         }
     }
+
+    public int countColumnReadPeoples(Long columnId) {
+        return columnArticleMapper.countColumnReadUserNums(columnId).intValue();
+    }
+
+    public List<ColumnArticleDO> listColumnArticlesDetail(Long columnId, PageParam pageParam) {
+        LambdaQueryWrapper<ColumnArticleDO> query = Wrappers.lambdaQuery();
+        if (columnId != null && columnId > 0) {
+            query.eq(ColumnArticleDO::getColumnId, columnId);
+        }
+        query.orderByAsc(ColumnArticleDO::getColumnId, ColumnArticleDO::getSection);
+        query.last(PageParam.getLimitSql(pageParam));
+        return columnArticleMapper.selectList(query);
+    }
+
 }

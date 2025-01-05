@@ -99,9 +99,20 @@ public class IndexRecommendHelper {
      */
     private Long categories(String active, IndexVo vo) {
         List<CategoryDTO> list = categoryService.loadAllCategories();
-        list.add(0, new CategoryDTO(0L, CategoryDTO.DEFAULT_TOTAL_CATEGORY, PushStatEnum.ONLINE.getCode(), false));
+
+        List<CategoryDTO> hasContentList = new ArrayList<>();
+
+        for (CategoryDTO categoryDTO : list) {
+            Long articleCount = articleService.queryArticleCountByCategoryId(categoryDTO.getCategoryId());
+            if (articleCount > 0) {
+                hasContentList.add(categoryDTO);
+            }
+        }
+
+        hasContentList.add(0, new CategoryDTO(0L, CategoryDTO.DEFAULT_TOTAL_CATEGORY, PushStatEnum.ONLINE.getCode(), false, 0));
+
         Long selectCategoryId = null;
-        for (CategoryDTO c : list) {
+        for (CategoryDTO c : hasContentList) {
             if (c.getCategory().equalsIgnoreCase(active)) {
                 selectCategoryId = c.getCategoryId();
                 c.setSelected(true);
@@ -112,9 +123,9 @@ public class IndexRecommendHelper {
 
         if (selectCategoryId == null) {
             // 未匹配时，默认选全部
-            list.get(0).setSelected(true);
+            hasContentList.get(0).setSelected(true);
         }
-        vo.setCategories(list);
+        vo.setCategories(hasContentList);
         return selectCategoryId;
     }
 
@@ -148,6 +159,10 @@ public class IndexRecommendHelper {
         for (ArticleDTO articleDTO : articleDTOS) {
             articleDTO.setCover(topPicList.get(index));
             index++;
+        }
+
+        if (articleDTOS.size() < 4) {
+            articleDTOS.clear();
         }
         return articleDTOS;
     }

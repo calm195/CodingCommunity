@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @author wx128
- * @createAt 2024/12/17
+ * @createAt 2025/1/2
  */
 @Data
 @Accessors(chain = true)
@@ -25,10 +25,11 @@ public class SideBarDTO {
 
     private String content;
 
-    private List<SideBarItemDto> items;
+    private List<SideBarItemDTO> items;
 
     /**
      * 侧边栏样式
      */
     private Integer style;
 }
+

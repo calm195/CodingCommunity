@@ -29,17 +29,20 @@
         <div class="notification-bottom">
         <span
                 class="notification-time"
-                th:text="${T(cor.chrissy.community.forum.core.util.DateUtil).time2day(msg.createTime)}"
+                th:text="${T(cor.chrissy.community.core.util.DateUtil).time2day(msg.createTime)}"
         >
           4天前
         </span>
-            <div class="action">
-                <div class="action-item">
-                    <button class="follow-btn" data-follow-user="${msg.operateUserId}">
-                        <span>关注</span>
-                    </button>
-                </div>
-            </div>
+        </div>
+    </div>
+    <div class="action" th:if="${global.isLogin && global.user.userId != msg.operateUserId}">
+        <div class="action-item">
+            <button class="follow-btn c-btn"
+                    th:data-user-id="${msg.operateUserId}"
+                    th:data-followed="${msg.msg}"
+                    onclick="followAction(this)">
+                <span th:text="${msg.msg == 'true' ? '取消关注': '关注'}">关注</span>
+            </button>
         </div>
     </div>
 </div>

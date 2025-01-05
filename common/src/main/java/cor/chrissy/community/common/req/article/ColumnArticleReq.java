@@ -31,5 +31,5 @@ public class ColumnArticleReq implements Serializable {
     /**
      * 顺序，越小越靠前 todo: rename
      */
-    private Integer section;
+    private Integer sort;
 }

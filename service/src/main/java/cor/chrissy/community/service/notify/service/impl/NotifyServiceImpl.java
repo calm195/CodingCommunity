@@ -9,14 +9,13 @@ import cor.chrissy.community.core.util.NumUtil;
 import cor.chrissy.community.service.notify.dto.NotifyMsgDTO;
 import cor.chrissy.community.service.notify.repository.dao.NotifyMsgDao;
 import cor.chrissy.community.service.notify.service.NotifyService;
+import cor.chrissy.community.service.user.service.UserRelationService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author wx128
@@ -26,6 +25,9 @@ import java.util.Map;
 public class NotifyServiceImpl implements NotifyService {
     @Resource
     private NotifyMsgDao notifyMsgDao;
+
+    @Resource
+    private UserRelationService userRelationService;
 
     @Override
     public int queryUserNotifyMsgCount(Long userId) {
@@ -39,11 +41,32 @@ public class NotifyServiceImpl implements NotifyService {
      */
     public PageListVo<NotifyMsgDTO> queryUserNotices(Long userId, NotifyTypeEnum type, PageParam page) {
         List<NotifyMsgDTO> list = notifyMsgDao.listNotifyMsgByUserIdAndType(userId, type, page);
-        if (!CollectionUtils.isEmpty(list)) {
-            notifyMsgDao.updateNotifyMsgToRead(list);
-            return PageListVo.newVo(list, page.getPageSize());
+        if (CollectionUtils.isEmpty(list)) {
+            return PageListVo.emptyVo();
         }
-        return PageListVo.emptyVo();
+        notifyMsgDao.updateNotifyMsgToRead(list);
+        ReqInfoContext.getReqInfo().setMsgNum(queryUserNotifyMsgCount(userId));
+        updateFollowStatus(userId, list);
+        return PageListVo.newVo(list, page.getPageSize());
+    }
+
+    private void updateFollowStatus(Long userId, List<NotifyMsgDTO> list) {
+        List<Long> targetUserIds = list.stream()
+                .filter(s -> s.getType() == NotifyTypeEnum.FOLLOW.getType())
+                .map(NotifyMsgDTO::getOperateUserId)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(targetUserIds)) {
+            return;
+        }
+
+        Set<Long> followUserIds = userRelationService.getFollowedUserId(targetUserIds, userId);
+        list.forEach(notifyMsgDTO -> {
+            if (followUserIds.contains(notifyMsgDTO.getOperateUserId())) {
+                notifyMsgDTO.setMsg("true");
+            } else {
+                notifyMsgDTO.setMsg("false");
+            }
+        });
     }
 
     @Override

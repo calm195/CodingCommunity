@@ -1,6 +1,5 @@
 package cor.chrissy.community.service.article.service;
 
-import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
 
 /**
@@ -23,13 +22,5 @@ public interface ArticleWriteService {
      *
      * @param articleId
      */
-    void deleteArticle(Long articleId);
-
-    /**
-     * 上线/下线文章
-     *
-     * @param articleId
-     * @param pushStatusEnum
-     */
-    void operateArticle(Long articleId, PushStatEnum pushStatusEnum);
+    void deleteArticle(Long articleId, Long loginUserId);
 }

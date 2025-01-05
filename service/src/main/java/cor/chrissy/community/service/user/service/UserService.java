@@ -43,4 +43,6 @@ public interface UserService {
      * @throws Exception
      */
     UserStatisticInfoDTO queryUserInfoWithStatistic(Long userId);
+
+    BaseUserInfoDTO passwordLogin(String username, String password);
 }

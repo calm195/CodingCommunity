@@ -5,19 +5,20 @@ import cor.chrissy.community.common.enums.ConfigTypeEnum;
 import cor.chrissy.community.common.enums.SidebarStyleEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.core.util.JsonUtil;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.config.dto.ConfigDTO;
 import cor.chrissy.community.service.config.service.ConfigService;
+import cor.chrissy.community.service.recommend.dto.RateVisitDTO;
 import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
-import cor.chrissy.community.service.sidebar.dto.SideBarItemDto;
+import cor.chrissy.community.service.sidebar.dto.SideBarItemDTO;
 import cor.chrissy.community.service.sidebar.service.SidebarService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,27 +39,46 @@ public class SidebarServiceImpl implements SidebarService {
 
     @Override
     public List<SideBarDTO> queryHomeSidebarList() {
-        return Arrays.asList(noticeSideBar(), columnSideBar(), hotArticles());
+        List<SideBarDTO> list = new ArrayList<>();
+        list.add(noticeSideBar());
+        list.add(columnSideBar());
+        list.add(hotArticles());
+        return list;
+    }
+
+    @Override
+    public List<SideBarDTO> queryColumnSidebarList() {
+        List<SideBarDTO> list = new ArrayList<>();
+        list.add(subscribeSideBar());
+        return list;
+    }
+
+    @Override
+    public List<SideBarDTO> queryArticleDetailSidebarList() {
+        List<SideBarDTO> list = new ArrayList<>();
+        list.add(pdfSideBar());
+        return list;
+    }
+
+    private SideBarDTO subscribeSideBar() {
+        return new SideBarDTO().setTitle("book").setSubTitle("test")
+                .setImg("")
+                .setContent("books")
+                .setStyle(SidebarStyleEnum.SUBSCRIBE.getStyle());
     }
 
     private SideBarDTO columnSideBar() {
         List<ConfigDTO> columnList = configService.getConfigList(ConfigTypeEnum.COLUMN);
-        List<SideBarItemDto> items = new ArrayList<>(columnList.size());
+        List<SideBarItemDTO> items = new ArrayList<>(columnList.size());
         columnList.forEach(configDTO -> {
-
+            SideBarItemDTO item = new SideBarItemDTO();
+            item.setName(configDTO.getName());
+            item.setTitle(configDTO.getContent());
+            item.setUrl(configDTO.getJumpUrl());
+            item.setImg(configDTO.getBannerUrl());
+            items.add(item);
         });
-        // TODO 精选教程的
-        items.add(new SideBarItemDto()
-                .setName("Java程序员进阶之路")
-                .setTitle("这是一份通俗易懂、风趣幽默的Java学习指南，内容涵盖Java基础、Java并发编程、Java虚拟机、Java企业级开发、Java面试等核心知识点。")
-                .setUrl("/column/1/1")
-                .setImg("https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/4ba0bc79579c488eb79df93cecd12390~tplv-k3u1fbpfcp-watermark.image")
-        );
-        return new SideBarDTO().setTitle("精选教程").setItems(items).setStyle(SidebarStyleEnum.COLUMN.getStyle());
-    }
-
-    private SideBarDTO aboutSideBar() {
-        return new SideBarDTO().setTitle("关于社区").setContent("一个技术爱好者的交流社区。欢迎加入!").setStyle(SidebarStyleEnum.ABOUT.getStyle());
+        return new SideBarDTO().setTitle("精选").setItems(items).setStyle(SidebarStyleEnum.COLUMN.getStyle());
     }
 
     private SideBarDTO recommendSideBar() {
@@ -77,7 +97,7 @@ public class SidebarServiceImpl implements SidebarService {
      */
     private SideBarDTO noticeSideBar() {
         List<ConfigDTO> noticeList = configService.getConfigList(ConfigTypeEnum.NOTICE);
-        List<SideBarItemDto> items = new ArrayList<>(noticeList.size());
+        List<SideBarItemDTO> items = new ArrayList<>(noticeList.size());
         noticeList.forEach(configDTO -> {
             List<Integer> configTags;
             if (StringUtils.isBlank(configDTO.getTags())) {
@@ -88,7 +108,7 @@ public class SidebarServiceImpl implements SidebarService {
                         .map(s -> Integer.parseInt(s.trim()))
                         .collect(Collectors.toList());
             }
-            items.add(new SideBarItemDto()
+            items.add(new SideBarItemDTO()
                     .setName(configDTO.getName())
                     .setTitle(configDTO.getContent())
                     .setUrl(configDTO.getJumpUrl())
@@ -111,8 +131,8 @@ public class SidebarServiceImpl implements SidebarService {
      */
     private SideBarDTO hotArticles() {
         PageListVo<SimpleArticleDTO> vo = articleReadService.queryHotArticlesForRecommend(PageParam.newPageInstance());
-        List<SideBarItemDto> items = vo.getList().stream().map(
-                        s -> new SideBarItemDto()
+        List<SideBarItemDTO> items = vo.getList().stream().map(
+                        s -> new SideBarItemDTO()
                                 .setTitle(s.getTitle())
                                 .setUrl("/article/detail/" + s.getId())
                                 .setTime(s.getCreateTime().getTime())
@@ -121,25 +141,26 @@ public class SidebarServiceImpl implements SidebarService {
         return new SideBarDTO().setTitle("热门推荐").setItems(items).setStyle(SidebarStyleEnum.ARTICLES.getStyle());
     }
 
-    @Override
-    public SideBarDTO pdfSideBar() {
+    private SideBarDTO pdfSideBar() {
         List<ConfigDTO> pdfList = configService.getConfigList(ConfigTypeEnum.PDF);
-        List<SideBarItemDto> items = new ArrayList<>(pdfList.size());
+        List<SideBarItemDTO> items = new ArrayList<>(pdfList.size());
         pdfList.forEach(configDTO -> {
-
+            SideBarItemDTO dto = new SideBarItemDTO();
+            dto.setName(configDTO.getName());
+            dto.setUrl(configDTO.getJumpUrl());
+            dto.setImg(configDTO.getBannerUrl());
+            RateVisitDTO visit;
+            if (StringUtils.isNotBlank(configDTO.getExtra())) {
+                visit = (JsonUtil.toObj(configDTO.getExtra(), RateVisitDTO.class));
+            } else {
+                visit = new RateVisitDTO();
+            }
+            visit.incrVisit();
+            // 更新阅读计数
+            configService.updateVisit(configDTO.getId(), JsonUtil.toStr(visit));
+            dto.setVisit(visit);
+            items.add(dto);
         });
-        // TODO PDF 优质资源
-        items.add(new SideBarItemDto()
-                .setName("4天实战轻松玩转Docker")
-                .setUrl("docker")
-                .setImg("https://cdn.sanity.io/images/708bnrs8/production/ec8688d3f0426bf5cd5e99122b19c6791853564d-832x1042.png")
-        );
-
-        items.add(new SideBarItemDto()
-                .setName("Java开发手册（嵩山版）")
-                .setUrl("docker")
-                .setImg("https://cdn.sanity.io/images/708bnrs8/production/6038f68c4a4ffa4e2e36837d4efc0d70734fb287-1021x1278.jpg")
-        );
         return new SideBarDTO().setTitle("优质PDF").setItems(items).setStyle(SidebarStyleEnum.PDF.getStyle());
     }
 }

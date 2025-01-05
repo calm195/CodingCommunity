@@ -8,9 +8,11 @@ import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.notify.NotifyMsgEvent;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
+import cor.chrissy.community.common.req.article.ContentPostReq;
 import cor.chrissy.community.common.result.Result;
 import cor.chrissy.community.common.vo.NextPageHtmlVo;
 import cor.chrissy.community.common.vo.PageListVo;
+import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
 import cor.chrissy.community.core.util.SpringUtil;
@@ -38,14 +40,19 @@ import java.util.Optional;
 @RequestMapping(path = "article/api")
 @RestController
 public class ArticleRestController {
+
     @Autowired
     private ArticleReadService articleReadService;
+
     @Autowired
     private UserFootService userFootService;
+
     @Autowired
     private CategoryService categoryService;
+
     @Autowired
     private TagService tagService;
+
     @Autowired
     private ArticleWriteService articleWriteService;
 
@@ -80,13 +87,17 @@ public class ArticleRestController {
      * @return
      */
     @GetMapping(path = "tag/list")
-    public Result<List<TagDTO>> queryTags(Long categoryId) {
-        if (categoryId == null || categoryId <= 0L) {
-            return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS, categoryId);
+    public Result<PageVo<TagDTO>> queryTags(@RequestParam(name = "key", required = false) String key,
+                                            @RequestParam(name = "articleId", required = false) Long articleId,
+                                            @RequestParam(name = "pageNumber", required = false, defaultValue = "1") Integer pageNumber,
+                                            @RequestParam(name = "pageSize", required = false, defaultValue = "10") Integer pageSize) {
+        PageVo<TagDTO> tagDTOPageVo;
+        if (articleId != null && articleId > 0) {
+            tagDTOPageVo = articleReadService.queryTagsByArticleId(articleId);
+        } else {
+            tagDTOPageVo = tagService.queryTags(key, PageParam.newPageInstance(pageNumber, pageSize));
         }
-
-        List<TagDTO> list = tagService.queryTagsByCategoryId(categoryId);
-        return Result.ok(list);
+        return Result.ok(tagDTOPageVo);
     }
 
     /**
@@ -150,6 +161,18 @@ public class ArticleRestController {
 //        response.sendRedirect("/article/detail/" + id);
         // 这里采用前端重定向策略
         return Result.ok(id);
+    }
+
+    @PostMapping(path = "generateSummary")
+    public Result<String> generateSummary(@RequestBody ContentPostReq req) {
+        return Result.ok(articleReadService.generateSummary(req.getContent()));
+    }
+
+    @Permission(role = UserRole.LOGIN)
+    @RequestMapping(path = "delete")
+    public Result<Boolean> delete(@RequestParam(value = "articleId") Long articleId) {
+        articleWriteService.deleteArticle(articleId, ReqInfoContext.getReqInfo().getUserId());
+        return Result.ok(true);
     }
 }
 

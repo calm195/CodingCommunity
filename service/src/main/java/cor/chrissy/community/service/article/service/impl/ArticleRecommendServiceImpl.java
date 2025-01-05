@@ -12,13 +12,12 @@ import cor.chrissy.community.service.article.repository.entity.ArticleTagDO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.article.service.ArticleRecommendService;
 import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
-import cor.chrissy.community.service.sidebar.dto.SideBarItemDto;
+import cor.chrissy.community.service.sidebar.dto.SideBarItemDTO;
 import cor.chrissy.community.service.sidebar.service.SidebarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,13 +42,13 @@ public class ArticleRecommendServiceImpl implements ArticleRecommendService {
 
     @Override
     public List<SideBarDTO> recommend(ArticleDTO articleDO) {
+        List<SideBarDTO> sides = sidebarService.queryArticleDetailSidebarList();
+
         // 推荐文章
         SideBarDTO recommend = recommendByAuthor(articleDO.getAuthor(), articleDO.getArticleId(), PageParam.DEFAULT_PAGE_SIZE);
+        sides.add(recommend);
 
-        // 社区圈子
-        SideBarDTO pdf = sidebarService.pdfSideBar();
-
-        return Arrays.asList(pdf, recommend);
+        return sides;
     }
 
 
@@ -62,8 +61,8 @@ public class ArticleRecommendServiceImpl implements ArticleRecommendService {
      */
     public SideBarDTO recommendByAuthor(Long authorId, Long articleId, long size) {
         List<SimpleArticleDTO> list = articleDao.listAuthorHotArticles(authorId, PageParam.newPageInstance(PageParam.DEFAULT_PAGE_NUM, size));
-        List<SideBarItemDto> items = list.stream().filter(s -> !s.getId().equals(articleId))
-                .map(s -> new SideBarItemDto()
+        List<SideBarItemDTO> items = list.stream().filter(s -> !s.getId().equals(articleId))
+                .map(s -> new SideBarItemDTO()
                         .setTitle(s.getTitle()).setUrl("/article/detail/" + s.getId())
                         .setTime(s.getCreateTime().getTime()))
                 .collect(Collectors.toList());
@@ -102,6 +101,9 @@ public class ArticleRecommendServiceImpl implements ArticleRecommendService {
         }
 
         List<ArticleDO> recommendArticles = articleDao.listRelatedArticlesOrderByReadCount(article.getCategoryId(), tagIds, page);
+        if (recommendArticles.removeIf(s -> s.getId().equals(articleId))) {
+            page.setPageSize(page.getPageSize() - 1);
+        }
         return articleReadService.buildArticleListVo(recommendArticles, page.getPageSize());
     }
 }

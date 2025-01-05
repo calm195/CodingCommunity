@@ -32,7 +32,7 @@ public class ArticleConverter {
         article.setAuthorId(author);
         article.setId(req.getArticleId());
         article.setTitle(req.getTitle());
-        article.setShortTitle(req.getSubTitle());
+        article.setShortTitle(req.getShortTitle());
         article.setArticleType(ArticleTypeEnum.valueOf(req.getArticleType().toUpperCase()).getCode());
         article.setPicture(req.getCover() == null ? "" : req.getCover());
         article.setCategoryId(req.getCategoryId());
@@ -84,7 +84,6 @@ public class ArticleConverter {
         TagDTO dto = new TagDTO();
         dto.setTag(tag.getTagName());
         dto.setTagId(tag.getId());
-        dto.setCategoryId(tag.getCategoryId());
         dto.setStatus(tag.getStatus());
         return dto;
     }
@@ -97,6 +96,7 @@ public class ArticleConverter {
         CategoryDTO dto = new CategoryDTO();
         dto.setCategory(category.getCategoryName());
         dto.setCategoryId(category.getId());
+        dto.setRank(category.getRank());
         dto.setStatus(category.getStatus());
         dto.setSelected(false);
         return dto;
@@ -111,9 +111,7 @@ public class ArticleConverter {
             return null;
         }
         TagDO tagDO = new TagDO();
-        tagDO.setTagName(tagReq.getTagName());
-        tagDO.setTagType(tagReq.getTagType());
-        tagDO.setCategoryId(tagReq.getCategoryId());
+        tagDO.setTagName(tagReq.getTag());
         return tagDO;
     }
 
@@ -122,7 +120,8 @@ public class ArticleConverter {
             return null;
         }
         CategoryDO categoryDO = new CategoryDO();
-        categoryDO.setCategoryName(categoryReq.getCategoryName());
+        categoryDO.setCategoryName(categoryReq.getCategory());
+        categoryDO.setRank(categoryReq.getRank());
         return categoryDO;
     }
 }

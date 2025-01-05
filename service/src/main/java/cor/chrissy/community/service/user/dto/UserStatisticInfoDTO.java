@@ -54,4 +54,6 @@ public class UserStatisticInfoDTO extends BaseUserInfoDTO {
     private Boolean followed;
 
     private List<YearArticleDTO> yearArticleList;
+
+    private Integer infoPercent;
 }

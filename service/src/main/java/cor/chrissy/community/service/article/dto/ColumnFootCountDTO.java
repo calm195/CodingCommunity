@@ -34,12 +34,15 @@ public class ColumnFootCountDTO {
      */
     private Integer articleCount;
 
+    private Integer totalNums;
+
     public ColumnFootCountDTO() {
         praiseCount = 0;
         readCount = 0;
         collectionCount = 0;
         commentCount = 0;
         articleCount = 0;
+        totalNums = 0;
     }
 }
 

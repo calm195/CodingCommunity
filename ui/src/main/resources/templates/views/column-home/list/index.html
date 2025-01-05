@@ -3,3 +3,15 @@
         专栏详情
     </div>
 </div>
+<script>
+    // 倒计时
+    let cntDivs = document.getElementsByClassName('count-down-text');
+    for (let i = 0; i < cntDivs.length; i++) {
+        const target = cntDivs[i];
+        console.log("Target:", target.dataset.freeEndtime)
+        target.innerHTML = showtime(target.dataset.freeEndtime)
+        setInterval(function () {
+            target.innerHTML = showtime(target.dataset.freeEndtime)
+        }, 1000)
+    }
+</script>

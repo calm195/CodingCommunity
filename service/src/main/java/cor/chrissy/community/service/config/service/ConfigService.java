@@ -17,4 +17,6 @@ public interface ConfigService {
      * @return
      */
     List<ConfigDTO> getConfigList(ConfigTypeEnum configTypeEnum);
+
+    void updateVisit(long configId, String extra);
 }

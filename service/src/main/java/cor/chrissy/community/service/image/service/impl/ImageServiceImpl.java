@@ -1,27 +1,29 @@
 package cor.chrissy.community.service.image.service.impl;
 
-import com.github.hui.quick.plugin.base.ImageLoadUtil;
+import com.github.hui.quick.plugin.base.FileReadUtil;
 import com.github.hui.quick.plugin.base.constants.MediaType;
-import cor.chrissy.community.core.config.ImageProperties;
-import cor.chrissy.community.core.util.DateUtil;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import cor.chrissy.community.common.enums.StatusEnum;
+import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.core.util.MdImgLoader;
+import cor.chrissy.community.service.image.oss.IOssUploader;
 import cor.chrissy.community.service.image.service.ImageService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wx128
@@ -29,13 +31,36 @@ import java.util.Random;
  */
 @Slf4j
 @Service
-@EnableConfigurationProperties(ImageProperties.class)
 public class ImageServiceImpl implements ImageService {
 
     @Autowired
-    private ImageProperties imageProperties;
+    private IOssUploader ossUploader;
 
-    private static final MediaType[] STATIC_IMG_TYPE = new MediaType[]{MediaType.ImagePng, MediaType.ImageJpg, MediaType.ImageWebp};
+    private static final MediaType[] STATIC_IMG_TYPE = new MediaType[]{MediaType.ImagePng, MediaType.ImageJpg, MediaType.ImageWebp, MediaType.ImageGif};
+
+    private final LoadingCache<String, String> imgReplaceCache = CacheBuilder.newBuilder()
+            .maximumSize(300)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, String>() {
+                @NotNull
+                @Override
+                public String load(@NotNull String img) {
+                    try {
+                        InputStream stream = FileReadUtil.getStreamByFileName(img);
+                        URI uri = URI.create(img);
+                        String path = uri.getPath();
+                        int index = path.lastIndexOf(".");
+                        String fileType = null;
+                        if (index > 0) {
+                            fileType = path.substring(index + 1);
+                        }
+                        return ossUploader.upload(stream, fileType);
+                    } catch (Exception e) {
+                        log.error("外网照片转存异常，image：{}。exception: {}", img, e.toString());
+                        return "";
+                    }
+                }
+            });
 
     @Override
     public String saveImg(HttpServletRequest request) {
@@ -47,27 +72,21 @@ public class ImageServiceImpl implements ImageService {
 
         if (file == null) {
             log.error("load upload image error! The image url is empty!");
-            throw new IllegalArgumentException("图片不能为空!");
+            throw ExceptionUtil.of(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "it's no image here");
         }
 
         // 目前只支持 jpg, png, webp 等静态图片格式
-        String contentType = file.getContentType();
-        MediaType type = validateStaticImg(contentType);
-        if (type == null) {
-            throw new IllegalArgumentException("不支持的图片类型");
+        String fileType = validateStaticImg(file.getContentType());
+        if (fileType == null) {
+            throw ExceptionUtil.of(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, "no supported fileType");
         }
 
         // 获取BufferedImage对象
         try {
-            BufferedImage image = ImageIO.read(file.getInputStream());
-            String path = saveImg(image, type);
-            if (StringUtils.isBlank(path)) {
-                throw new IllegalStateException("image upload error!");
-            }
-            return imageProperties.getCdnHost() + path;
+            return ossUploader.upload(file.getInputStream(), fileType);
         } catch (IOException e) {
-            log.error("Parse image from httpRequest to BufferedImage error!  not supported type: {}", e.toString());
-            throw new IllegalArgumentException("不支持的图片类型!");
+            log.error("Parse image from httpRequest to BufferedImage error!  not supported fileType: {}", e.toString());
+            throw ExceptionUtil.of(StatusEnum.UPLOAD_PIC_FAILED);
         }
     }
 
@@ -75,14 +94,7 @@ public class ImageServiceImpl implements ImageService {
     public String mdImgReplace(String content) {
         List<MdImgLoader.MdImg> imgList = MdImgLoader.loadImgs(content);
         for (MdImgLoader.MdImg img : imgList) {
-            // fixme 下面可以调整为并发转存
-            if (img.getUrl().startsWith(imageProperties.getCdnHost()) ||
-                    !img.getUrl().startsWith("http")) {
-                // 已经转存过，不需要再次转存；非http图片，不处理
-                continue;
-            }
-
-            String newImg = imageProperties.getCdnHost() + saveImg(img.getUrl());
+            String newImg = saveImg(img.getUrl());
             content = StringUtils.replace(content, img.getOrigin(), "![" + img.getDesc() + "](" + newImg + ")");
         }
         return content;
@@ -94,92 +106,25 @@ public class ImageServiceImpl implements ImageService {
      * @param img
      * @return
      */
+    @Override
     public String saveImg(String img) {
+        if (ossUploader.uploadIgnore(img)) {
+            return img;
+        }
+
         try {
-            BufferedImage bufferedImage = ImageLoadUtil.getImageByPath(img);
-            return saveImg(bufferedImage, MediaType.ImagePng);
-        } catch (Exception e) {
-            log.error("外网图片转存异常! img:{}", img, e);
-            return null;
-        }
-    }
-
-    public String saveImg(BufferedImage bf, MediaType mediaType) {
-        try {
-            String path = genTmpImg(mediaType.getExt());
-            File file = new File(imageProperties.getAbsTmpPath() + path);
-            mkDir(file.getParentFile());
-            ImageIO.write(bf, mediaType.getExt(), file);
-            return path;
-        } catch (Exception e) {
-            log.error("save file error!", e);
-            return null;
-        }
-    }
-
-    /**
-     * 获取文件临时名称
-     *
-     * @return
-     */
-    private String genTmpFileName() {
-        Random random = new Random();
-        return System.currentTimeMillis() + "_" + random.nextInt(100);
-    }
-
-    /**
-     * 获取文件路径
-     *
-     * @param type
-     * @return
-     */
-    public String genTmpImg(String type) {
-        String time = genTmpFileName();
-        return imageProperties.getWebImgPath() + DateUtil.getCurrentDateTime() + "/" + time + "." + type;
-    }
-
-    /**
-     * 递归创建文件夹
-     *
-     * @param path 由目录创建的file对象
-     * @throws FileNotFoundException
-     */
-    private void mkDir(File path) throws FileNotFoundException {
-        if (path.getParentFile() == null) {
-            path = path.getAbsoluteFile();
-        }
-
-        if (path.getParentFile() == null) {
-            // windows 操作系统下，如果直接到最上层的分区，这里依然可能是null，所以直接返回
-            return;
-        }
-
-        if (path.getParentFile().exists()) {
-            modifyFileAuth(path);
-            if (!path.exists() && !path.mkdir()) {
-                throw new FileNotFoundException();
+            String ans = imgReplaceCache.get(img);
+            if (StringUtils.isBlank(ans)) {
+                return buildUploadFailImgUrl(img);
             }
-        } else {
-            mkDir(path.getParentFile());
-            modifyFileAuth(path);
-            if (!path.exists() && !path.mkdir()) {
-                throw new FileNotFoundException();
-            }
+            return ans;
+        } catch (Exception e) {
+            return buildUploadFailImgUrl(img);
         }
     }
 
-    /**
-     * 修改文件权限，设置为可读写
-     *
-     * @param file
-     */
-    private void modifyFileAuth(File file) {
-        boolean ans = file.setExecutable(true, false);
-        ans = file.setReadable(true, false) && ans;
-        ans = file.setWritable(true, false) && ans;
-        if (log.isDebugEnabled()) {
-            log.debug("create file auth : {}", ans);
-        }
+    private String buildUploadFailImgUrl(String img) {
+        return img.contains("saveError") ? img : img + "?&cause=saveError!";
     }
 
     /**
@@ -188,7 +133,10 @@ public class ImageServiceImpl implements ImageService {
      * @param mime
      * @return
      */
-    private MediaType validateStaticImg(String mime) {
+    private String validateStaticImg(String mime) {
+        if ("svg".equalsIgnoreCase(mime)) {
+            return "svg";
+        }
         if (mime == null) {
             return null;
         }
@@ -197,7 +145,7 @@ public class ImageServiceImpl implements ImageService {
         }
         for (MediaType type : STATIC_IMG_TYPE) {
             if (type.getMime().equals(mime)) {
-                return type;
+                return type.getExt();
             }
         }
         return null;

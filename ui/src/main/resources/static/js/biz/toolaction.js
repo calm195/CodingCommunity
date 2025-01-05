@@ -20,7 +20,7 @@ const praiseComment = function (e, login) {
     }
 
     const commentId = e.dataset.commentId;
-    const action = e.dataset.praised !== 'true'
+    const action = e.dataset.praised == 'true' ? false : true
     let priaseCount = e.dataset.praiseCount;
 
     // 2 点赞， 4 取消点赞

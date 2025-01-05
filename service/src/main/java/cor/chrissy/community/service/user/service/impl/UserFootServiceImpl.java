@@ -90,6 +90,7 @@ public class UserFootServiceImpl implements UserFootService {
     private boolean setUserFootStat(UserFootDO userFootDO, OperateTypeEnum operate) {
         switch (operate) {
             case READ:
+                userFootDO.setReadStat(1);
                 return compareAndUpdate(userFootDO::getReadStat, userFootDO::setReadStat, operate.getDbStatCode());
             case PRAISE:
             case CANCEL_PRAISE:

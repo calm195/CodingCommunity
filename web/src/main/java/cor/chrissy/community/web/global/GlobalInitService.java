@@ -9,6 +9,7 @@ import cor.chrissy.community.web.config.GlobalViewConfig;
 import cor.chrissy.community.web.global.vo.GlobalVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -28,6 +29,7 @@ public class GlobalInitService {
     @Value("${env.name}")
     private String env;
     @Autowired
+    @Qualifier("pwdLoginServiceImpl")
     private LoginService loginService;
 
     @Resource
@@ -79,7 +81,7 @@ public class GlobalInitService {
         for (Cookie cookie : request.getCookies()) {
             if (LoginService.SESSION_KEY.equalsIgnoreCase(cookie.getName())) {
                 String session = cookie.getValue();
-                BaseUserInfoDTO user = loginService.getUserBySessionId(session);
+                BaseUserInfoDTO user = loginService.getAndUpdateUserIpInfoBySessionId(session, reqInfo.getClientIp());
                 reqInfo.setSession(session);
                 if (user != null) {
                     reqInfo.setUserId(user.getUserId());

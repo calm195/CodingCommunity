@@ -12,7 +12,6 @@ import cor.chrissy.community.common.vo.NextPageHtmlVo;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
-import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.user.dto.FollowUserInfoDTO;
@@ -70,9 +69,8 @@ public class UserRestController {
     @PostMapping(path = "saveUserInfo")
     @Transactional(rollbackFor = Exception.class)
     public Result<Boolean> saveUserInfo(@RequestBody UserInfoSaveReq req) {
-        if (!(req.getUserId() != null && req.getUserId().equals(ReqInfoContext.getReqInfo().getUserId()))) {
-            // 不能修改其他用户的信息
-            throw ExceptionUtil.of(StatusEnum.FORBID_ERROR_MIXED, "无权修改");
+        if (req.getUserId() == null || !Objects.equals(req.getUserId(), ReqInfoContext.getReqInfo().getUserId())) {
+            return Result.fail(StatusEnum.FORBID_ERROR_MIXED, "forbidden");
         }
         userService.saveUserInfo(req);
         return Result.ok(true);
