@@ -67,6 +67,12 @@ public class ArticleSettingServiceImpl implements ArticleSettingService {
     public void updateArticle(ArticlePostReq req) {
         ArticleDO articleDO = articleDao.getById(req.getArticleId());
         if (articleDO != null) {
+            if (!req.getTitle().isEmpty()) {
+                articleDO.setTitle(req.getTitle());
+            }
+            if (req.getStatus() != null) {
+                articleDO.setStatus(req.getStatus());
+            }
             articleDO.setShortTitle(req.getShortTitle());
             articleDao.updateById(articleDO);
         }

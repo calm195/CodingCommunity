@@ -5,10 +5,13 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import cor.chrissy.community.common.context.ReqInfoContext;
+import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.DocumentTypeEnum;
 import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.core.permission.UserRole;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.SimpleArticleDTO;
@@ -20,6 +23,7 @@ import cor.chrissy.community.service.article.repository.mapper.ArticleDetailMapp
 import cor.chrissy.community.service.article.repository.mapper.ArticleMapper;
 import cor.chrissy.community.service.article.repository.mapper.ReadCountMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.PriorityOrdered;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
 
@@ -44,6 +48,8 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
     private ReadCountMapper readCountMapper;
     @Autowired
     private ResourceLoader resourceLoader;
+    @Autowired
+    private PriorityOrdered priorityOrdered;
 
     /**
      * 查询文章详情
@@ -60,9 +66,28 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
 
         // 查询文章正文
         ArticleDTO dto = ArticleConverter.toDto(article);
-        ArticleDetailDO detail = findLatestDetail(articleId);
-        dto.setContent(detail.getContent());
+        if (showReviewContent(article)) {
+            ArticleDetailDO detail = findLatestDetail(articleId);
+            dto.setContent(detail.getContent());
+        } else {
+            dto.setContent("## the article is being audited");
+        }
+
         return dto;
+    }
+
+    private boolean showReviewContent(ArticleDO article) {
+        if (article.getStatus() != PushStatEnum.REVIEW.getCode()) {
+            return true;
+        }
+
+        BaseUserInfoDTO userInfoDTO = ReqInfoContext.getReqInfo().getUserInfo();
+        if (userInfoDTO == null) {
+            return false;
+        }
+
+        return userInfoDTO.getUserId().equals(article.getAuthorId())
+                || (userInfoDTO.getRole() != null && userInfoDTO.getRole().equalsIgnoreCase(UserRole.ADMIN.name()));
     }
 
     public Long countArticleByCategoryId(Long categoryId) {
@@ -106,8 +131,16 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
      * @param articleId
      * @param content
      */
-    public void updateArticleContent(Long articleId, String content) {
-        articleDetailMapper.updateContent(articleId, content);
+    public void updateArticleContent(Long articleId, String content, boolean update) {
+        if (update) {
+            articleDetailMapper.updateContent(articleId, content);
+        } else {
+            ArticleDetailDO latest = findLatestDetail(articleId);
+            latest.setVersion(latest.getVersion() + 1);
+            latest.setId(null);
+            latest.setContent(content);
+            articleDetailMapper.insert(latest);
+        }
     }
 
     // ------------- 文章列表查询 --------------
@@ -115,10 +148,12 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
     public List<ArticleDO> listArticlesByAuthorId(Long authorId, PageParam pageParam) {
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
                 .eq(ArticleDO::getAuthorId, authorId)
                 .last(PageParam.getLimitSql(pageParam))
                 .orderByDesc(ArticleDO::getId);
+        if (!Objects.equals(ReqInfoContext.getReqInfo().getUserId(), authorId)) {
+            query.eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode());
+        }
         return baseMapper.selectList(query);
     }
 
@@ -266,7 +301,6 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
     public List<ArticleDO> listArticles(PageParam pageParam) {
         return lambdaQuery()
                 .eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
                 .last(PageParam.getLimitSql(pageParam))
                 .orderByDesc(ArticleDO::getId)
                 .list();
@@ -280,7 +314,6 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
     public Integer countArticle() {
         return lambdaQuery()
                 .eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
-                .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode())
                 .count().intValue();
     }
 }

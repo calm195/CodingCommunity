@@ -78,6 +78,8 @@ public class ArticlePostReq implements Serializable {
      */
     private String actionType;
 
+    private Integer status;
+
     public PushStatEnum pushStatus() {
         if ("post".equalsIgnoreCase(actionType)) {
             return PushStatEnum.ONLINE;

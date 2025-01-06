@@ -1,9 +1,6 @@
 package cor.chrissy.community.service.article.service.impl;
 
-import cor.chrissy.community.common.enums.DocumentTypeEnum;
-import cor.chrissy.community.common.enums.OperateTypeEnum;
-import cor.chrissy.community.common.enums.StatusEnum;
-import cor.chrissy.community.common.enums.YesOrNoEnum;
+import cor.chrissy.community.common.enums.*;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
 import cor.chrissy.community.core.util.ExceptionUtil;
 import cor.chrissy.community.core.util.NumUtil;
@@ -71,6 +68,9 @@ public class ArticleWriteServiceImpl implements ArticleWriteService {
      */
     private Long insertArticle(ArticleDO article, String content, Set<Long> tags) {
         // article + article_detail + tag  三张表的数据变更
+        if (article.getStatus() == PushStatEnum.ONLINE.getCode()) {
+            article.setStatus(PushStatEnum.REVIEW.getCode());
+        }
         articleDao.save(article);
         Long articleId = article.getId();
 
@@ -92,11 +92,13 @@ public class ArticleWriteServiceImpl implements ArticleWriteService {
      * @return
      */
     private Long updateArticle(ArticleDO article, String content, Set<Long> tags) {
+        boolean isToReview = article.getStatus() == PushStatEnum.REVIEW.getCode();
+
         // 更新文章
         articleDao.updateById(article);
 
         // 更新内容
-        articleDao.updateArticleContent(article.getId(), content);
+        articleDao.updateArticleContent(article.getId(), content, isToReview);
 
         // 标签更新
         articleTagDao.updateTags(article.getId(), tags);

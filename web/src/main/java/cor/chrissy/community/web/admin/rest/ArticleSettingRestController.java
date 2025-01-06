@@ -1,6 +1,7 @@
 package cor.chrissy.community.web.admin.rest;
 
 import cor.chrissy.community.common.enums.OperateArticleEnum;
+import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
@@ -41,6 +42,11 @@ public class ArticleSettingRestController {
     @ResponseBody
     @PostMapping(path = "save")
     public Result<String> save(@RequestBody ArticlePostReq req) {
+        if (req.getStatus() != PushStatEnum.OFFLINE.getCode()
+                && req.getStatus() != PushStatEnum.ONLINE.getCode()
+                && req.getStatus() != PushStatEnum.REVIEW.getCode()) {
+            return Result.fail(StatusEnum.ILLEGAL_ARGUMENTS_MIXED, req.getStatus() + "is illegal arguments");
+        }
         articleSettingService.updateArticle(req);
         return Result.ok("ok");
     }
