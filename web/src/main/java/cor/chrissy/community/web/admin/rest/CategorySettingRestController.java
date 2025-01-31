@@ -19,29 +19,32 @@ import org.springframework.web.bind.annotation.*;
  * @createAt 2024/12/19
  */
 @RestController
-@Permission(role = UserRole.ADMIN)
-@RequestMapping(path = "admin/category/")
+@Permission(role = UserRole.LOGIN)
+@RequestMapping(path = {"/api/admin/category/", "/admin/category"})
 public class CategorySettingRestController {
 
     @Autowired
     private CategorySettingService categorySettingService;
 
     @ResponseBody
-    @PostMapping(path = "save")
+    @PostMapping(path = "/save")
+    @Permission(role = UserRole.ADMIN)
     public Result<String> save(@RequestBody CategoryReq req) {
         categorySettingService.saveCategory(req);
         return Result.ok("ok");
     }
 
     @ResponseBody
-    @GetMapping(path = "delete")
+    @GetMapping(path = "/delete")
+    @Permission(role = UserRole.ADMIN)
     public Result<String> delete(@RequestParam(name = "categoryId") Integer categoryId) {
         categorySettingService.deleteCategory(categoryId);
         return Result.ok("ok");
     }
 
     @ResponseBody
-    @GetMapping(path = "operate")
+    @GetMapping(path = "/operate")
+    @Permission(role = UserRole.ADMIN)
     public Result<String> operate(@RequestParam(name = "categoryId") Integer categoryId,
                                   @RequestParam(name = "pushStatus") Integer pushStatus) {
         if (pushStatus != PushStatEnum.OFFLINE.getCode() || pushStatus != PushStatEnum.ONLINE.getCode()) {
@@ -52,7 +55,8 @@ public class CategorySettingRestController {
     }
 
     @ResponseBody
-    @GetMapping(path = "list")
+    @GetMapping(path = "/list")
+    @Permission(role = UserRole.ADMIN)
     public Result<PageVo<CategoryDTO>> list(@RequestParam(name = "pageNumber", required = false) Integer pageNumber,
                                             @RequestParam(name = "pageSize", required = false) Integer pageSize) {
         pageNumber = NumUtil.nullOrZero(pageNumber) ? 1 : pageNumber;

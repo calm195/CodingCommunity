@@ -1,8 +1,11 @@
 package cor.chrissy.community.web.global.vo;
 
+import cor.chrissy.community.common.context.SeoTagVo;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.web.config.GlobalViewConfig;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @author wx128
@@ -36,4 +39,10 @@ public class GlobalVo {
 
 
     private String currentDomain;
+
+    private Integer onlineCnt;
+
+    private List<SeoTagVo> ogp;
+
+    private String jsonLd;
 }

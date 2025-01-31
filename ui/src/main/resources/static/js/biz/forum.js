@@ -27,7 +27,7 @@ const get = function (url, params, callback) {
             // 出现了
             console.log("出现了异常:", data.status.msg)
             toastr.error(data.status.msg)
-            return
+
         } else if (callback) {
             callback(data.result)
         }

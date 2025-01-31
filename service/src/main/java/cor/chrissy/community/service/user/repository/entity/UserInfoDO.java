@@ -55,6 +55,8 @@ public class UserInfoDO extends BaseDO {
 
     private Integer deleted;
 
+    private Integer userRole;
+
     @TableField(typeHandler = JacksonTypeHandler.class)
     private IpInfo ip;
 

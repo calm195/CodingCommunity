@@ -138,7 +138,7 @@ public class WxHelper {
         }
         // 微信公众号登录
         else if (CodeGenerateUtil.isVerifyCode(content)) {
-            String verifyCode = loginService.getVerifyCode(fromUser);
+            String verifyCode = loginService.autoRegisterAndGetVerifyCode(fromUser);
             if (qrLoginHelper.login(content, verifyCode)) {
                 textRes = "登录成功";
             } else {

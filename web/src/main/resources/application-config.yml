@@ -11,3 +11,4 @@ view:
     wxLoginUrl: http://weixin.qq.com/r/FS9waAPEg178rUcL93oH
     host: http://127.0.0.1:${server.port}
     welcomeInfo: hello
+    contactMeWxQrCode: test

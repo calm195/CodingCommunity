@@ -1,5 +1,6 @@
 package cor.chrissy.community.service.user.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
@@ -17,6 +18,7 @@ import cor.chrissy.community.service.article.repository.dao.ArticleDao;
 import cor.chrissy.community.service.article.service.ArticleReadService;
 import cor.chrissy.community.service.article.service.CountService;
 import cor.chrissy.community.service.user.converter.UserConverter;
+import cor.chrissy.community.service.user.dto.SimpleUserInfoDTO;
 import cor.chrissy.community.service.user.dto.UserStatisticInfoDTO;
 import cor.chrissy.community.service.user.repository.dao.UserDao;
 import cor.chrissy.community.service.user.repository.dao.UserRelationDao;
@@ -30,7 +32,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wx128
@@ -108,7 +113,6 @@ public class UserServiceImpl implements UserService {
     public UserStatisticInfoDTO queryUserInfoWithStatistic(Long userId) {
         BaseUserInfoDTO userInfoDTO = queryBasicUserInfo(userId);
         UserStatisticInfoDTO userHomeDTO = UserConverter.toUserHomeDTO(userInfoDTO);
-        userHomeDTO.setRole("normal");
 
         int cnt = 0;
         if (StringUtils.isNotBlank(userHomeDTO.getCompany())) {
@@ -177,5 +181,29 @@ public class UserServiceImpl implements UserService {
         }
 
         return queryBasicUserInfo(userDO.getId());
+    }
+
+    @Override
+    public List<SimpleUserInfoDTO> searchUser(String userName) {
+        List<UserInfoDO> userInfoDOS = userDao.getByUserNameLike(userName);
+        if (CollectionUtils.isEmpty(userInfoDOS)) {
+            return Collections.emptyList();
+        }
+        return userInfoDOS.stream()
+                .map(s -> new SimpleUserInfoDTO()
+                        .setUserId(s.getUserId())
+                        .setName(s.getUserName())
+                        .setAvatar(s.getPhoto())
+                        .setProfile(s.getProfile())
+                ).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BaseUserInfoDTO> batchQueryBasicUserInfo(Collection<Long> userIds) {
+        List<UserInfoDO> userInfoDOS = userDao.getByUserIds(userIds);
+        if (CollectionUtils.isEmpty(userInfoDOS)) {
+            return Collections.emptyList();
+        }
+        return userInfoDOS.stream().map(UserConverter::toDTO).collect(Collectors.toList());
     }
 }

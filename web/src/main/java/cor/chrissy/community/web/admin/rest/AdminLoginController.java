@@ -11,11 +11,13 @@ import cor.chrissy.community.service.user.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
@@ -25,7 +27,7 @@ import java.util.Optional;
  * @createAt 2025/1/4
  */
 @RestController
-@RequestMapping(path = "/admin/login")
+@RequestMapping(path = {"/api/admin/login", "/admin/login"})
 public class AdminLoginController {
 
     @Autowired
@@ -35,11 +37,12 @@ public class AdminLoginController {
     @Autowired
     private LoginService loginService;
 
-    @RequestMapping(path = {"", "/"})
-    public Result<BaseUserInfoDTO> login(@RequestParam(name = "user") String user,
-                                         @RequestParam(name = "password") String pwd,
+    @PostMapping(path = {"", "/"})
+    public Result<BaseUserInfoDTO> login(HttpServletRequest request,
                                          HttpServletResponse response) {
-        BaseUserInfoDTO info = userService.passwordLogin(user, pwd);
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        BaseUserInfoDTO info = userService.passwordLogin(username, password);
         String session = loginService.login(info.getUserId());
         if (StringUtils.isNotBlank(session)) {
             // cookie中写入用户登录信息
@@ -50,8 +53,8 @@ public class AdminLoginController {
         }
     }
 
-    @Permission(role = UserRole.ADMIN)
-    @RequestMapping("logout")
+    @Permission(role = UserRole.LOGIN)
+    @RequestMapping("/logout")
     public Result<Boolean> logOut(HttpServletResponse response) throws IOException {
         Optional.ofNullable(ReqInfoContext.getReqInfo()).ifPresent(s -> loginService.logout(s.getSession()));
         // 重定向到首页

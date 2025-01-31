@@ -9,6 +9,7 @@ import cor.chrissy.community.common.req.user.UserSaveReq;
 import cor.chrissy.community.core.util.CodeGenerateUtil;
 import cor.chrissy.community.service.account.service.LoginService;
 import cor.chrissy.community.service.user.service.UserService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,7 @@ public class WxLoginServiceImpl implements LoginService {
         // 五分钟内，最多只支持300个用户登录；注意当服务多台机器部署时，基于本地缓存会有问题；请改成redis/memcache缓存
         verifyCodeCache = CacheBuilder.newBuilder().maximumSize(300).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<Long, String>() {
             @Override
-            public String load(Long userId) {
+            public @NotNull String load(@NotNull Long userId) {
                 String code = CodeGenerateUtil.genCode(1);
                 codeUserIdCache.put(code, userId);
                 return code;
@@ -54,14 +55,14 @@ public class WxLoginServiceImpl implements LoginService {
         });
         codeUserIdCache = CacheBuilder.newBuilder().maximumSize(300).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<String, Long>() {
             @Override
-            public Long load(String s) throws Exception {
+            public @NotNull Long load(@NotNull String s) throws Exception {
                 throw new NoVlaInGuavaException("not hit!");
             }
         });
 
         sessionMap = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build(new CacheLoader<String, Long>() {
             @Override
-            public Long load(String userId) {
+            public @NotNull Long load(@NotNull String userId) {
                 throw new NoVlaInGuavaException("not hit!");
             }
         });
@@ -81,6 +82,13 @@ public class WxLoginServiceImpl implements LoginService {
 
     @Override
     public String getVerifyCode(String uuid) {
+        UserSaveReq req = new UserSaveReq().setLoginType(0).setThirdAccountId(uuid);
+        userService.registerOrGetUserInfo(req);
+        return getVerifyCodeFromCache(req.getUserId());
+    }
+
+    @Override
+    public String autoRegisterAndGetVerifyCode(String uuid) {
         UserSaveReq req = new UserSaveReq().setLoginType(0).setThirdAccountId(uuid);
         userService.registerOrGetUserInfo(req);
         return getVerifyCodeFromCache(req.getUserId());

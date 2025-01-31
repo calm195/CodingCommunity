@@ -1,6 +1,6 @@
 package cor.chrissy.community.service.image.service.impl;
 
-import com.github.hui.quick.plugin.base.FileReadUtil;
+import com.github.hui.quick.plugin.base.file.FileReadUtil;
 import com.github.hui.quick.plugin.base.constants.MediaType;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

@@ -10,6 +10,7 @@ import cor.chrissy.community.service.article.dto.TagDTO;
 import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wx128
@@ -125,4 +126,6 @@ public interface ArticleReadService {
     PageVo<TagDTO> queryTagsByArticleId(Long articleId);
 
     Long queryArticleCountByCategoryId(Long categoryId);
+
+    Map<Long, Long> queryArticleCountByCategory();
 }

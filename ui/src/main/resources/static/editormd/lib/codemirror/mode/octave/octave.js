@@ -59,7 +59,7 @@
                 state.tokenize = tokenBase;
                 return 'comment';
             }
-            ;
+
             stream.skipToEnd();
             return 'comment';
         }
@@ -86,65 +86,65 @@
                     stream.tokenize = tokenBase;
                     return 'number';
                 }
-                ;
+
                 if (stream.match(/^[+-]?\d*\.\d+([EeDd][+-]?\d+)?[ij]?/)) {
                     return 'number';
                 }
-                ;
+
                 if (stream.match(/^[+-]?\d+([EeDd][+-]?\d+)?[ij]?/)) {
                     return 'number';
                 }
-                ;
+
             }
             if (stream.match(wordRegexp(['nan', 'NaN', 'inf', 'Inf']))) {
                 return 'number';
             }
-            ;
+
 
             // Handle Strings
             if (stream.match(/^"([^"]|(""))*"/)) {
                 return 'string';
             }
-            ;
+
             if (stream.match(/^'([^']|(''))*'/)) {
                 return 'string';
             }
-            ;
+
 
             // Handle words
             if (stream.match(keywords)) {
                 return 'keyword';
             }
-            ;
+
             if (stream.match(builtins)) {
                 return 'builtin';
             }
-            ;
+
             if (stream.match(identifiers)) {
                 return 'variable';
             }
-            ;
+
 
             if (stream.match(singleOperators) || stream.match(doubleOperators)) {
                 return 'operator';
             }
-            ;
+
             if (stream.match(singleDelimiters) || stream.match(doubleDelimiters) || stream.match(tripleDelimiters)) {
                 return null;
             }
-            ;
+
 
             if (stream.match(expressionEnd)) {
                 state.tokenize = tokenTranspose;
                 return null;
             }
-            ;
+
 
 
             // Handle non-detected items
             stream.next();
             return 'error';
-        };
+        }
 
 
         return {

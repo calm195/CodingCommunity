@@ -7,6 +7,9 @@ import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 import cor.chrissy.community.core.config.ImageProperties;
 import cor.chrissy.community.core.util.Md5Util;
+import jdk.jfr.events.ExceptionStatisticsEvent;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.DisposableBean;
@@ -24,6 +27,8 @@ import java.io.InputStream;
  * @createAt 2025/1/3
  */
 @Slf4j
+@Getter
+@Setter
 @Component
 @ConditionalOnExpression(value = "#{'ali'.equals(environment.getProperty('image.oss.type'))}")
 public class AliOssWrapper implements IOssUploader, InitializingBean, DisposableBean {
@@ -36,28 +41,49 @@ public class AliOssWrapper implements IOssUploader, InitializingBean, Disposable
         try {
             // 创建PutObjectRequest对象。
             byte[] bytes = StreamUtils.copyToByteArray(input);
-            // 计算md5作为文件名，避免重复上传
+
+            return upload(bytes, fileType);
+        } catch (OSSException ossException) {
+            log.error("Oss rejected with an error response! msg:{}, code: {}, reqId: {}, host:{}",
+                    ossException.getMessage(),
+                    ossException.getErrorCode(),
+                    ossException.getRequestId(),
+                    ossException.getHostId());
+            return null;
+        } catch (Exception e) {
+            log.error("Caught an ClientException, which means the client encountered " +
+                    "a serious internal problem while trying to communicate with OSS, " +
+                    "such as not being able to access the network.： {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public String upload(byte[] bytes, String fileType) {
+        try {
             String fileName = Md5Util.encode(bytes);
-            input = new ByteArrayInputStream(bytes);
-            fileName = properties.getOss().getPrefix() + fileName + "." + getFileType((ByteArrayInputStream) input, fileType);
-            PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getOss().getBucket(), fileName, input);
-            // 设置该属性可以返回response。如果不设置，则返回的response为空。
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+            fileName = properties.getOss().getPrefix() + fileName + "." + getFileType(inputStream, fileType);
+
+            PutObjectRequest putObjectRequest = new PutObjectRequest(properties.getOss().getBucket(), fileName, inputStream);
             putObjectRequest.setProcess("true");
-            // 上传字符串。
-            PutObjectResult result = ossClient.putObject(putObjectRequest);
-            if (SUCCESS_CODE == result.getResponse().getStatusCode()) {
+            PutObjectResult putObjectResult = ossClient.putObject(putObjectRequest);
+            if (SUCCESS_CODE == putObjectResult.getResponse().getStatusCode()) {
                 return properties.getOss().getHost() + fileName;
             } else {
-                log.error("upload to oss error! response:{}", result.getResponse().getStatusCode());
+                log.error("upload to oss error. code:{}", putObjectResult.getResponse().getStatusCode());
                 return null;
             }
-        } catch (OSSException oe) {
-            log.error("Oss rejected with an error response! msg:{}, code:{}, reqId:{}, host:{}", oe.getErrorMessage(), oe.getErrorCode(), oe.getRequestId(), oe.getHostId());
+        } catch (OSSException ossException) {
+            log.error("Oss rejected with an error response! msg:{}, code: {}, reqId: {}, host:{}",
+                    ossException.getMessage(),
+                    ossException.getErrorCode(),
+                    ossException.getRequestId(),
+                    ossException.getHostId());
             return null;
-        } catch (Exception ce) {
-            log.error("Caught an ClientException, which means the client encountered "
-                    + "a serious internal problem while trying to communicate with OSS, "
-                    + "such as not being able to access the network. {}", ce.getMessage());
+        } catch (Exception e) {
+            log.error("Caught an ClientException, which means the client encountered " +
+                    "a serious internal problem while trying to communicate with OSS, " +
+                    "such as not being able to access the network.： {}", e.getMessage());
             return null;
         }
     }

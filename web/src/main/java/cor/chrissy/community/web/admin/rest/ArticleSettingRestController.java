@@ -20,15 +20,15 @@ import org.springframework.web.bind.annotation.*;
  * @createAt 2024/12/19
  */
 @RestController
-@Permission(role = UserRole.ADMIN)
-@RequestMapping(path = "admin/article/")
+@Permission(role = UserRole.LOGIN)
+@RequestMapping(path = {"/api/admin/article", "/admin/article"})
 public class ArticleSettingRestController {
 
     @Autowired
     private ArticleSettingService articleSettingService;
 
-    @ResponseBody
-    @GetMapping(path = "operate")
+    @GetMapping(path = "/operate")
+    @Permission(role = UserRole.ADMIN)
     public Result<String> operate(@RequestParam(name = "articleId") Long articleId,
                                   @RequestParam(name = "operateType") Integer operateType) {
         OperateArticleEnum operateArticleEnum = OperateArticleEnum.fromCode(operateType);
@@ -39,8 +39,8 @@ public class ArticleSettingRestController {
         return Result.ok("ok");
     }
 
-    @ResponseBody
-    @PostMapping(path = "save")
+    @PostMapping(path = "/save")
+    @Permission(role = UserRole.ADMIN)
     public Result<String> save(@RequestBody ArticlePostReq req) {
         if (req.getStatus() != PushStatEnum.OFFLINE.getCode()
                 && req.getStatus() != PushStatEnum.ONLINE.getCode()
@@ -51,15 +51,15 @@ public class ArticleSettingRestController {
         return Result.ok("ok");
     }
 
-    @ResponseBody
-    @GetMapping(path = "delete")
+    @GetMapping(path = "/delete")
+    @Permission(role = UserRole.ADMIN)
     public Result<String> delete(@RequestParam(name = "articleId") Long articleId) {
         articleSettingService.deleteArticle(articleId);
         return Result.ok("ok");
     }
 
-    @ResponseBody
-    @GetMapping(path = "list")
+    @GetMapping(path = "/list")
+    @Permission(role = UserRole.ADMIN)
     public Result<PageVo<ArticleDTO>> list(@RequestParam(name = "pageNumber", required = false) Integer pageNumber,
                                            @RequestParam(name = "pageSize", required = false) Integer pageSize) {
         pageNumber = NumUtil.nullOrZero(pageNumber) ? 1 : pageNumber;

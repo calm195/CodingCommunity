@@ -1,6 +1,7 @@
 package cor.chrissy.community.service.user.dto;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -11,6 +12,7 @@ import java.io.Serializable;
  * @createAt 2024/12/17
  */
 @Data
+@Accessors(chain = true)
 public class SimpleUserInfoDTO implements Serializable {
     private static final long serialVersionUID = 4802653694786272120L;
 

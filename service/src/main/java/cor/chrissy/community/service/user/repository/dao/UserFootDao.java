@@ -13,6 +13,7 @@ import cor.chrissy.community.service.user.repository.mapper.UserFootMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author wx128
@@ -72,7 +73,9 @@ public class UserFootDao extends ServiceImpl<UserFootMapper, UserFootDO> {
      * @return
      */
     public ArticleFootCountDTO countArticleByUserId(Long author) {
-        return baseMapper.countArticleByUserId(author);
+        ArticleFootCountDTO countDTO = baseMapper.countArticleByUserId(author);
+        Optional.ofNullable(countDTO).ifPresent(s -> s.setReadCount(baseMapper.countArticleReadsByUserId(author)));
+        return countDTO;
     }
 
     /**

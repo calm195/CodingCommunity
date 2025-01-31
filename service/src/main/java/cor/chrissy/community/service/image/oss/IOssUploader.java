@@ -1,6 +1,6 @@
 package cor.chrissy.community.service.image.oss;
 
-import com.github.hui.quick.plugin.base.FileReadUtil;
+import com.github.hui.quick.plugin.base.file.FileReadUtil;
 import com.github.hui.quick.plugin.base.constants.MediaType;
 import org.apache.commons.lang3.StringUtils;
 

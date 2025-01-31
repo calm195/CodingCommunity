@@ -1,6 +1,6 @@
 package cor.chrissy.community.service.image.oss;
 
-import com.github.hui.quick.plugin.base.FileWriteUtil;
+import com.github.hui.quick.plugin.base.file.FileWriteUtil;
 import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.core.config.ImageProperties;
 import cor.chrissy.community.core.util.ExceptionUtil;
@@ -27,7 +27,7 @@ import java.util.Random;
 public class LocalStorageWrapper implements IOssUploader {
     @Autowired
     private ImageProperties imageProperties;
-    private Random random;
+    private final Random random;
 
     public LocalStorageWrapper() {
         random = new Random();
@@ -72,6 +72,10 @@ public class LocalStorageWrapper implements IOssUploader {
     @Override
     public boolean uploadIgnore(String img) {
         if (StringUtils.isNotBlank(imageProperties.getCdnHost()) && img.startsWith(imageProperties.getCdnHost())) {
+            return true;
+        }
+
+        if (StringUtils.isNotBlank(imageProperties.getOss().getHost()) && img.startsWith(imageProperties.getOss().getHost())) {
             return true;
         }
 

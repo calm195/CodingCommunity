@@ -1,4 +1,4 @@
-package cor.chrissy.community.test;
+package cor.chrissy.community.test.basic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;

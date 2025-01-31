@@ -1,5 +1,6 @@
 package cor.chrissy.community.web.global;
 
+import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.exception.CommunityException;
 import cor.chrissy.community.common.result.Result;
@@ -70,10 +71,10 @@ public class CodingCommunityExceptionHandler implements HandlerExceptionResolver
         } else if (ex instanceof HttpMediaTypeNotAcceptableException) {
             return Status.newStatus(StatusEnum.RECORDS_NOT_EXISTS, ExceptionUtils.getStackTrace(ex));
         } else if (ex instanceof NestedRuntimeException) {
-            log.error("unexpect error", ex);
+            log.error("unexpect error! {}", ReqInfoContext.getReqInfo(), ex);
             return Status.newStatus(StatusEnum.UNEXPECT_ERROR, ex.getMessage());
         } else {
-            log.error("unexpect error", ex);
+            log.error("unexpect error! {}", ReqInfoContext.getReqInfo(), ex);
             return Status.newStatus(StatusEnum.UNEXPECT_ERROR, ExceptionUtils.getStackTrace(ex));
         }
     }
@@ -82,13 +83,13 @@ public class CodingCommunityExceptionHandler implements HandlerExceptionResolver
         // 根据异常码解析需要返回的错误页面
         if (StatusEnum.is5xx(status.getCode())) {
             response.setStatus(500);
-            return "/error/500";
+            return "error/500";
         } else if (StatusEnum.is403(status.getCode())) {
             response.setStatus(403);
-            return "/error/403";
+            return "error/403";
         } else {
             response.setStatus(404);
-            return "/error/404";
+            return "error/404";
         }
     }
 
@@ -101,7 +102,7 @@ public class CodingCommunityExceptionHandler implements HandlerExceptionResolver
      * @return
      */
     private boolean restResponse(HttpServletRequest request, HttpServletResponse response) {
-        if (request.getRequestURI().startsWith("admin/")) {
+        if (request.getRequestURI().startsWith("/api/admin/") || request.getRequestURI().startsWith("/admin/")) {
             return true;
         }
 
@@ -113,8 +114,17 @@ public class CodingCommunityExceptionHandler implements HandlerExceptionResolver
             return true;
         }
 
+        if (isAjaxRequest(request)) {
+            return true;
+        }
+
         // 数据接口请求
         AntPathMatcher pathMatcher = new AntPathMatcher();
         return pathMatcher.match("/**/api/**", request.getRequestURI());
+    }
+
+    private boolean isAjaxRequest(HttpServletRequest request) {
+        String requestedWith = request.getHeader("X-Requested-With");
+        return requestedWith != null && requestedWith.equals("XMLHttpRequest");
     }
 }

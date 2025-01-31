@@ -42,6 +42,11 @@ public class PwdLoginServiceImpl implements LoginService {
     }
 
     @Override
+    public String autoRegisterAndGetVerifyCode(String uuid) {
+        return "";
+    }
+
+    @Override
     public String login(String code) {
         Long userId = sessionHelper.getUserIdByCode(code);
         if (userId == null) {

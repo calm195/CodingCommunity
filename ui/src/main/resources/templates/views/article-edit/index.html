@@ -484,7 +484,9 @@
 
         post("/article/api/generateSummary", params, function (data) {
             console.log("提取后的简介:", data)
-            $("#summary").val(data);
+            const $summary = $("#summary");
+            $summary.val(data);
+            $summary.scrollTo($summary.prop('scrollHeight'));
             $('.form-textarea-limit').text(data.length + '/' + summaryMax)
         });
 

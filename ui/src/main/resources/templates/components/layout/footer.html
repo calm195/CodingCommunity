@@ -2,7 +2,9 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <footer th:fragment="footer" class="footer-wrap">
     <div class="foot container-bg-light">
-        <span th:text="${global.siteInfo.websiteRecord}">TXXX备123456号</span>
+        <a class="text-reset" href="https//beian.miit.gov.cn" target="_blank">
+            <span th:text="${global.siteInfo.websiteRecord}">TXXX备123456号</span>
+        </a>
         <a
                 class="text-reset"
                 href="https://www.hhui.top"
@@ -11,6 +13,7 @@
         >
             © xxx-xxx chrissy
         </a>
+        <span th:text="' | ' + ${global.onlineCnt} + 'peoples online'"></span>
     </div>
 
     <script src="/js/jquery.min.js"></script>

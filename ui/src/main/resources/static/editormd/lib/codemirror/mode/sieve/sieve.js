@@ -170,7 +170,7 @@
                     return null;
 
                 return (state.tokenize || tokenBase)(stream, state);
-                ;
+
             },
 
             indent: function (state, _textAfter) {

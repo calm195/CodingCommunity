@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
@@ -30,6 +31,12 @@ public class CommunityDataSourceInitializer {
 //    @Value("classpath:init-data.sql")
 //    private Resource initData;
 
+    @Value("${spring.liquibase.enabled:true}")
+    private Boolean liquibaseEnabled;
+
+    @Value("${spring.liquibase.change-log}")
+    private String liquibaseChangeLog;
+
     @Value("${database.name}")
     private String database;
 
@@ -38,16 +45,19 @@ public class CommunityDataSourceInitializer {
         final DataSourceInitializer initializer = new DataSourceInitializer();
         // 设置数据源
         initializer.setDataSource(dataSource);
-        initializer.setDatabasePopulator(databasePopulator());
-        initializer.setEnabled(needInit(dataSource));
+        boolean enabled = needInit(dataSource);
+        initializer.setEnabled(enabled);
+        initializer.setDatabasePopulator(databasePopulator(enabled));
         return initializer;
     }
 
-    private DatabasePopulator databasePopulator() {
+    private DatabasePopulator databasePopulator(boolean enabled) {
         final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-//        populator.addScripts(schemaSql);
-//        populator.addScripts(initData);
-//        populator.setSeparator(";");
+        if (enabled && !liquibaseEnabled) {
+            populator.addScripts(DbChangeSetLoader.loadDbChangeSetResources(liquibaseChangeLog).toArray(new ClassPathResource[]{}));
+            populator.setSeparator(";");
+            log.info("no liquibase database, init database by scripts");
+        }
         return populator;
     }
 
@@ -78,7 +88,7 @@ public class CommunityDataSourceInitializer {
         String uname = SpringUtil.getConfig("spring.datasource.username");
         String pwd = SpringUtil.getConfig("spring.datasource.password");
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://" + url.getHost() + ":" + url.getPort() +
-                "?useUnicode=true&characterEncoding=UTF-8&useSSL=false", uname, pwd);
+                "?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true", uname, pwd);
              Statement statement = connection.createStatement()) {
             ResultSet set = statement.executeQuery("select schema_name from information_schema.schemata where schema_name = '" + database + "'");
             if (!set.next()) {

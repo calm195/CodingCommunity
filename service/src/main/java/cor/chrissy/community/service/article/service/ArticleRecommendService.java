@@ -13,15 +13,6 @@ import java.util.List;
  */
 public interface ArticleRecommendService {
     /**
-     * 文章详情页的侧边栏推荐
-     *
-     * @param articleDO
-     * @return
-     */
-    List<SideBarDTO> recommend(ArticleDTO articleDO);
-
-
-    /**
      * 文章关联推荐
      *
      * @param article

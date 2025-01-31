@@ -3,6 +3,7 @@ package cor.chrissy.community.service.user.converter;
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.FollowStateEnum;
+import cor.chrissy.community.common.enums.RoleEnum;
 import cor.chrissy.community.common.req.user.UserInfoSaveReq;
 import cor.chrissy.community.common.req.user.UserRelationReq;
 import cor.chrissy.community.common.req.user.UserSaveReq;
@@ -53,6 +54,7 @@ public class UserConverter {
         // todo 知识点，bean属性拷贝的几种方式， 直接get/set方式，使用BeanUtil工具类(spring, cglib, apache, objectMapper)，序列化方式等
         BeanUtils.copyProperties(info, user);
         user.setRegion(info.getIp().getLatestRegion());
+        user.setRole(RoleEnum.role(info.getUserRole()));
         return user;
     }
 

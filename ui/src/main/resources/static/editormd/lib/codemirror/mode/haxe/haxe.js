@@ -288,7 +288,7 @@
                 if (type == wanted) return cont();
                 else if (wanted == ";") return pass();
                 else return cont(f);
-            };
+            }
             return f;
         }
 

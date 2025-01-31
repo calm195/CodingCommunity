@@ -8,6 +8,7 @@ import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
+import cor.chrissy.community.core.util.SpringUtil;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.TagSelectDTO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
@@ -17,6 +18,7 @@ import cor.chrissy.community.service.user.service.UserRelationService;
 import cor.chrissy.community.service.user.service.UserService;
 import cor.chrissy.community.web.front.user.vo.UserHomeVo;
 import cor.chrissy.community.web.global.BaseViewController;
+import cor.chrissy.community.web.global.SeoInjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -76,6 +78,7 @@ public class UserViewController extends BaseViewController {
 
         userHomeSelectList(vo, userId);
         model.addAttribute("vo", vo);
+        SpringUtil.getBean(SeoInjectService.class).initUserSeo(vo);
         return "views/user/index";
     }
 
@@ -95,6 +98,7 @@ public class UserViewController extends BaseViewController {
 
         userHomeSelectList(vo, userId);
         model.addAttribute("vo", vo);
+        SpringUtil.getBean(SeoInjectService.class).initUserSeo(vo);
         return "views/user/index";
     }
 

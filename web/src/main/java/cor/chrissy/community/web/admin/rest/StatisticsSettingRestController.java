@@ -16,8 +16,8 @@ import java.util.List;
  * @createAt 2024/12/19
  */
 @RestController
-@Permission(role = UserRole.ADMIN)
-@RequestMapping(path = "admin/statistics/")
+@Permission(role = UserRole.LOGIN)
+@RequestMapping(path = {"/api/admin/statistics", "/admin/statistics/"})
 public class StatisticsSettingRestController {
 
     @Autowired
@@ -26,6 +26,7 @@ public class StatisticsSettingRestController {
     static final Integer DEFAULT_DAY = 7;
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "queryTotal")
     public Result<StatisticsCountDTO> queryTotal() {
         StatisticsCountDTO statisticsCountDTO = statisticsSettingService.getStatisticsCount();
@@ -33,6 +34,7 @@ public class StatisticsSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "pvDayList")
     public Result<List<StatisticsDayDTO>> pvDayList(@RequestParam(name = "day", required = false) Integer day) {
         day = (day == null || day == 0) ? DEFAULT_DAY : day;
@@ -41,6 +43,7 @@ public class StatisticsSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "uvDayList")
     public Result<List<StatisticsDayDTO>> uvDayList(@RequestParam(name = "day", required = false) Integer day) {
         day = (day == null || day == 0) ? DEFAULT_DAY : day;

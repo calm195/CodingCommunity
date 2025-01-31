@@ -1,13 +1,16 @@
 package cor.chrissy.community.service.article.repository.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Maps;
 import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.enums.DocumentTypeEnum;
+import cor.chrissy.community.common.enums.OfficialStatEnum;
 import cor.chrissy.community.common.enums.PushStatEnum;
 import cor.chrissy.community.common.enums.YesOrNoEnum;
 import cor.chrissy.community.common.req.PageParam;
@@ -28,10 +31,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -46,10 +46,6 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
 
     @Resource
     private ReadCountMapper readCountMapper;
-    @Autowired
-    private ResourceLoader resourceLoader;
-    @Autowired
-    private PriorityOrdered priorityOrdered;
 
     /**
      * 查询文章详情
@@ -106,7 +102,7 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         contentQuery.eq(ArticleDetailDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDetailDO::getArticleId, articleId)
                 .orderByDesc(ArticleDetailDO::getVersion);
-        return articleDetailMapper.selectOne(contentQuery);
+        return articleDetailMapper.selectList(contentQuery).get(0);
     }
 
     /**
@@ -166,9 +162,14 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         LambdaQueryWrapper<ArticleDO> query = Wrappers.lambdaQuery();
         query.eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .eq(ArticleDO::getStatus, PushStatEnum.ONLINE.getCode());
+
+        if (pageParam.getPageSize() == PageParam.TOP_PAGE_SIZE) {
+            query.eq(ArticleDO::getOfficialStat, OfficialStatEnum.OFFICIAL.getCode());
+        }
+
         Optional.ofNullable(categoryId).ifPresent(cid -> query.eq(ArticleDO::getCategoryId, cid));
         query.last(PageParam.getLimitSql(pageParam))
-                .orderByDesc(ArticleDO::getOfficialStat, ArticleDO::getToppingStat, ArticleDO::getCreateTime);
+                .orderByDesc(ArticleDO::getToppingStat, ArticleDO::getCreateTime);
         return baseMapper.selectList(query);
     }
 
@@ -315,5 +316,24 @@ public class ArticleDao extends ServiceImpl<ArticleMapper, ArticleDO> {
         return lambdaQuery()
                 .eq(ArticleDO::getDeleted, YesOrNoEnum.NO.getCode())
                 .count().intValue();
+    }
+
+    public Map<Long, Long> countArticleByCategoryId() {
+        QueryWrapper<ArticleDO> query = Wrappers.query();
+        query.select("category_id, count(*) as cnt")
+                .eq("deleted", YesOrNoEnum.NO.getCode())
+                .eq("status", PushStatEnum.ONLINE.getCode())
+                .groupBy("category_id");
+
+        List<Map<String, Object>> mapList = baseMapper.selectMaps(query);
+        Map<Long, Long> result = Maps.newHashMapWithExpectedSize(mapList.size());
+
+        for (Map<String, Object> map : mapList) {
+            Long cnt = (Long) map.get("cnt");
+            if (cnt != null && cnt > 0) {
+                result.put((Long) map.get("category_id"), cnt);
+            }
+        }
+        return result;
     }
 }

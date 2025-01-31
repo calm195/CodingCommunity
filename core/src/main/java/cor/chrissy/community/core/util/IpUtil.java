@@ -1,6 +1,6 @@
 package cor.chrissy.community.core.util;
 
-import com.github.hui.quick.plugin.base.FileWriteUtil;
+import com.github.hui.quick.plugin.base.file.FileWriteUtil;
 import cor.chrissy.community.core.region.IpRegionInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;

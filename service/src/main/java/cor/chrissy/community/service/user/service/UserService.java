@@ -3,7 +3,11 @@ package cor.chrissy.community.service.user.service;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
 import cor.chrissy.community.common.req.user.UserInfoSaveReq;
 import cor.chrissy.community.common.req.user.UserSaveReq;
+import cor.chrissy.community.service.user.dto.SimpleUserInfoDTO;
 import cor.chrissy.community.service.user.dto.UserStatisticInfoDTO;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author wx128
@@ -45,4 +49,8 @@ public interface UserService {
     UserStatisticInfoDTO queryUserInfoWithStatistic(Long userId);
 
     BaseUserInfoDTO passwordLogin(String username, String password);
+
+    List<SimpleUserInfoDTO> searchUser(String userName);
+
+    List<BaseUserInfoDTO> batchQueryBasicUserInfo(Collection<Long> userIds);
 }

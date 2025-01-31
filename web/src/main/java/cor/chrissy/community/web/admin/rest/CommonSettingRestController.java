@@ -17,13 +17,14 @@ import java.util.Map;
  * @createAt 2025/1/4
  */
 @RestController
-@Permission(role = UserRole.ADMIN)
-@RequestMapping(path = "admin/common/")
+@Permission(role = UserRole.LOGIN)
+@RequestMapping(path = {"/api/admin/common", "/admin/common/"})
 public class CommonSettingRestController {
     @Autowired
     private DictCommonService dictCommonService;
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "/dict")
     public Result<Map<String, Object>> list() {
         Map<String, Object> bannerDTOPageVo = dictCommonService.getDict();

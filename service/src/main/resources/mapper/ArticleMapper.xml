@@ -61,4 +61,17 @@
           and deleted = ${@cor.chrissy.community.common.enums.YesOrNoEnum@NO.code}
         group by year
     </select>
+
+    <select id="listArticlesOrderById" resultType="cor.chrissy.community.service.article.dto.SimpleArticleDTO">
+        select
+            id,
+            title,
+            update_time as createTime
+        from article
+        where id > #{lastId}
+            and status = ${@cor.chrssiy.community.common.enums.PushStatEnum@ONLINE.code}
+            and deleted = ${@cor.chrssiy.community.common.enums.YesOrNoEnum@NO.code}
+            order by id
+        limit #{size}
+    </select>
 </mapper>

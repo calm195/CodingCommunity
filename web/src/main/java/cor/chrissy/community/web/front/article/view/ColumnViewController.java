@@ -6,6 +6,8 @@ import cor.chrissy.community.common.enums.StatusEnum;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.common.vo.PageListVo;
 import cor.chrissy.community.core.util.ExceptionUtil;
+import cor.chrissy.community.core.util.MdUtil;
+import cor.chrissy.community.core.util.SpringUtil;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.ColumnArticlesDTO;
 import cor.chrissy.community.service.article.dto.ColumnDTO;
@@ -17,6 +19,7 @@ import cor.chrissy.community.service.comment.service.CommentReadService;
 import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
 import cor.chrissy.community.service.sidebar.service.SidebarService;
 import cor.chrissy.community.web.front.article.vo.ColumnVo;
+import cor.chrissy.community.web.global.SeoInjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -97,6 +100,8 @@ public class ColumnViewController {
         // 文章信息
         ArticleDTO articleDTO = articleReadService.queryTotalArticleInfo(articleId, ReqInfoContext.getReqInfo().getUserId());
 
+        articleDTO.setContent(MdUtil.mdToHtml(articleDTO.getContent()));
+
         // 评论信息
         List<TopCommentDTO> comments = commentReadService.getArticleComments(articleId, PageParam.newPageInstance());
 
@@ -115,6 +120,8 @@ public class ColumnViewController {
         vo.setArticleList(articles);
         vo.setSection(section);
         model.addAttribute("vo", vo);
+
+        SpringUtil.getBean(SeoInjectService.class).initColumnSeo(vo, columnDTO);
         return "/views/column-detail/index";
     }
 
@@ -136,7 +143,7 @@ public class ColumnViewController {
             vo.setReadType(columnDTO.getType());
         }
 
-        if (vo.getReadType() == ColumnTypeEnum.LOGIN.getType()) {
+        if (vo.getReadType() == ColumnTypeEnum.LOGIN.getType() && ReqInfoContext.getReqInfo().getUserId() == null) {
             String content = articleDTO.getContent();
             if (content.length() > 300) {
                 content = content.substring(0, 300);

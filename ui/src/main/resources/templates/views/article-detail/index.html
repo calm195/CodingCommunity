@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="components/layout/header :: head(~{::title}, ~{}, ~{})">
-    <title th:text="${global.siteInfo.name}">Coding</title>
+    <title th:text="${vo.article.title} + '-coding'">Coding</title>
 </div>
 
 <link rel="stylesheet" href="/css/views/article-detail.css"/>
@@ -75,25 +75,9 @@
 ></div>
 
 <script th:inline="javascript">
+    /*<![CDATA[*/
     // 内容渲染
     const articleId = [[${vo.article.articleId}]];
-    const content = [[${vo.article.content}]];
-    document.getElementById('articleContent').innerHTML = marked.parse(content);
-    // 文章样式渲染
-    document.addEventListener('DOMContentLoaded', function (event) {
-        if (document.querySelectorAll('pre code').length === 0) {
-            return;
-        }
-
-        // 加载 highlight 样式文件
-        // loadLink('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css');
-        // 加载 highlight 脚本文件
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js', function () {
-            document.querySelectorAll('pre code').forEach(function (block) {
-                hljs.highlightBlock(block);
-            });
-        });
-    });
 
     // 生成菜单
     genTocMenu('#articleContent', '#contentMenu')
@@ -361,6 +345,7 @@
 
 
     bindCommentInputEvent();
+    /*]]>*/
 </script>
 </body>
 </html>

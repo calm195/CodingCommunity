@@ -50,7 +50,8 @@ public class LoginRestController {
     @ResponseBody
     @Permission(role = UserRole.LOGIN)
     @RequestMapping("logout")
-    public Result<Boolean> logOut(HttpServletResponse response) throws Exception {
+    public Result<Boolean> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        request.getSession().invalidate();
         Optional.ofNullable(ReqInfoContext.getReqInfo()).ifPresent(s -> loginService.logout(s.getSession()));
         response.sendRedirect("/");
         return Result.ok(true);

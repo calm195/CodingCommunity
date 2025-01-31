@@ -23,5 +23,5 @@ public interface SidebarService {
      */
     List<SideBarDTO> queryColumnSidebarList();
 
-    List<SideBarDTO> queryArticleDetailSidebarList();
+    List<SideBarDTO> queryArticleDetailSidebarList(Long authorId, Long articleId);
 }

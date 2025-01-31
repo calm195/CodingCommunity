@@ -25,8 +25,8 @@ import java.util.List;
  * @createAt 2024/12/19
  */
 @RestController
-@Permission(role = UserRole.ADMIN)
-@RequestMapping(path = "admin/column/")
+@Permission(role = UserRole.LOGIN)
+@RequestMapping(path = {"/api/admin/column", "/admin/column/"})
 public class ColumnSettingRestController {
 
     @Autowired
@@ -36,6 +36,7 @@ public class ColumnSettingRestController {
     private ArticleReadService articleReadService;
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @PostMapping(path = "saveColumn")
     public Result<String> saveColumn(@RequestBody ColumnReq req) {
         columnSettingService.saveColumn(req);
@@ -43,6 +44,7 @@ public class ColumnSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @PostMapping(path = "saveColumnArticle")
     public Result<String> saveColumnArticle(@RequestBody ColumnArticleReq req) {
 
@@ -57,6 +59,7 @@ public class ColumnSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @PostMapping(path = "sortColumnArticle")
     public Result<String> sortColumnArticle(@RequestBody List<ColumnArticleReq> columnArticleReqs) {
         columnSettingService.sortColumnArticle(columnArticleReqs);
@@ -64,6 +67,7 @@ public class ColumnSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "deleteColumn")
     public Result<String> deleteColumn(@RequestParam(name = "columnId") Integer columnId) {
         columnSettingService.deleteColumn(columnId);
@@ -71,6 +75,7 @@ public class ColumnSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "deleteColumnArticle")
     public Result<String> deleteColumnArticle(@RequestParam(name = "id") Integer id) {
         columnSettingService.deleteColumnArticle(id);
@@ -78,6 +83,7 @@ public class ColumnSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "listColumn")
     public Result<PageVo<ColumnDTO>> listColumn(@RequestParam(name = "pageNumber", required = false) Integer pageNumber,
                                                 @RequestParam(name = "pageSize", required = false) Integer pageSize) {
@@ -88,6 +94,7 @@ public class ColumnSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "listColumnArticle")
     public Result<PageVo<ColumnArticleDTO>> listColumnArticle(@RequestParam(name = "columnId") Integer columnId,
                                                               @RequestParam(name = "pageNumber", required = false) Integer pageNumber,

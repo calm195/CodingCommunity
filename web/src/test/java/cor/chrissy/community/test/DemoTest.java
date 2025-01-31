@@ -1,15 +1,27 @@
 package cor.chrissy.community.test;
 
+import cor.chrissy.community.core.util.DateUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.function.BiConsumer;
 
 /**
- * @author wx128
- * @createAt 2024/12/11
+ * @author YiHui
+ * @date 2022/8/6
  */
 public class DemoTest {
+
+    @Test
+    public void testTime() {
+        long now = System.currentTimeMillis();
+        LocalDateTime local = DateUtil.time2LocalTime(now);
+        System.out.println(local);
+
+        System.out.println(DateUtil.time2utc(now));
+        System.out.println("over");
+    }
 
     public static void scan(int maxX, int maxY, BiConsumer<Integer, Integer> consumer) {
         for (int i = 0; i < maxX; i++) {
@@ -92,4 +104,3 @@ public class DemoTest {
         System.out.println(ans);
     }
 }
-

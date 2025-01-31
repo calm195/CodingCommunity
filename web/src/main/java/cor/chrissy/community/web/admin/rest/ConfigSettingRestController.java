@@ -19,14 +19,15 @@ import org.springframework.web.bind.annotation.*;
  * @createAt 2024/12/19
  */
 @RestController
-@Permission(role = UserRole.ADMIN)
-@RequestMapping(path = "admin/config/")
+@Permission(role = UserRole.LOGIN)
+@RequestMapping(path = {"/api/admin/config", "/admin/config/"})
 public class ConfigSettingRestController {
 
     @Autowired
     private ConfigSettingService configSettingService;
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @PostMapping(path = "save")
     public Result<String> save(@RequestBody ConfigReq configReq) {
         configSettingService.saveConfig(configReq);
@@ -34,6 +35,7 @@ public class ConfigSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "delete")
     public Result<String> delete(@RequestParam(name = "configId") Integer configId) {
         configSettingService.deleteConfig(configId);
@@ -41,6 +43,7 @@ public class ConfigSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "operate")
     public Result<String> operate(@RequestParam(name = "configId") Integer configId,
                                   @RequestParam(name = "operateType") Integer operateType) {
@@ -52,6 +55,7 @@ public class ConfigSettingRestController {
     }
 
     @ResponseBody
+    @Permission(role = UserRole.ADMIN)
     @GetMapping(path = "list")
     public Result<PageVo<ConfigDTO>> list(@RequestParam(name = "pageNumber", required = false) Integer pageNumber,
                                           @RequestParam(name = "pageSize", required = false) Integer pageSize) {

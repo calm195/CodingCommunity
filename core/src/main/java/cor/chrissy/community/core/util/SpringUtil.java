@@ -1,5 +1,6 @@
 package cor.chrissy.community.core.util;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -16,16 +17,16 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
-    private static ApplicationContext context;
-    private static Environment environment;
+    private volatile static ApplicationContext context;
+    private volatile static Environment environment;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NotNull ApplicationContext applicationContext) throws BeansException {
         SpringUtil.context = applicationContext;
     }
 
     @Override
-    public void setEnvironment(Environment environment) {
+    public void setEnvironment(@NotNull Environment environment) {
         SpringUtil.environment = environment;
     }
 
@@ -52,6 +53,10 @@ public class SpringUtil implements ApplicationContextAware, EnvironmentAware {
      */
     public static String getConfig(String key) {
         return environment.getProperty(key);
+    }
+
+    public static String getConfig(String key, String defaultValue) {
+        return environment.getProperty(key, defaultValue);
     }
 
     public static void publishEvent(ApplicationEvent event) {

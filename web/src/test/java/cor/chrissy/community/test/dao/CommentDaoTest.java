@@ -18,8 +18,7 @@ public class CommentDaoTest extends BasicTest {
     private CommentWriteService commentWriteService;
 
     @Test
-//    @Transactional(rollbackFor = Exception.class)
-    public void testSaveComment() throws Exception {
+    public void testSaveComment() {
         CommentSaveReq commentSaveReq1 = new CommentSaveReq();
         commentSaveReq1.setArticleId(1L);
         commentSaveReq1.setCommentContent("一灰的评论1");
@@ -57,7 +56,7 @@ public class CommentDaoTest extends BasicTest {
     }
 
     @Test
-    public void testDeleteComment() throws Exception {
+    public void testDeleteComment() {
         commentWriteService.deleteComment(58L, 1L);
     }
 }

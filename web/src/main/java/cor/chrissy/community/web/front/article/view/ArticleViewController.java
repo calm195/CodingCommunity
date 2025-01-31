@@ -4,20 +4,23 @@ import cor.chrissy.community.common.context.ReqInfoContext;
 import cor.chrissy.community.common.req.PageParam;
 import cor.chrissy.community.core.permission.Permission;
 import cor.chrissy.community.core.permission.UserRole;
+import cor.chrissy.community.core.util.MdUtil;
+import cor.chrissy.community.core.util.SpringUtil;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.dto.CategoryDTO;
 import cor.chrissy.community.service.article.service.ArticleReadService;
-import cor.chrissy.community.service.article.service.ArticleRecommendService;
 import cor.chrissy.community.service.article.service.CategoryService;
 import cor.chrissy.community.service.article.service.TagService;
 import cor.chrissy.community.service.comment.dto.TopCommentDTO;
 import cor.chrissy.community.service.comment.service.CommentReadService;
 import cor.chrissy.community.service.sidebar.dto.SideBarDTO;
+import cor.chrissy.community.service.sidebar.service.SidebarService;
 import cor.chrissy.community.service.user.dto.UserStatisticInfoDTO;
 import cor.chrissy.community.service.user.service.UserService;
 import cor.chrissy.community.web.front.article.vo.ArticleDetailVo;
 import cor.chrissy.community.web.front.article.vo.ArticleEditVo;
 import cor.chrissy.community.web.global.BaseViewController;
+import cor.chrissy.community.web.global.SeoInjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -53,7 +56,7 @@ public class ArticleViewController extends BaseViewController {
     private CommentReadService commentService;
 
     @Autowired
-    private ArticleRecommendService articleRecommendService;
+    private SidebarService sidebarService;
 
     /**
      * 文章编辑页
@@ -102,6 +105,7 @@ public class ArticleViewController extends BaseViewController {
     public String detail(@PathVariable(name = "articleId") Long articleId, Model model) {
         ArticleDetailVo vo = new ArticleDetailVo();
         ArticleDTO articleDTO = articleService.queryTotalArticleInfo(articleId, ReqInfoContext.getReqInfo().getUserId());
+        articleDTO.setContent(MdUtil.mdToHtml(articleDTO.getContent()));
         vo.setArticle(articleDTO);
 
         // 评论信息
@@ -119,9 +123,11 @@ public class ArticleViewController extends BaseViewController {
         vo.setAuthor(user);
 
         // 详情页的侧边推荐信息
-        List<SideBarDTO> sideBars = articleRecommendService.recommend(articleDTO);
+        List<SideBarDTO> sideBars = sidebarService.queryArticleDetailSidebarList(articleDTO.getAuthor(), articleDTO.getArticleId());
         vo.setSideBarItems(sideBars);
         model.addAttribute("vo", vo);
+
+        SpringUtil.getBean(SeoInjectService.class).initColumnSeo(vo);
         return "views/article-detail/index";
     }
 }

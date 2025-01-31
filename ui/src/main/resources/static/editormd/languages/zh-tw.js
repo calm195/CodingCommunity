@@ -91,16 +91,16 @@
     :
         "coding now...."
     },
-        htmlEntities : {
-            title : "HTML實體字符"
+        {
+            "HTML實體字符"
         }
     ,
-        help : {
-            title : "使用幫助"
+        {
+            "使用幫助"
         }
     }
     }
-        ;
+
 
         exports.defaults.lang = lang;
     };

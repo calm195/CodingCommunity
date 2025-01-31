@@ -51,4 +51,6 @@ public interface ArticleMapper extends BaseMapper<ArticleDO> {
      * @return
      */
     List<YearArticleDTO> listYearArticleByUserId(@Param("userId") Long userId);
+
+    List<SimpleArticleDTO> listArticlesOrderById(@Param("lastId") Long lastId, @Param("size") int size);
 }

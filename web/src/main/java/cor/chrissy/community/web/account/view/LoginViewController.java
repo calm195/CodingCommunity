@@ -82,12 +82,12 @@ public class LoginViewController extends BaseViewController {
     /**
      * 客户端与后端建立扫描二维码的长连接
      *
-     * @param id
+     * @param code
      * @return
      */
     @GetMapping(path = "subscribe", produces = {org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE})
-    public SseEmitter subscribe(String id) {
-        return qrLoginHelper.subscribe(id);
+    public SseEmitter subscribe(String code) throws IOException {
+        return qrLoginHelper.subscribe(code);
     }
 
     /**

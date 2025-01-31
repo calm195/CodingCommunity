@@ -138,7 +138,7 @@ let articleCatalog = (function () {
 							<span class="arCatalog-dot"></span>
 						</dd>`
             }
-            ;
+
             retStr += `</dl></div></div>`
 
             document.getElementById('arAnchorBar').innerHTML = retStr

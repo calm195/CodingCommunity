@@ -441,12 +441,12 @@
                     if (curPunc == "\\SV" && state.vxCodeActive) {
                         state.vxCodeActive = false;
                     }
-                    ;
+
                     if ((/\\SVX/.test(curPunc) && !state.vxCodeActive)
                         || (curPunc == "\\SVX_version" && state.vxCodeActive)) {
                         state.vxCodeActive = true;
                     }
-                    ;
+
                     style = "keyword";
                     state.svxCurCtlFlowChar = state.svxPrevPrevCtlFlowChar
                         = state.svxPrevCtlFlowChar = "";

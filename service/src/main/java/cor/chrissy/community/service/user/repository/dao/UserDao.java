@@ -1,5 +1,6 @@
 package cor.chrissy.community.service.user.repository.dao;
 
+import com.aliyuncs.ram.model.v20150501.GetUserResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -12,6 +13,8 @@ import cor.chrissy.community.service.user.repository.mapper.UserMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author wx128
@@ -63,6 +66,21 @@ public class UserDao extends ServiceImpl<UserInfoMapper, UserInfoDO> {
         }
         user.setId(record.getId());
         updateById(user);
+    }
+
+    public List<UserInfoDO> getByUserNameLike(String userName) {
+        LambdaQueryWrapper<UserInfoDO> query = Wrappers.lambdaQuery();
+        query.select(UserInfoDO::getUserId, UserInfoDO::getUserName, UserInfoDO::getPhoto, UserInfoDO::getProfile)
+                .like(UserInfoDO::getUserName, userName)
+                .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode());
+        return baseMapper.selectList(query);
+    }
+
+    public List<UserInfoDO> getByUserIds(Collection<Long> userIds) {
+        LambdaQueryWrapper<UserInfoDO> query = Wrappers.lambdaQuery();
+        query.in(UserInfoDO::getUserId, userIds)
+                .eq(UserInfoDO::getDeleted, YesOrNoEnum.NO.getCode());
+        return baseMapper.selectList(query);
     }
 }
 

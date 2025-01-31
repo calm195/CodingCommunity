@@ -24,6 +24,8 @@ public interface LoginService {
      */
     String getVerifyCode(String uuid);
 
+    String autoRegisterAndGetVerifyCode(String uuid);
+
     /**
      * 登录
      *

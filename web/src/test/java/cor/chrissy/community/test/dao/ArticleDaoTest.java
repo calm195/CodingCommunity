@@ -14,11 +14,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * @author wx128
- * @createAt 2024/12/9
+ * @author YiHui
+ * @date 2022/7/20
  */
 @Slf4j
 public class ArticleDaoTest extends BasicTest {
+
     @Autowired
     private TagDao tagDao;
 
@@ -52,4 +53,5 @@ public class ArticleDaoTest extends BasicTest {
         PageListVo<ArticleDTO> articleListDTO = articleService.queryArticlesByCategory(1L, PageParam.newPageInstance(1L, 10L));
         log.info("articleListDTO: {}", articleListDTO);
     }
+
 }

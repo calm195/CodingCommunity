@@ -124,7 +124,7 @@ public class ArticleReadServiceImpl implements ArticleReadService {
 
     @Override
     public List<ArticleDTO> queryTopArticlesByCategory(Long categoryId) {
-        PageParam page = PageParam.newPageInstance(PageParam.DEFAULT_PAGE_NUM, (long) 4);
+        PageParam page = PageParam.newPageInstance(PageParam.DEFAULT_PAGE_NUM, PageParam.TOP_PAGE_SIZE);
         List<ArticleDO> articleDTOS = articleDao.listArticlesByCategoryId(categoryId, page);
         return articleDTOS.stream().map(this::fillArticleRelatedInfo).collect(Collectors.toList());
     }
@@ -247,6 +247,11 @@ public class ArticleReadServiceImpl implements ArticleReadService {
     @Override
     public Long queryArticleCountByCategoryId(Long categoryId) {
         return articleDao.countArticleByCategoryId(categoryId);
+    }
+
+    @Override
+    public Map<Long, Long> queryArticleCountByCategory() {
+        return articleDao.countArticleByCategoryId();
     }
 }
 

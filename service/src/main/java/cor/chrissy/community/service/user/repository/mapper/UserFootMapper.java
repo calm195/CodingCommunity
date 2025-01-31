@@ -61,4 +61,6 @@ public interface UserFootMapper extends BaseMapper<UserFootDO> {
     List<SimpleUserInfoDTO> listSimpleUserInfosByArticleId(@Param("documentId") Long documentId,
                                                            @Param("type") Integer type,
                                                            @Param("size") int size);
+
+    Integer countArticleReadsByUserId(@Param("userId") Long userId);
 }

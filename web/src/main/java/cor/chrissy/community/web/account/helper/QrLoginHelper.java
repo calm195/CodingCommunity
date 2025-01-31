@@ -7,14 +7,18 @@ import cor.chrissy.community.common.exception.NoVlaInGuavaException;
 import cor.chrissy.community.core.util.CodeGenerateUtil;
 import cor.chrissy.community.service.account.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -25,41 +29,30 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class QrLoginHelper {
-    public static final String ACCESS_TOKEN_URL = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx4a128c315d9b1228&secret=077e2d92dee69f04ba6d53a0ef4459f9";
-    /**
-     * 访问token
-     */
-    public static volatile String token = "";
-
-    /**
-     * 失效时间
-     */
-    public static volatile long expireTime = 0L;
-
 
     private final LoginService loginService;
 
     /**
      * key = 验证码, value = 长连接
      */
-    private LoadingCache<String, SseEmitter> verifyCodeCache;
+    private final LoadingCache<String, SseEmitter> verifyCodeCache;
     /**
      * key = 设备 value = 验证码
      */
-    private LoadingCache<String, String> deviceCodeCache;
+    private final LoadingCache<String, String> deviceCodeCache;
 
     public QrLoginHelper(@Qualifier(value = "pwdLoginServiceImpl") LoginService loginService) {
         this.loginService = loginService;
         verifyCodeCache = CacheBuilder.newBuilder().maximumSize(300).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<String, SseEmitter>() {
             @Override
-            public SseEmitter load(String s) throws Exception {
+            public @NotNull SseEmitter load(@NotNull String s) throws Exception {
                 throw new NoVlaInGuavaException("no val: " + s);
             }
         });
 
         deviceCodeCache = CacheBuilder.newBuilder().maximumSize(300).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<String, String>() {
             @Override
-            public String load(String s) {
+            public @NotNull String load(@NotNull String s) {
                 int cnt = 0;
                 while (true) {
                     String code = CodeGenerateUtil.genCode(cnt++);
@@ -97,11 +90,22 @@ public class QrLoginHelper {
      * @param code
      * @return
      */
-    public SseEmitter subscribe(String code) {
-        SseEmitter sseEmitter = new SseEmitter(5 * 60 * 1000L);
+    public SseEmitter subscribe(String code) throws IOException {
+        HttpServletRequest req = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        HttpServletResponse res = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        String device = initDeviceId(req, res);
+        String realCode = deviceCodeCache.getUnchecked(device);
+
+        // fixme 设置15min的超时时间, 超时时间一旦设置不能修改；因此导致刷新验证码并不会增加连接的有效期
+        SseEmitter sseEmitter = new SseEmitter(15 * 60 * 1000L);
         verifyCodeCache.put(code, sseEmitter);
-        sseEmitter.onTimeout(() -> verifyCodeCache.invalidate(code));
-        sseEmitter.onError((e) -> verifyCodeCache.invalidate(code));
+        sseEmitter.onTimeout(() -> verifyCodeCache.invalidate(realCode));
+        sseEmitter.onError((e) -> verifyCodeCache.invalidate(realCode));
+        if (!Objects.equals(realCode, code)) {
+            // 若实际的验证码与前端显示的不同，则通知前端更新
+            sseEmitter.send("initCode!");
+            sseEmitter.send("init#" + realCode);
+        }
         return sseEmitter;
     }
 
@@ -115,15 +119,20 @@ public class QrLoginHelper {
      */
     public String refreshCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String deviceId = initDeviceId(request, response);
-        String oldCode = deviceCodeCache.getUnchecked(deviceId);
-        SseEmitter lastSse = verifyCodeCache.getIfPresent(oldCode);
+        // 获取旧的验证码，注意不使用 getUnchecked, 避免重新生成一个验证码
+        String oldCode = deviceCodeCache.getIfPresent(deviceId);
+        SseEmitter lastSse = oldCode == null ? null : verifyCodeCache.getIfPresent(oldCode);
         if (lastSse == null) {
+            log.info("last deviceId:{}, code:{}, sse closed!", deviceId, oldCode);
             return null;
         }
 
         // 重新生成一个验证码
         deviceCodeCache.invalidate(deviceId);
         String newCode = deviceCodeCache.getUnchecked(deviceId);
+        log.info("generate new loginCode! deviceId:{}, oldCode:{}, code:{}", deviceId, oldCode, newCode);
+
+        lastSse.send("updateCode!");
         lastSse.send("refresh#" + newCode);
         verifyCodeCache.invalidate(oldCode);
         verifyCodeCache.put(newCode, lastSse);

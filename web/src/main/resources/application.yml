@@ -1,9 +1,12 @@
 server:
   port: 8080
+  servlet:
+    session:
+      timeout: 30m
 
 spring:
-  profiles:
-    active: dal, web, config, image
+  config:
+    import: classpath:application-config.yml, classpath:application-dal.yml, classpath:application-web.yml, classpath:application-email.yml, classpath:application-image.yml
   main:
     allow-circular-references: true
   mvc:

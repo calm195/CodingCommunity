@@ -39,12 +39,12 @@ public class CategoryServiceImpl implements CategoryService {
     public void init() {
         categoryCaches = CacheBuilder.newBuilder().maximumSize(300).build(new CacheLoader<Long, CategoryDTO>() {
             @Override
-            public CategoryDTO load(@NotNull Long categoryId) throws Exception {
+            public @NotNull CategoryDTO load(@NotNull Long categoryId) {
                 CategoryDO category = categoryDao.getById(categoryId);
                 if (category == null || category.getDeleted() == YesOrNoEnum.YES.getCode()) {
                     return CategoryDTO.EMPTY;
                 }
-                return new CategoryDTO(categoryId, category.getCategoryName());
+                return new CategoryDTO(categoryId, category.getCategoryName(), category.getRank());
             }
         });
     }

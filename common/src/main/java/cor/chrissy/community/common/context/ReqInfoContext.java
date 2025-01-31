@@ -75,5 +75,7 @@ public class ReqInfoContext {
         private BaseUserInfoDTO userInfo;
 
         private Integer msgNum;
+
+        private Seo seo;
     }
 }

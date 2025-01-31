@@ -26,11 +26,10 @@
         SELECT sum(if(f.praise_stat = ${@cor.chrissy.community.common.enums.PraiseStatEnum@PRAISE.code}, 1,
                       0))   as praiseCount,
                sum(if(f.collection_stat = ${@cor.chrissy.community.common.enums.CollectionStatEnum@COLLECTION.code}, 1,
-                      0))   as collectionCount,
-               sum(r.`cnt`) as readCount
-        FROM read_count as r
-                 left join user_foot as f on f.document_id = r.document_id and f.document_type = r.document_type
-        WHERE r.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
+                      0))   as collectionCount
+        FROM user_foot as f
+        WHERE
+            f.document_type = ${@cor.chrissy.community.common.enums.DocumentTypeEnum@ARTICLE.code}
           AND f.document_author_id = #{userId}
 
     </select>
@@ -73,4 +72,12 @@
         limit #{size}
     </select>
 
+    <select id="countArticleReadsByUserId" resultType="java.lang.Integer">
+        select
+            sum(r.`cnt`) as readCount
+        from article a left join read_count as r
+            on a.id = r.document_id
+        where r.document_type = ${@cor.chrissy.community.comman.enums.DocumentTypeEnum@ARTICLE.code}
+            and a.author_id = #{userId}
+    </select>
 </mapper>

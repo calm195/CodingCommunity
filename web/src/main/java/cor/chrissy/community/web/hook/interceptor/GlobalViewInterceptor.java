@@ -53,6 +53,8 @@ public class GlobalViewInterceptor implements AsyncHandlerInterceptor {
                     response.getWriter().println(JsonUtil.toStr(Result.fail(StatusEnum.FORBID_ERROR_MIXED, "must login")));
                     response.getWriter().flush();
                     return false;
+                } else if (request.getRequestURI().startsWith("/api/admin/") || request.getRequestURI().startsWith("/admin/")) {
+                    response.sendRedirect("/admin");
                 } else {
                     response.sendRedirect("/qrLogin");
                 }

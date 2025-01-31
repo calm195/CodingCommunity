@@ -3,9 +3,14 @@
     <!-- fixme 知识点：logback配置变量的姿势，如何读取Spring配置参数   -->
     <springProperty scope="context" name="log.path" source="log.path" defaultValue="logs"/>
     <springProperty scope="context" name="log.env" source="env.name" defaultValue="NO"/>
-    <property name="log.service.name" value="forum"/>
+    <property name="log.service.name" value="coding"/>
     <property name="log.req.name" value="req"/>
 
+    <appender name="errorAlarm" class="cor.chrissy.community.core.util.AlarmUtil">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
 
     <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,%i索引【从数字0开始递增】,,, -->
     <!-- appender是configuration的子节点，是负责写日志的组件。 -->
@@ -83,6 +88,7 @@
     <logger name="cor.chrissy.community" level="INFO" additivity="false">
         <appender-ref ref="service"/>
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="errorAlarm"/>
     </logger>
 
     <!-- 控制台输出日志级别 -->

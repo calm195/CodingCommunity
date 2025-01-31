@@ -1,13 +1,14 @@
 package cor.chrissy.community.service.article.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import cor.chrissy.community.common.entity.BaseUserInfoDTO;
-import cor.chrissy.community.common.enums.OperateArticleEnum;
-import cor.chrissy.community.common.enums.StatusEnum;
-import cor.chrissy.community.common.enums.YesOrNoEnum;
+import cor.chrissy.community.common.enums.*;
 import cor.chrissy.community.common.req.PageParam;
+import cor.chrissy.community.common.req.article.ArticleMsgEvent;
 import cor.chrissy.community.common.req.article.ArticlePostReq;
 import cor.chrissy.community.common.vo.PageVo;
 import cor.chrissy.community.core.util.ExceptionUtil;
+import cor.chrissy.community.core.util.SpringUtil;
 import cor.chrissy.community.service.article.conveter.ArticleConverter;
 import cor.chrissy.community.service.article.dto.ArticleDTO;
 import cor.chrissy.community.service.article.repository.dao.ArticleDao;
@@ -15,6 +16,7 @@ import cor.chrissy.community.service.article.repository.entity.ArticleDO;
 import cor.chrissy.community.service.article.service.ArticleSettingService;
 import cor.chrissy.community.service.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,17 +66,38 @@ public class ArticleSettingServiceImpl implements ArticleSettingService {
     }
 
     @Override
+    @CacheEvict(key = "'sideBar_' + #req.articleId", cacheManager = "caffeineCacheManager", cacheNames = "article")
     public void updateArticle(ArticlePostReq req) {
         ArticleDO articleDO = articleDao.getById(req.getArticleId());
-        if (articleDO != null) {
-            if (!req.getTitle().isEmpty()) {
-                articleDO.setTitle(req.getTitle());
+        if (articleDO == null) {
+            return;
+        }
+
+        if (StringUtils.isNotBlank(req.getTitle())) {
+            articleDO.setTitle(req.getTitle());
+        }
+        articleDO.setShortTitle(req.getShortTitle());
+
+        ArticleEventEnum operateEvent = null;
+        if (req.getStatus() != null) {
+            articleDO.setStatus(req.getStatus());
+            PushStatEnum temp = PushStatEnum.fromCode(req.getStatus());
+            switch (temp) {
+                case OFFLINE:
+                    operateEvent = ArticleEventEnum.OFFLINE;
+                    break;
+                case ONLINE:
+                    operateEvent = ArticleEventEnum.ONLINE;
+                    break;
+                case REVIEW:
+                    operateEvent = ArticleEventEnum.REVIEW;
+                    break;
             }
-            if (req.getStatus() != null) {
-                articleDO.setStatus(req.getStatus());
-            }
-            articleDO.setShortTitle(req.getShortTitle());
             articleDao.updateById(articleDO);
+
+            if (operateEvent != null) {
+                SpringUtil.publishEvent(new ArticleMsgEvent<>(this, operateEvent, articleDO.getId()));
+            }
         }
     }
 
@@ -84,6 +107,8 @@ public class ArticleSettingServiceImpl implements ArticleSettingService {
         if (articleDO != null && articleDO.getDeleted() != YesOrNoEnum.YES.getCode()) {
             articleDO.setDeleted(YesOrNoEnum.YES.getCode());
             articleDao.updateById(articleDO);
+
+            SpringUtil.publishEvent(new ArticleMsgEvent<>(this, ArticleEventEnum.DELETE, articleDO.getId()));
         }
     }
 
